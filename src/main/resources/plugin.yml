@@ -1,3 +1,6 @@
 name: WoolWars
 version: '${project.version}'
 main: me.cubecrafter.woolwars.WoolWars
+commands:
+  woolwars:
+    usage: /<command>
