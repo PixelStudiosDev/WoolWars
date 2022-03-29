@@ -43,7 +43,10 @@ public class Arena {
     public void addPlayer(Player player) {
         players.add(player);
         player.teleport(lobby);
-        broadcast(player.getName() + " has joined! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
+        broadcast(TextUtil.color("&b{player} &ejoined the game! &7({currentplayers}/{maxplayers})"
+                .replace("{player}", player.getName())
+                .replace("{currentplayers}", String.valueOf(players.size()))
+                .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam()))));
         if (getPlayers().size() >= getMinPlayers()) {
             startingTask = new ArenaStartingTask(this).getTask();
         }
@@ -53,6 +56,7 @@ public class Arena {
         players.remove(player);
         broadcast(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
         if (getPlayers().size() < getMinPlayers()) {
+            broadcast(TextUtil.color("&cNot enough players! Countdown stopped!"));
             startingTask.cancel();
         }
     }
