@@ -5,5 +5,3 @@ api-version: 1.13
 softdepend:
   - PlaceholderAPI
 commands:
-  woolwars:
-    usage: /<command>

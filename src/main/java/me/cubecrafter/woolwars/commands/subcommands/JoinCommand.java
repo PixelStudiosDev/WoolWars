@@ -1,37 +1,14 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
+import com.jonahseguin.drink.annotation.Command;
+import com.jonahseguin.drink.annotation.Sender;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.commands.SubCommand;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+public class JoinCommand {
 
-public class JoinCommand implements SubCommand {
-
-    @Override
-    public void onCommand(CommandSender sender, String[] args) {
-        WoolWars.getInstance().getGameManager().getArena().addPlayer((Player) sender);
+    @Command(name = "join", desc = "Join a game")
+    public void joinMatch(@Sender Player player){
+        WoolWars.getInstance().getGameManager().getArena().addPlayer(player);
     }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return null;
-    }
-
-    @Override
-    public String getLabel() {
-        return "join";
-    }
-
-    @Override
-    public String getPermission() {
-        return null;
-    }
-
-    @Override
-    public boolean isPlayerOnly() {
-        return true;
-    }
-
 }
