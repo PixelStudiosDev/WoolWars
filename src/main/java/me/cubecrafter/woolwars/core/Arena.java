@@ -1,18 +1,18 @@
 package me.cubecrafter.woolwars.core;
 
-import me.cubecrafter.woolwars.WoolWars;
+import lombok.Getter;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Getter
 public class Arena {
 
     private final String id;
@@ -34,41 +34,13 @@ public class Arena {
         }
     }
 
-    public String getId() {
-        return id;
-    }
-
     public void addPlayer(Player player) {
         players.add(player);
         player.sendMessage(TextUtil.color("&7Joined arena &a" + id));
     }
 
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public Location getSpawnLocation() {
-        return spawnLocation;
-    }
-
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
-    }
-
-    public GameState getGameState() {
-        return gameState;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public List<Player> getSpectators() {
-        return spectators;
-    }
-
-    public int getMaxPlayersPerTeam() {
-        return maxPlayersPerTeam;
     }
 
 }
