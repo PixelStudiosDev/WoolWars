@@ -5,7 +5,9 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,20 @@ public class TextUtil {
 
     public static void severe(String msg) {
         WoolWars.getInstance().getLogger().severe(msg);
+    }
+
+    public static String serializeLocation(Location location) {
+        return location.getWorld().getName() + ":" +
+                location.getX() + ":" +
+                location.getY() + ":" +
+                location.getZ() + ":" +
+                location.getPitch() + ":" +
+                location.getYaw();
+    }
+
+    public static Location deserializeLocation(String location) {
+        String[] loc = location.split(":");
+        return new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]), Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
     }
 
 }

@@ -1,5 +1,7 @@
 package me.cubecrafter.woolwars.commands;
 
+import me.cubecrafter.woolwars.commands.subcommands.JoinCommand;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -13,7 +15,7 @@ public class CommandManager implements TabExecutor {
     private final List<SubCommand> subCommands = new ArrayList<>();
 
     public CommandManager() {
-
+        subCommands.add(new JoinCommand());
     }
 
     @Override
@@ -37,7 +39,7 @@ public class CommandManager implements TabExecutor {
             }
         } else {
             if (sender instanceof Player) {
-                new MainMenu((Player) sender).openMenu();
+
             }
         }
         return true;
