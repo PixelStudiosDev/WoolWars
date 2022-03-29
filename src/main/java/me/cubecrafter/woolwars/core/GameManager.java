@@ -5,8 +5,9 @@ import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
 public class GameManager {
 
@@ -36,6 +37,10 @@ public class GameManager {
 
     public Arena getArena() {
         return arenas.get("test");
+    }
+
+    public List<Arena> getArenas() {
+        return new ArrayList<>(arenas.values());
     }
 
 }

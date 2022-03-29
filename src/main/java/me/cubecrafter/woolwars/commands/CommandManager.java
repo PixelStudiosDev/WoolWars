@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.commands;
 
 import me.cubecrafter.woolwars.commands.subcommands.JoinCommand;
+import me.cubecrafter.woolwars.commands.subcommands.LeaveCommand;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,6 +17,7 @@ public class CommandManager implements TabExecutor {
 
     public CommandManager() {
         subCommands.add(new JoinCommand());
+        subCommands.add(new LeaveCommand());
     }
 
     @Override
