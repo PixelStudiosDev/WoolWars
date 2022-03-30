@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.core;
 
+import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -7,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.HashMap;
 
+@Getter
 public class GameManager {
 
     private final HashMap<String, Arena> arenas = new HashMap<>();

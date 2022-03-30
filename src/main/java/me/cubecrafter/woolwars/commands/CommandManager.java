@@ -5,6 +5,7 @@ import com.jonahseguin.drink.Drink;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.subcommands.JoinCommand;
+import me.cubecrafter.woolwars.commands.subcommands.LeaveCommand;
 
 /**
  * @author Infinity
@@ -23,7 +24,8 @@ public class CommandManager {
 
     public void load() {
         drink.register(new BaseCommand(), "woolwars", null)
-                .registerSub(new JoinCommand());
+                .registerSub(new JoinCommand())
+                .registerSub(new LeaveCommand());
 
         drink.registerCommands();
     }

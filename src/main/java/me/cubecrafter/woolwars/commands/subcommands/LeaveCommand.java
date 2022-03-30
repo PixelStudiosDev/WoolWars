@@ -1,43 +1,22 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
-import me.cubecrafter.woolwars.commands.SubCommand;
+import com.jonahseguin.drink.annotation.Command;
+import com.jonahseguin.drink.annotation.Sender;
 import me.cubecrafter.woolwars.core.Arena;
 import me.cubecrafter.woolwars.utils.GameUtil;
-import org.bukkit.command.CommandSender;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+public class LeaveCommand {
 
-public class LeaveCommand implements SubCommand {
-
-    @Override
-    public void onCommand(CommandSender sender, String[] args) {
-        Arena arena = GameUtil.getArenaByPlayer((Player) sender);
+    @Command(name = "leave", desc = "Leave a game", usage = "/woolwars leave")
+    public void leaveCommand(@Sender Player player){
+        Arena arena = GameUtil.getArenaByPlayer(player);
         if (arena != null) {
-            arena.removePlayer((Player) sender);
+            arena.removePlayer(player);
         } else {
-            sender.sendMessage("You aren't in arena!");
+            player.sendMessage(TextUtil.color("You aren't in arena!"));
         }
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return null;
-    }
-
-    @Override
-    public String getLabel() {
-        return "leave";
-    }
-
-    @Override
-    public String getPermission() {
-        return null;
-    }
-
-    @Override
-    public boolean isPlayerOnly() {
-        return true;
     }
 
 }
