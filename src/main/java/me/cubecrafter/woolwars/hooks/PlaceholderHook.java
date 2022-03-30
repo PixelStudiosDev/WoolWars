@@ -8,7 +8,7 @@ public class PlaceholderHook extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return "realms";
+        return "woolwars";
     }
 
     @Override
