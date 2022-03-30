@@ -10,17 +10,9 @@ import java.util.List;
 public class GameUtil {
 
     public static Arena getArenaByPlayer(Player player) {
-        if (GameUtil.isSpectating(player)) {
-            for (Arena arena : GameUtil.getArenas()) {
-                if (arena.getSpectators().contains(player)) {
-                    return arena;
-                }
-            }
-        } else {
-            for (Arena arena : GameUtil.getArenas()) {
-                if (arena.getPlayers().contains(player)) {
-                    return arena;
-                }
+        for (Arena arena : GameUtil.getArenas()) {
+            if (arena.getPlayers().contains(player) || arena.getSpectators().contains(player)) {
+                return arena;
             }
         }
         return null;

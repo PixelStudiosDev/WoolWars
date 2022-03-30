@@ -34,8 +34,4 @@ public class GameManager {
         arenas.remove(id);
     }
 
-    public Arena getArena() {
-        return arenas.get("test");
-    }
-
 }
