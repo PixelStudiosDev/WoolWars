@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.core.GameManager;
+import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.MongoManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.libs.Metrics;
@@ -17,6 +18,7 @@ public final class WoolWars extends JavaPlugin {
     @Getter private GameManager gameManager;
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
+    @Getter private Database database;
     @Getter private MongoManager mongoManager;
 
     @Override
@@ -25,11 +27,17 @@ public final class WoolWars extends JavaPlugin {
         new Metrics(this, 14788);
         registerHooks();
         fileManager = new FileManager();
+        database = new Database();
         gameManager = new GameManager();
         commandManager = new CommandManager(this);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         // mongoManager = new MongoManager();
         // mongoManager.load();
+    }
+
+    @Override
+    public void onDisable() {
+        database.close();
     }
 
     private void registerHooks() {
