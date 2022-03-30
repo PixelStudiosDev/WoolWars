@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -57,6 +58,10 @@ public class TextUtil {
     public static Location deserializeLocation(String location) {
         String[] loc = location.split(":");
         return new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]), Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
+    }
+
+    public static ChatColor getChatColor(String color) {
+        return ChatColor.valueOf(color);
     }
 
 }

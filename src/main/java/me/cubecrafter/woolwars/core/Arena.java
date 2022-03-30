@@ -1,8 +1,10 @@
 package me.cubecrafter.woolwars.core;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,6 +27,7 @@ public class Arena {
     private final List<Player> spectators = new ArrayList<>();
     private final HashMap<String, Team> teams = new HashMap<>();
     private BukkitTask startingTask;
+    private BukkitTask playingTask;
     private GameState gameState = GameState.WAITING;
 
     public Arena(String id, YamlConfiguration arenaConfig) {
@@ -35,12 +38,17 @@ public class Arena {
         minPlayers = arenaConfig.getInt("min-players");
         for (String key : arenaConfig.getConfigurationSection("teams").getKeys(false)) {
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
-            Team team = new Team(key, spawn, Color.RED);
+            ChatColor color = TextUtil.getChatColor(arenaConfig.getString("teams." + key + ".color"));
+            Team team = new Team(key, spawn, color);
             teams.put(key, team);
         }
     }
 
     public void addPlayer(Player player) {
+        if (getPlayers().contains(player)) {
+            player.sendMessage(TextUtil.color("&cYou are already in this arena!"));
+            return;
+        }
         players.add(player);
         player.teleport(lobbyLocation);
         broadcast(TextUtil.color("&b{player} &ejoined the game! &7({currentplayers}/{maxplayers})"
@@ -71,13 +79,14 @@ public class Arena {
                 startingTask = new ArenaStartingTask(this).getTask();
                 break;
             case PLAYING:
+                playingTask = new ArenaPlayingTask(this).getTask();
                 break;
             case RESTARTING:
                 break;
         }
     }
 
-    private void assignTeams() {
+    public void assignTeams() {
         for (Player player : getPlayers()) {
             Team team = new ArrayList<>(getTeams().values()).get(0);
             for (Team t : getTeams().values()) {
@@ -87,6 +96,19 @@ public class Arena {
             }
             team.addMember(player);
         }
+    }
+
+    public Team getTeamByName(String name) {
+        return teams.get(name);
+    }
+
+    public Team getTeamByPlayer(Player player) {
+        for (Team team : getTeams().values()) {
+            if (team.getMembers().contains(player)) {
+                return team;
+            }
+        }
+        return null;
     }
 
     public void broadcast(String msg) {

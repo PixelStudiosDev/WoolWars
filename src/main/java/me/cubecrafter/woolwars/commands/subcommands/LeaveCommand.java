@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 
 public class LeaveCommand {
 
-    @Command(name = "leave", desc = "Leave a game", usage = "/woolwars leave")
-    public void leaveCommand(@Sender Player player){
+    @Command(name = "leave", desc = "Leave the current game")
+    public void leaveCommand(@Sender Player player) {
         Arena arena = GameUtil.getArenaByPlayer(player);
         if (arena != null) {
             arena.removePlayer(player);

@@ -38,6 +38,7 @@ public final class WoolWars extends JavaPlugin {
     @Override
     public void onDisable() {
         database.close();
+        getServer().getScheduler().cancelTasks(this);
     }
 
     private void registerHooks() {
