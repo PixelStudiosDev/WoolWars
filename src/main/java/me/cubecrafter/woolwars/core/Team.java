@@ -1,5 +1,7 @@
 package me.cubecrafter.woolwars.core;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -7,6 +9,8 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@RequiredArgsConstructor
 public class Team {
 
     private final String name;
@@ -14,30 +18,8 @@ public class Team {
     private final Color color;
     private final List<Player> members = new ArrayList<>();
 
-    public Team(String name, Color color, Location spawnLocation) {
-        this.name = name;
-        this.color = color;
-        this.spawnLocation = spawnLocation;
-    }
-
     public void addMember(Player player) {
         members.add(player);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Location getSpawnLocation() {
-        return spawnLocation;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public List<Player> getMembers() {
-        return members;
     }
 
 }

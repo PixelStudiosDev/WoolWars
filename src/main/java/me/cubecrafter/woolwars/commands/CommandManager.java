@@ -15,18 +15,14 @@ import me.cubecrafter.woolwars.commands.subcommands.LeaveCommand;
 
 public class CommandManager {
 
-    @Getter
-    private static CommandService drink;
+    @Getter private final CommandService drink;
 
-    public CommandManager(WoolWars instance) {
-        drink = Drink.get(instance);
-    }
-
-    public void load() {
+    public CommandManager(WoolWars plugin) {
+        drink = Drink.get(plugin);
         drink.register(new BaseCommand(), "woolwars", null)
                 .registerSub(new JoinCommand())
                 .registerSub(new LeaveCommand());
-
         drink.registerCommands();
     }
+
 }

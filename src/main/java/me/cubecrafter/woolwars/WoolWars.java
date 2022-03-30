@@ -5,7 +5,10 @@ import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.core.GameManager;
 import me.cubecrafter.woolwars.database.MongoManager;
+import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.libs.Metrics;
+import me.cubecrafter.woolwars.listeners.MenuListener;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WoolWars extends JavaPlugin {
@@ -18,17 +21,34 @@ public final class WoolWars extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         instance = this;
         new Metrics(this, 14788);
-
-        mongoManager = new MongoManager();
-        mongoManager.load();
-
+        registerHooks();
         fileManager = new FileManager();
         gameManager = new GameManager();
-
         commandManager = new CommandManager(this);
-        commandManager.load();
+        getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        // mongoManager = new MongoManager();
+        // mongoManager.load();
     }
+
+    private void registerHooks() {
+        if (isPAPIEnabled()) {
+            new PlaceholderHook().register();
+            TextUtil.info("Hooked into PlaceholderAPI!");
+        }
+        if (isVaultEnabled()) {
+            // TODO Vault Hook
+            TextUtil.info("Hooked into Vault!");
+        }
+    }
+
+    public boolean isPAPIEnabled() {
+        return getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
+    }
+
+    public boolean isVaultEnabled() {
+        return getServer().getPluginManager().isPluginEnabled("Vault");
+    }
+
 }

@@ -47,23 +47,13 @@
                                     <pattern>org.apache.commons.io</pattern>
                                     <shadedPattern>me.cubecrafter.woolwars.libs.commons-io</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.jonahseguin.drink</pattern>
+                                    <shadedPattern>me.cubecrafter.woolwars.libs.drink</shadedPattern>
+                                </relocation>
                             </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -136,11 +126,12 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.7</version>
+            <version>3.12.10</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
