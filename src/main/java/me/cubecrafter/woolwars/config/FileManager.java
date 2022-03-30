@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.config;
 
+import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -10,8 +11,8 @@ public class FileManager {
 
     private final File configFile;
     private final File messagesFile;
-    private YamlConfiguration config;
-    private YamlConfiguration messages;
+    @Getter private YamlConfiguration config;
+    @Getter private YamlConfiguration messages;
 
     public FileManager() {
         new File(WoolWars.getInstance().getDataFolder(), "arenas").mkdirs();
@@ -25,14 +26,6 @@ public class FileManager {
         }
         config = YamlConfiguration.loadConfiguration(configFile);
         messages = YamlConfiguration.loadConfiguration(messagesFile);
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
-    public YamlConfiguration getMessages() {
-        return messages;
     }
 
     public void save() {

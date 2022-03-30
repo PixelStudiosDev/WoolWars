@@ -4,4 +4,3 @@ main: me.cubecrafter.woolwars.WoolWars
 api-version: 1.13
 softdepend:
   - PlaceholderAPI
-commands:
