@@ -1,15 +1,17 @@
 package me.cubecrafter.woolwars.utils;
 
 import lombok.experimental.UtilityClass;
+import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.core.Arena;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +68,20 @@ public class TextUtil {
         return ChatColor.valueOf(color);
     }
 
-    public boolean isSpawnRegistered(String source){
-        return source.contains(":");
+    public ItemStack getWool(String color) {
+        return XMaterial.matchXMaterial(color + "_WOOL").get().parseItem();
     }
+
+    public String parsePlaceholders(String s, Arena arena) {
+        return s.replace("{time}", arena.getTimerFormatted())
+                .replace("{arenaname}", arena.getId())
+                .replace("{arenadisplayname}", arena.getDisplayName());
+    }
+
+    public List<String> parsePlaceholders(List<String> lines, Arena arena) {
+        List<String> parsed = new ArrayList<>();
+        lines.forEach(s -> parsed.add(parsePlaceholders(s, arena)));
+        return parsed;
+    }
+
 }

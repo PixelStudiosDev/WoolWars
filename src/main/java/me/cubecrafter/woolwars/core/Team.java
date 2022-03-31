@@ -19,6 +19,7 @@ public class Team {
     @Getter private final ChatColor color;
     @Getter private final List<Player> members = new ArrayList<>();
     @Getter private final String teamLetter;
+    @Getter private int points;
     private final org.bukkit.scoreboard.Team scoreboardTeam;
 
     public Team(String name, Location spawnLocation, ChatColor color) {
@@ -26,7 +27,7 @@ public class Team {
         this.spawnLocation = spawnLocation;
         this.color = color;
         this.teamLetter = name.substring(0,1).toUpperCase();
-        this.scoreboardTeam = WoolWars.getInstance().getScoreboard().registerNewTeam(UUID.randomUUID().toString());
+        this.scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(UUID.randomUUID().toString());
         scoreboardTeam.setAllowFriendlyFire(false);
         scoreboardTeam.setPrefix(TextUtil.color("&l" + getTeamLetter() + "&r "));
         scoreboardTeam.setColor(color);
@@ -52,6 +53,14 @@ public class Team {
         for (Player player : getMembers()) {
             player.teleport(spawnLocation);
         }
+    }
+
+    public void addPoint() {
+        points++;
+    }
+
+    public void resetPoints() {
+        points = 0;
     }
 
 }

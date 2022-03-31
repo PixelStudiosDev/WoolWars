@@ -8,14 +8,11 @@ import me.cubecrafter.woolwars.core.ScoreboardAdapter;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.libs.Metrics;
-import me.cubecrafter.woolwars.listeners.BlockBreakListener;
-import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.scoreboard.Assemble;
 import me.cubecrafter.woolwars.utils.scoreboard.AssembleStyle;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Scoreboard;
 
 public final class WoolWars extends JavaPlugin {
 
@@ -24,16 +21,14 @@ public final class WoolWars extends JavaPlugin {
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
     @Getter private Database database;
-    @Getter private Scoreboard scoreboard;
 
     @Override
     public void onEnable() {
         instance = this;
 
         new Metrics(this, 14788);
-        registerHooks();
 
-        scoreboard = getServer().getScoreboardManager().getNewScoreboard();
+        registerHooks();
 
         fileManager = new FileManager();
 
@@ -44,8 +39,6 @@ public final class WoolWars extends JavaPlugin {
         commandManager = new CommandManager(this);
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
-        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
 
         setupScoreboard();
     }

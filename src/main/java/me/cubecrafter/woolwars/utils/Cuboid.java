@@ -33,4 +33,20 @@ public class Cuboid {
                 && location.getBlockZ() <= this.zMax;
     }
 
+    public int getHeight() {
+        return this.yMax - this.yMin + 1;
+    }
+
+    public int getXWidth() {
+        return this.xMax - this.xMin + 1;
+    }
+
+    public int getZWidth() {
+        return this.zMax - this.zMin + 1;
+    }
+
+    public int getTotalBlocks() {
+        return this.getHeight() * this.getXWidth() * this.getZWidth();
+    }
+
 }

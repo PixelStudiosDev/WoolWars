@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.scoreboard.events.AssembleBoardCreatedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,7 +42,7 @@ public class AssembleBoard {
 	 */
 	public Scoreboard getScoreboard() {
 		Player player = Bukkit.getPlayer(getUuid());
-		return WoolWars.getInstance().getScoreboard();
+		return Bukkit.getScoreboardManager().getMainScoreboard();
 	}
 
 	/**

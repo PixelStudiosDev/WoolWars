@@ -7,4 +7,4 @@ mysql:
   password: "password"
   useSSL: false
 
-spawn-location: ""
+lobby-location:

@@ -10,10 +10,10 @@ import java.util.List;
 
 public class ScoreboardAdapter implements AssembleAdapter {
 
-    private final List<String> lobbyLines = WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.lobby-board");
-    private final List<String> waitingLines = WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.waiting-board");
-    private final List<String> startingLines = WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.starting-board");
-    private final List<String> playingLines = WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.ingame-board");
+    private final List<String> lobbyLines = TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.lobby-board"));
+    private final List<String> waitingLines =  TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.waiting-board"));
+    private final List<String> startingLines = TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.starting-board"));
+    private final List<String> playingLines = TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.ingame-board"));
 
     @Override
     public String getTitle(Player player) {
@@ -26,11 +26,11 @@ public class ScoreboardAdapter implements AssembleAdapter {
             Arena arena = GameUtil.getArenaByPlayer(player);
             switch (arena.getGameState()) {
                 case WAITING:
-                    return waitingLines;
+                    return TextUtil.parsePlaceholders(waitingLines, arena);
                 case STARTING:
-                    return startingLines;
+                    return TextUtil.parsePlaceholders(startingLines, arena);
                 case PLAYING:
-                    return playingLines;
+                    return TextUtil.parsePlaceholders(playingLines, arena);
             }
         } else {
             return lobbyLines;

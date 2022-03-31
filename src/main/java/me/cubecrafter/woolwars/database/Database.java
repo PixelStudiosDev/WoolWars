@@ -24,6 +24,7 @@ public class Database {
             } catch (SQLException ignored) {}
         });
     }
+
     public void close() {
         pool.closePool();
     }

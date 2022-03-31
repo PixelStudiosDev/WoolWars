@@ -6,12 +6,10 @@ import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +26,7 @@ public class Arena {
     private final List<Player> players = new ArrayList<>();
     private final List<Player> spectators = new ArrayList<>();
     private final HashMap<String, Team> teams = new HashMap<>();
-    private Cuboid blocksRegion;
+    private final Cuboid blocksRegion;
     private ArenaStartingTask startingTask;
     private ArenaPlayingTask playingTask;
     private ArenaTimerTask timerTask;
@@ -46,6 +44,9 @@ public class Arena {
             Team team = new Team(key, spawn, color);
             teams.put(key, team);
         }
+        Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point1"));
+        Location point2 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point2"));
+        blocksRegion = new Cuboid(point1, point2);
     }
 
     public void addPlayer(Player player) {

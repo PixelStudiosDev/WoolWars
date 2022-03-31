@@ -15,7 +15,7 @@ public class LeaveCommand {
         if (arena != null) {
             arena.removePlayer(player);
         } else {
-            player.sendMessage(TextUtil.color("You aren't in arena!"));
+            player.sendMessage(TextUtil.color("&cYou’re not in an arena!"));
         }
     }
 
