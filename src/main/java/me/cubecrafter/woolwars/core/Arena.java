@@ -4,11 +4,9 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
-import me.cubecrafter.woolwars.events.GameStateChangeEvent;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -75,8 +73,6 @@ public class Arena {
     }
 
     public void setGameState(GameState gameState) {
-        GameStateChangeEvent event = new GameStateChangeEvent(this, gameState);
-        Bukkit.getServer().getPluginManager().callEvent(event);
         this.gameState = gameState;
         switch (getGameState()) {
             case WAITING:

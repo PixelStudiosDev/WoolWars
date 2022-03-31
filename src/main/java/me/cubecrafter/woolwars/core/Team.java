@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.core;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,8 +26,9 @@ public class Team {
         this.spawnLocation = spawnLocation;
         this.color = color;
         this.teamLetter = name.substring(0,1).toUpperCase();
-        this.scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(UUID.randomUUID().toString());
+        this.scoreboardTeam = WoolWars.getInstance().getScoreboard().registerNewTeam(UUID.randomUUID().toString());
         scoreboardTeam.setAllowFriendlyFire(false);
+        scoreboardTeam.setPrefix(getTeamLetter() + " ");
         scoreboardTeam.setColor(color);
     }
 

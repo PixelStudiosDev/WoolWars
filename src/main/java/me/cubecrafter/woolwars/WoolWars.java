@@ -15,6 +15,7 @@ import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.scoreboard.Assemble;
 import me.cubecrafter.woolwars.utils.scoreboard.AssembleStyle;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 public final class WoolWars extends JavaPlugin {
 
@@ -23,7 +24,7 @@ public final class WoolWars extends JavaPlugin {
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
     @Getter private Database database;
-    @Getter private Assemble scoreboard;
+    @Getter private Scoreboard scoreboard;
 
     @Override
     public void onEnable() {
@@ -31,6 +32,8 @@ public final class WoolWars extends JavaPlugin {
 
         new Metrics(this, 14788);
         registerHooks();
+
+        scoreboard = getServer().getScoreboardManager().getNewScoreboard();
 
         fileManager = new FileManager();
 
@@ -72,9 +75,12 @@ public final class WoolWars extends JavaPlugin {
         return getServer().getPluginManager().isPluginEnabled("Vault");
     }
 
-    public void setupScoreboard(){
-        scoreboard = new Assemble(this, new ScoreboardAdapter());
+    private void setupScoreboard() {
+        Assemble scoreboard = new Assemble(this, new ScoreboardAdapter());
         scoreboard.setTicks(10);
         scoreboard.setAssembleStyle(AssembleStyle.MODERN);
+        scoreboard.setCallEvents(false);
+        scoreboard.setDebugMode(false);
     }
+
 }
