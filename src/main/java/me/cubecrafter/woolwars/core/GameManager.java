@@ -8,10 +8,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.HashMap;
 
-@Getter
 public class GameManager {
 
-    private final HashMap<String, Arena> arenas = new HashMap<>();
+    @Getter private final HashMap<String, Arena> arenas = new HashMap<>();
 
     public GameManager() {
         loadArenas();
@@ -33,10 +32,6 @@ public class GameManager {
 
     public void removeArena(String id) {
         arenas.remove(id);
-    }
-
-    public Arena getArena() {
-        return arenas.get("test");
     }
 
 }

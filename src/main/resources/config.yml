@@ -1,1 +1,9 @@
+mysql:
+  enabled: false
+  host: localhost
+  port: 3306
+  database: woolwars
+  username: "username"
+  password: "password"
+  useSSL: false
 mongo:
