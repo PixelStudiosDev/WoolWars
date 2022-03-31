@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.utils;
 
+import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
 import org.bukkit.entity.Player;
@@ -7,9 +8,10 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+@UtilityClass
 public class GameUtil {
 
-    public static Arena getArenaByPlayer(Player player) {
+    public Arena getArenaByPlayer(Player player) {
         for (Arena arena : GameUtil.getArenas()) {
             if (arena.getPlayers().contains(player) || arena.getSpectators().contains(player)) {
                 return arena;
@@ -18,11 +20,11 @@ public class GameUtil {
         return null;
     }
 
-    public static Arena getArenaByName(String name) {
+    public Arena getArenaByName(String name) {
         return WoolWars.getInstance().getGameManager().getArenas().get(name);
     }
 
-    public static boolean isSpectating(Player player) {
+    public boolean isSpectating(Player player) {
         for (Arena arena : GameUtil.getArenas()) {
             if (arena.getSpectators().contains(player)) {
                 return true;
@@ -31,7 +33,7 @@ public class GameUtil {
         return false;
     }
 
-    public static boolean isPlaying(Player player) {
+    public boolean isPlaying(Player player) {
         for (Arena arena : GameUtil.getArenas()) {
             if (arena.getPlayers().contains(player)) {
                 return true;
@@ -40,7 +42,7 @@ public class GameUtil {
         return false;
     }
 
-    public static List<Arena> getArenas() {
+    public List<Arena> getArenas() {
         return new ArrayList<>(WoolWars.getInstance().getGameManager().getArenas().values());
     }
 
