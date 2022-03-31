@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
 public class Team {
 
-    private final String name;
-    private final Location spawnLocation;
-    private final ChatColor color;
-    private final List<Player> members = new ArrayList<>();
-    private final String teamLetter;
+    @Getter private final String name;
+    @Getter private final Location spawnLocation;
+    @Getter private final ChatColor color;
+    @Getter private final List<Player> members = new ArrayList<>();
+    @Getter private final String teamLetter;
     private final org.bukkit.scoreboard.Team scoreboardTeam;
 
     public Team(String name, Location spawnLocation, ChatColor color) {

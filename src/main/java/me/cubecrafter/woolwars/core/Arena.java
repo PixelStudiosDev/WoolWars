@@ -3,7 +3,10 @@ package me.cubecrafter.woolwars.core;
 import lombok.Getter;
 import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
+import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
+import me.cubecrafter.woolwars.events.GameStateChangeEvent;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -28,6 +31,7 @@ public class Arena {
     private final HashMap<String, Team> teams = new HashMap<>();
     private BukkitTask startingTask;
     private BukkitTask playingTask;
+    private BukkitTask timerTask;
     private GameState gameState = GameState.WAITING;
 
     public Arena(String id, YamlConfiguration arenaConfig) {
@@ -71,12 +75,15 @@ public class Arena {
     }
 
     public void setGameState(GameState gameState) {
+        GameStateChangeEvent event = new GameStateChangeEvent(this, gameState);
+        Bukkit.getServer().getPluginManager().callEvent(event);
         this.gameState = gameState;
         switch (getGameState()) {
             case WAITING:
                 break;
             case STARTING:
                 startingTask = new ArenaStartingTask(this).getTask();
+                timerTask = new ArenaTimerTask(this).getTask();
                 break;
             case PLAYING:
                 playingTask = new ArenaPlayingTask(this).getTask();

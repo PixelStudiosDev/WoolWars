@@ -26,10 +26,11 @@ public class ArenaStartingTask implements Runnable {
     @Override
     public void run() {
         if (countdown == 0) {
-            arena.assignTeams();
             arena.setGameState(GameState.PLAYING);
+            arena.assignTeams();
             for (Team team : arena.getTeams().values()) {
                 team.setNameTags();
+                team.teleportToSpawn();
             }
             for (Player player : arena.getPlayers()) {
                 Titles.sendTitle(player, 0, 20, 0, TextUtil.color("&c&lGame Started!"), "");
