@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
+import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,9 +28,10 @@ public class Arena {
     private final List<Player> players = new ArrayList<>();
     private final List<Player> spectators = new ArrayList<>();
     private final HashMap<String, Team> teams = new HashMap<>();
-    private BukkitTask startingTask;
-    private BukkitTask playingTask;
-    private BukkitTask timerTask;
+    private Cuboid blocksRegion;
+    private ArenaStartingTask startingTask;
+    private ArenaPlayingTask playingTask;
+    private ArenaTimerTask timerTask;
     private GameState gameState = GameState.WAITING;
 
     public Arena(String id, YamlConfiguration arenaConfig) {
@@ -67,7 +69,7 @@ public class Arena {
         broadcast(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
         if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             setGameState(GameState.WAITING);
-            startingTask.cancel();
+            startingTask.getTask().cancel();
             broadcast(TextUtil.color("&cNot enough players! Countdown stopped!"));
         }
     }
@@ -78,11 +80,11 @@ public class Arena {
             case WAITING:
                 break;
             case STARTING:
-                startingTask = new ArenaStartingTask(this).getTask();
-                timerTask = new ArenaTimerTask(this).getTask();
+                startingTask = new ArenaStartingTask(this);
+                timerTask = new ArenaTimerTask(this);
                 break;
             case PLAYING:
-                playingTask = new ArenaPlayingTask(this).getTask();
+                playingTask = new ArenaPlayingTask(this);
                 break;
             case RESTARTING:
                 break;
@@ -118,6 +120,10 @@ public class Arena {
         for (Player player : getPlayers()) {
             player.sendMessage(TextUtil.color(msg));
         }
+    }
+
+    public String getTimerFormatted() {
+        return timerTask.getTimerFormatted();
     }
 
 }

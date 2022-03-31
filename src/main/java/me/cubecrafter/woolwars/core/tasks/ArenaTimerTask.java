@@ -19,8 +19,14 @@ public class ArenaTimerTask implements Runnable {
 
     @Override
     public void run() {
-        timer--;
+        if (timer > 0) {
+            timer--;
+        }
         arena.broadcast(getTimerFormatted());
+    }
+
+    public void setTimer(int seconds) {
+        this.timer = seconds;
     }
 
     public String getTimerFormatted() {

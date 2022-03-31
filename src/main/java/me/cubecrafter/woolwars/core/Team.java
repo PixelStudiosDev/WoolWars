@@ -28,7 +28,7 @@ public class Team {
         this.teamLetter = name.substring(0,1).toUpperCase();
         this.scoreboardTeam = WoolWars.getInstance().getScoreboard().registerNewTeam(UUID.randomUUID().toString());
         scoreboardTeam.setAllowFriendlyFire(false);
-        scoreboardTeam.setPrefix(getTeamLetter() + " ");
+        scoreboardTeam.setPrefix(TextUtil.color("&l" + getTeamLetter() + "&r "));
         scoreboardTeam.setColor(color);
     }
 
