@@ -6,9 +6,10 @@ import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.core.GameManager;
 import me.cubecrafter.woolwars.core.ScoreboardAdapter;
 import me.cubecrafter.woolwars.database.Database;
-import me.cubecrafter.woolwars.database.MongoManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.libs.Metrics;
+import me.cubecrafter.woolwars.listeners.BlockBreakListener;
+import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.scoreboard.Assemble;
@@ -22,7 +23,6 @@ public final class WoolWars extends JavaPlugin {
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
     @Getter private Database database;
-    @Getter private MongoManager mongoManager;
     @Getter private Assemble scoreboard;
 
     @Override
@@ -41,9 +41,9 @@ public final class WoolWars extends JavaPlugin {
         commandManager = new CommandManager(this);
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
 
-        // mongoManager = new MongoManager();
-        // mongoManager.load();
         setupScoreboard();
     }
 
@@ -74,7 +74,7 @@ public final class WoolWars extends JavaPlugin {
 
     public void setupScoreboard(){
         scoreboard = new Assemble(this, new ScoreboardAdapter());
-        scoreboard.setTicks(2);
+        scoreboard.setTicks(10);
         scoreboard.setAssembleStyle(AssembleStyle.MODERN);
     }
 }

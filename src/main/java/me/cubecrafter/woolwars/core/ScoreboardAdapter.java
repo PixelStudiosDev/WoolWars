@@ -28,17 +28,20 @@ public class ScoreboardAdapter implements AssembleAdapter {
 
     @Override
     public List<String> getLines(Player player) {
-        Arena arena = GameUtil.getArenaByPlayer(player);
-        switch (arena.getGameState()){
-            case LOBBY:
-                return lobbyLines;
-            case WAITING:
-                return waitingLines;
-            case STARTING:
-                return startingLines;
-            case PLAYING:
-                return ingameLines;
+        if (GameUtil.isPlaying(player)) {
+            Arena arena = GameUtil.getArenaByPlayer(player);
+            switch (arena.getGameState()) {
+                case WAITING:
+                    return waitingLines;
+                case STARTING:
+                    return startingLines;
+                case PLAYING:
+                    return ingameLines;
+            }
+        } else {
+            return lobbyLines;
         }
+
         return null;
     }
 }

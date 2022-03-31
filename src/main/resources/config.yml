@@ -6,4 +6,3 @@ mysql:
   username: "username"
   password: "password"
   useSSL: false
-mongo:
