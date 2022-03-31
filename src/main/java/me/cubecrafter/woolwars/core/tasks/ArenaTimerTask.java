@@ -25,7 +25,8 @@ public class ArenaTimerTask implements Runnable {
 
     public String getTimerFormatted() {
         int minutes = (timer / 60) % 60;
-        return (minutes > 0 ? minutes + ":" : "") + timer;
+        int seconds = (timer) % 60;
+        return minutes + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 
 }
