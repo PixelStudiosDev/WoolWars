@@ -30,7 +30,6 @@ public class Team {
         this.scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(UUID.randomUUID().toString());
         scoreboardTeam.setAllowFriendlyFire(false);
         scoreboardTeam.setPrefix(TextUtil.color("&l" + getTeamLetter() + "&r "));
-        scoreboardTeam.setColor(color);
     }
 
     public void addMember(Player player) {

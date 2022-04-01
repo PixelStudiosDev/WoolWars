@@ -20,7 +20,7 @@ public final class WoolWars extends JavaPlugin {
     @Getter private GameManager gameManager;
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
-    @Getter private Database database;
+    @Getter private Database SQLDatabase;
 
     @Override
     public void onEnable() {
@@ -32,7 +32,7 @@ public final class WoolWars extends JavaPlugin {
 
         fileManager = new FileManager();
 
-        database = new Database();
+        SQLDatabase = new Database();
 
         gameManager = new GameManager();
 
@@ -45,7 +45,7 @@ public final class WoolWars extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        database.close();
+        SQLDatabase.close();
         getServer().getScheduler().cancelTasks(this);
     }
 
