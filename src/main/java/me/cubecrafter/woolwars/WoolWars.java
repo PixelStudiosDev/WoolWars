@@ -70,10 +70,8 @@ public final class WoolWars extends JavaPlugin {
 
     private void setupScoreboard() {
         Assemble scoreboard = new Assemble(this, new ScoreboardAdapter());
-        scoreboard.setTicks(10);
+        scoreboard.setTicks(20L);
         scoreboard.setAssembleStyle(AssembleStyle.MODERN);
-        scoreboard.setCallEvents(false);
-        scoreboard.setDebugMode(false);
     }
 
 }

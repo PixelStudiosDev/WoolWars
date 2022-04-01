@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
+import me.cubecrafter.woolwars.core.Team;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -64,18 +65,14 @@ public class TextUtil {
         return new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]), Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
     }
 
-    public ChatColor getChatColor(String color) {
-        return ChatColor.valueOf(color);
-    }
-
-    public ItemStack getWool(String color) {
-        return XMaterial.matchXMaterial(color + "_WOOL").get().parseItem();
-    }
-
     public String parsePlaceholders(String s, Arena arena) {
-        return s.replace("{time}", arena.getTimerFormatted())
-                .replace("{arenaname}", arena.getId())
-                .replace("{arenadisplayname}", arena.getDisplayName());
+        String parsed = s.replace("{time}", arena.getTimerFormatted())
+                        .replace("{arenaname}", arena.getId())
+                        .replace("{arenadisplayname}", arena.getDisplayName());
+        for (Team team : arena.getTeams().values()) {
+            parsed = parsed.replace("{points_" + team.getName() + "}", String.valueOf(team.getPoints()));
+        }
+        return parsed;
     }
 
     public List<String> parsePlaceholders(List<String> lines, Arena arena) {

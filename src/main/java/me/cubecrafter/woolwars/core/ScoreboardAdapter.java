@@ -4,20 +4,23 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.scoreboard.AssembleAdapter;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public class ScoreboardAdapter implements AssembleAdapter {
 
-    private final List<String> lobbyLines = TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.lobby-board"));
-    private final List<String> waitingLines =  TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.waiting-board"));
-    private final List<String> startingLines = TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.starting-board"));
-    private final List<String> playingLines = TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getStringList("scoreboard.ingame-board"));
+    private final YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
+    private final List<String> lobbyLines = TextUtil.color(messages.getStringList("scoreboard.lobby-board"));
+    private final List<String> waitingLines =  TextUtil.color(messages.getStringList("scoreboard.waiting-board"));
+    private final List<String> startingLines = TextUtil.color(messages.getStringList("scoreboard.starting-board"));
+    private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
+    private final String title = TextUtil.color(messages.getString("scoreboard.title"));
 
     @Override
     public String getTitle(Player player) {
-        return TextUtil.color(WoolWars.getInstance().getFileManager().getMessages().getString("scoreboard.title"));
+        return title;
     }
 
     @Override

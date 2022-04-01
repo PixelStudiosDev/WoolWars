@@ -6,8 +6,8 @@ import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -23,6 +23,7 @@ public class Arena {
     private final Location lobbyLocation;
     private final int maxPlayersPerTeam;
     private final int minPlayers;
+    private final int requiredPoints;
     private final List<Player> players = new ArrayList<>();
     private final List<Player> spectators = new ArrayList<>();
     private final HashMap<String, Team> teams = new HashMap<>();
@@ -38,9 +39,10 @@ public class Arena {
         displayName = TextUtil.color(arenaConfig.getString("displayname"));
         maxPlayersPerTeam = arenaConfig.getInt("max-players-per-team");
         minPlayers = arenaConfig.getInt("min-players");
+        requiredPoints = arenaConfig.getInt("required-points-to-win");
         for (String key : arenaConfig.getConfigurationSection("teams").getKeys(false)) {
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
-            ChatColor color = TextUtil.getChatColor(arenaConfig.getString("teams." + key + ".color"));
+            TeamColor color = TeamColor.valueOf(arenaConfig.getString("teams." + key + ".color"));
             Team team = new Team(key, spawn, color);
             teams.put(key, team);
         }
@@ -111,6 +113,15 @@ public class Arena {
     public Team getTeamByPlayer(Player player) {
         for (Team team : getTeams().values()) {
             if (team.getMembers().contains(player)) {
+                return team;
+            }
+        }
+        return null;
+    }
+
+    public Team getTeamByWool(Material wool) {
+        for (Team team : getTeams().values()) {
+            if (team.getTeamColor().getWoolMaterial().equals(wool)) {
                 return team;
             }
         }
