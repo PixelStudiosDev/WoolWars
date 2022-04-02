@@ -2,6 +2,10 @@ package me.cubecrafter.woolwars.utils;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cuboid {
 
@@ -21,6 +25,19 @@ public class Cuboid {
         this.zMin = Math.min(point1.getBlockZ(), point2.getBlockZ());
         this.zMax = Math.max(point1.getBlockZ(), point2.getBlockZ());
         this.world = point1.getWorld();
+    }
+
+    public List<Block> getBlocks() {
+        List<Block> blocks = new ArrayList<>(this.getTotalBlocks());
+        for (int x = this.xMin; x <= this.xMax; ++x) {
+            for (int y = this.yMin; y <= this.yMax; ++y) {
+                for (int z = this.zMin; z <= this.zMax; ++z) {
+                    Block b = this.world.getBlockAt(x, y, z);
+                    blocks.add(b);
+                }
+            }
+        }
+        return blocks;
     }
 
     public boolean isInside(Location location) {

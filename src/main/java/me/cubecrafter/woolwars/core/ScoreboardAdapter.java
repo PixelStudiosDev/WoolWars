@@ -12,11 +12,11 @@ import java.util.List;
 public class ScoreboardAdapter implements AssembleAdapter {
 
     private final YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
-    private final List<String> lobbyLines = TextUtil.color(messages.getStringList("scoreboard.lobby-board"));
-    private final List<String> waitingLines =  TextUtil.color(messages.getStringList("scoreboard.waiting-board"));
-    private final List<String> startingLines = TextUtil.color(messages.getStringList("scoreboard.starting-board"));
-    private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
-    private final String title = TextUtil.color(messages.getString("scoreboard.title"));
+    private final List<String> lobbyLines = messages.getStringList("scoreboard.lobby-board");
+    private final List<String> waitingLines =  messages.getStringList("scoreboard.waiting-board");
+    private final List<String> startingLines = messages.getStringList("scoreboard.starting-board");
+    private final List<String> playingLines = messages.getStringList("scoreboard.ingame-board");
+    private final String title = messages.getString("scoreboard.title");
 
     @Override
     public String getTitle(Player player) {
@@ -35,10 +35,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 case PLAYING:
                     return TextUtil.parsePlaceholders(playingLines, arena);
             }
-        } else {
-            return lobbyLines;
         }
-        return null;
+        return lobbyLines;
     }
 
 }

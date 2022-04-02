@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.core.tasks;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
 import org.bukkit.Bukkit;
@@ -10,7 +11,7 @@ public class ArenaTimerTask implements Runnable {
 
     @Getter private final BukkitTask task;
     private final Arena arena;
-    private int timer = 120;
+    @Setter private int timer = 120;
 
     public ArenaTimerTask(Arena arena) {
         this.arena = arena;
@@ -23,10 +24,6 @@ public class ArenaTimerTask implements Runnable {
             timer--;
         }
         arena.broadcast(getTimerFormatted());
-    }
-
-    public void setTimer(int seconds) {
-        this.timer = seconds;
     }
 
     public String getTimerFormatted() {

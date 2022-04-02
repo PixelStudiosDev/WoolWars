@@ -7,6 +7,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
 import me.cubecrafter.woolwars.core.GameState;
 import me.cubecrafter.woolwars.core.Team;
+import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,24 +27,26 @@ public class ArenaStartingTask implements Runnable {
     @Override
     public void run() {
         if (countdown == 0) {
-            arena.setGameState(GameState.PLAYING);
+            arena.setGameState(GameState.SELECTING_KIT);
             arena.assignTeams();
             for (Team team : arena.getTeams().values()) {
                 team.setNameTags();
+                team.applyArmor();
                 team.teleportToSpawn();
             }
             for (Player player : arena.getPlayers()) {
-                Titles.sendTitle(player, 0, 20, 0, TextUtil.color("&c&lGame Started!"), "");
+                Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&e&lPRE ROUND"), TextUtil.color("&bSelect your kit!"));
                 XSound.play(player, "BLOCK_ANVIL_LAND");
+                new KitsMenu(player).openMenu();
             }
             task.cancel();
         } else {
+            arena.broadcast(TextUtil.color("&eThe game starts in &c{seconds} &eseconds!".replace("{seconds}", String.valueOf(countdown))));
             for (Player player : arena.getPlayers()) {
-                Titles.sendTitle(player, 0, 20, 0, TextUtil.color("&a{time}".replace("{time}", String.valueOf(countdown))), "");
-                XSound.play(player, "BLOCK_NOTE_BLOCK_BIT");
+                XSound.play(player, "ENTITY_CHICKEN_EGG");
             }
+            countdown--;
         }
-        countdown--;
     }
 
 }

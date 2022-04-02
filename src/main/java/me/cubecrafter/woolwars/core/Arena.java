@@ -1,7 +1,9 @@
 package me.cubecrafter.woolwars.core;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
+import me.cubecrafter.woolwars.core.tasks.ArenaSelectKitTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
@@ -31,7 +33,9 @@ public class Arena {
     private ArenaStartingTask startingTask;
     private ArenaPlayingTask playingTask;
     private ArenaTimerTask timerTask;
+    private ArenaSelectKitTask selectKitTask;
     private GameState gameState = GameState.WAITING;
+    @Setter private int round = 1;
 
     public Arena(String id, YamlConfiguration arenaConfig) {
         this.id = id;
@@ -79,12 +83,15 @@ public class Arena {
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
-        switch (getGameState()) {
+        switch (gameState) {
             case WAITING:
                 break;
             case STARTING:
                 startingTask = new ArenaStartingTask(this);
                 timerTask = new ArenaTimerTask(this);
+                break;
+            case SELECTING_KIT:
+                selectKitTask = new ArenaSelectKitTask(this);
                 break;
             case PLAYING:
                 playingTask = new ArenaPlayingTask(this);

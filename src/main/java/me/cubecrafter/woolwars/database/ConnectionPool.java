@@ -46,6 +46,7 @@ public class ConnectionPool {
                 }
             }
             hikariConfig.setJdbcUrl("jdbc:sqlite:" + database);
+            hikariConfig.setDriverClassName("org.sqlite.JDBC");
         }
         hikariConfig.addDataSourceProperty("characterEncoding", "utf8");
         hikariConfig.addDataSourceProperty("useUnicode", "true");

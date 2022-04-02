@@ -7,11 +7,12 @@ import me.cubecrafter.woolwars.core.GameManager;
 import me.cubecrafter.woolwars.core.ScoreboardAdapter;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
-import me.cubecrafter.woolwars.libs.Metrics;
+import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.scoreboard.Assemble;
 import me.cubecrafter.woolwars.utils.scoreboard.AssembleStyle;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WoolWars extends JavaPlugin {
@@ -39,6 +40,7 @@ public final class WoolWars extends JavaPlugin {
         commandManager = new CommandManager(this);
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        getServer().getPluginManager().registerEvents(new InteractListener(), this);
 
         setupScoreboard();
     }
