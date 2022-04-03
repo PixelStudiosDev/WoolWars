@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.utils;
 
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XMaterial;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class ItemBuilder {
 
-    private final ItemStack item;
+    private ItemStack item;
 
     public ItemBuilder(String material) {
         item = XMaterial.matchXMaterial(material).get().parseItem();
@@ -54,6 +55,13 @@ public class ItemBuilder {
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
         meta.setColor(color);
         item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setNBT(String key, String value) {
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.setString(key, value);
+        item = nbtItem.getItem();
         return this;
     }
 
