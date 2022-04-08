@@ -4,14 +4,16 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.core.GameManager;
-import me.cubecrafter.woolwars.core.ScoreboardAdapter;
+import me.cubecrafter.woolwars.core.KitManager;
+import me.cubecrafter.woolwars.core.PlayerDataHandler;
 import me.cubecrafter.woolwars.core.ScoreboardHandler;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
+import me.cubecrafter.woolwars.listeners.DeathListener;
+import me.cubecrafter.woolwars.listeners.FoodChangeListener;
 import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import me.cubecrafter.woolwars.utils.scoreboard.Absorb;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,33 +23,44 @@ public final class WoolWars extends JavaPlugin {
     @Getter private GameManager gameManager;
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
-    @Getter private Database SQLDatabase;
+    @Getter private Database SQLdatabase;
+    @Getter private PlayerDataHandler playerDataHandler;
+    @Getter private KitManager kitManager;
+    @Getter private ScoreboardHandler scoreboardHandler;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        new Metrics(this, 14788);
+        TextUtil.info("\n" +
+                " __          __         ___          __            \n" +
+                " \\ \\        / /        | \\ \\        / /            \n" +
+                "  \\ \\  /\\  / /__   ___ | |\\ \\  /\\  / /_ _ _ __ ___ \n" +
+                "   \\ \\/  \\/ / _ \\ / _ \\| | \\ \\/  \\/ / _` | '__/ __|\n" +
+                "    \\  /\\  / (_) | (_) | |  \\  /\\  / (_| | |  \\__ \\\n" +
+                "     \\/  \\/ \\___/ \\___/|_|   \\/  \\/ \\__,_|_|  |___/\n" +
+                "                                                          \n");
 
+        new Metrics(this, 14788);
         registerHooks();
 
         fileManager = new FileManager();
-
-        SQLDatabase = new Database();
-
+        SQLdatabase = new Database();
         gameManager = new GameManager();
-
         commandManager = new CommandManager(this);
+        kitManager = new KitManager();
+        playerDataHandler = new PlayerDataHandler();
+        scoreboardHandler = new ScoreboardHandler();
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new InteractListener(), this);
-        getServer().getPluginManager().registerEvents(new ScoreboardHandler(), this);
-
+        getServer().getPluginManager().registerEvents(new DeathListener(), this);
+        getServer().getPluginManager().registerEvents(new FoodChangeListener(), this);
     }
 
     @Override
     public void onDisable() {
-        SQLDatabase.close();
+        SQLdatabase.close();
         getServer().getScheduler().cancelTasks(this);
     }
 

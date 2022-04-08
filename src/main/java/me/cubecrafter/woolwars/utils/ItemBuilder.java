@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XMaterial;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +19,10 @@ public class ItemBuilder {
 
     public ItemBuilder(String material) {
         item = XMaterial.matchXMaterial(material).get().parseItem();
+    }
+
+    public ItemBuilder(Material material) {
+        item = XMaterial.matchXMaterial(material).parseItem();
     }
 
     public ItemBuilder setDisplayName(String name) {
@@ -62,6 +67,11 @@ public class ItemBuilder {
         NBTItem nbtItem = new NBTItem(item);
         nbtItem.setString(key, value);
         item = nbtItem.getItem();
+        return this;
+    }
+
+    public ItemBuilder setAmount(int amount) {
+        item.setAmount(amount);
         return this;
     }
 

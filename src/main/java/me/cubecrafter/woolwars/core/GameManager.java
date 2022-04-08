@@ -21,16 +21,20 @@ public class GameManager {
             YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
             String id = file.getName().replace(".yml", "");
             Arena arena = new Arena(id, arenaConfig);
-            addArena(arena);
+            registerArena(arena);
             TextUtil.info("Arena " + id + " loaded!");
         }
     }
 
-    public void addArena(Arena arena) {
+    public void registerArena(Arena arena) {
         arenas.put(arena.getId(), arena);
     }
 
-    public void removeArena(String id) {
+    public Arena getArena(String name) {
+        return arenas.get(name);
+    }
+
+    public void unregisterArena(String id) {
         arenas.remove(id);
     }
 

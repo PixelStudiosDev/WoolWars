@@ -7,7 +7,6 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
 import me.cubecrafter.woolwars.core.GameState;
 import me.cubecrafter.woolwars.core.Team;
-import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,19 +16,19 @@ public class ArenaStartingTask implements Runnable {
 
     @Getter private final BukkitTask task;
     private final Arena arena;
-    private int countdown = 5;
 
     public ArenaStartingTask(Arena arena) {
         this.arena = arena;
+        arena.setTimer(5);
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
     }
 
     @Override
     public void run() {
-        if (countdown == 0) {
-            arena.setGameState(GameState.SELECTING_KIT);
+        if (arena.getTimer() == 0) {
+            arena.setGameState(GameState.PRE_ROUND);
             arena.assignTeams();
-            for (Team team : arena.getTeams().values()) {
+            for (Team team : arena.getTeams()) {
                 team.setNameTags();
                 team.applyArmor();
                 team.teleportToSpawn();
@@ -37,15 +36,14 @@ public class ArenaStartingTask implements Runnable {
             for (Player player : arena.getPlayers()) {
                 Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&e&lPRE ROUND"), TextUtil.color("&bSelect your kit!"));
                 XSound.play(player, "BLOCK_ANVIL_LAND");
-                new KitsMenu(player).openMenu();
             }
             task.cancel();
         } else {
-            arena.broadcast(TextUtil.color("&eThe game starts in &c{seconds} &eseconds!".replace("{seconds}", String.valueOf(countdown))));
+            arena.broadcast(TextUtil.color("&eThe game starts in &c{seconds} &eseconds!".replace("{seconds}", String.valueOf(arena.getTimer()))));
             for (Player player : arena.getPlayers()) {
                 XSound.play(player, "ENTITY_CHICKEN_EGG");
             }
-            countdown--;
+            arena.setTimer(arena.getTimer() - 1);
         }
     }
 

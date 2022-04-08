@@ -2,10 +2,10 @@ package me.cubecrafter.woolwars.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaSelectKitTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
-import me.cubecrafter.woolwars.core.tasks.ArenaTimerTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
@@ -28,14 +28,16 @@ public class Arena {
     private final int requiredPoints;
     private final List<Player> players = new ArrayList<>();
     private final List<Player> spectators = new ArrayList<>();
+    private final List<Player> deadPlayers = new ArrayList<>();
     private final HashMap<String, Team> teams = new HashMap<>();
     private final Cuboid blocksRegion;
     private ArenaStartingTask startingTask;
     private ArenaPlayingTask playingTask;
-    private ArenaTimerTask timerTask;
     private ArenaSelectKitTask selectKitTask;
     private GameState gameState = GameState.WAITING;
-    @Setter private int round = 1;
+    private boolean enabled = true;
+    @Setter private int round = 0;
+    @Setter private int timer = 0;
 
     public Arena(String id, YamlConfiguration arenaConfig) {
         this.id = id;
@@ -56,6 +58,10 @@ public class Arena {
     }
 
     public void addPlayer(Player player) {
+        if (!isEnabled()) {
+            player.sendMessage(TextUtil.color("&cThis arena is currently disabled!"));
+            return;
+        }
         if (getPlayers().contains(player)) {
             player.sendMessage(TextUtil.color("&cYou are already in this arena!"));
             return;
@@ -73,6 +79,7 @@ public class Arena {
 
     public void removePlayer(Player player) {
         players.remove(player);
+        player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
         broadcast(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
         if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             setGameState(GameState.WAITING);
@@ -88,9 +95,8 @@ public class Arena {
                 break;
             case STARTING:
                 startingTask = new ArenaStartingTask(this);
-                timerTask = new ArenaTimerTask(this);
                 break;
-            case SELECTING_KIT:
+            case PRE_ROUND:
                 selectKitTask = new ArenaSelectKitTask(this);
                 break;
             case PLAYING:
@@ -103,8 +109,8 @@ public class Arena {
 
     public void assignTeams() {
         for (Player player : getPlayers()) {
-            Team team = new ArrayList<>(getTeams().values()).get(0);
-            for (Team t : getTeams().values()) {
+            Team team = getTeams().get(0);
+            for (Team t : getTeams()) {
                 if (t.getMembers().size() < team.getMembers().size() && t.getMembers().size() < getMaxPlayersPerTeam()) {
                     team = t;
                 }
@@ -118,7 +124,7 @@ public class Arena {
     }
 
     public Team getTeamByPlayer(Player player) {
-        for (Team team : getTeams().values()) {
+        for (Team team : getTeams()) {
             if (team.getMembers().contains(player)) {
                 return team;
             }
@@ -127,7 +133,7 @@ public class Arena {
     }
 
     public Team getTeamByWool(Material wool) {
-        for (Team team : getTeams().values()) {
+        for (Team team : getTeams()) {
             if (team.getTeamColor().getWoolMaterial().equals(wool)) {
                 return team;
             }
@@ -141,8 +147,32 @@ public class Arena {
         }
     }
 
+    public void enable() {
+        enabled = true;
+    }
+
+    public void disable() {
+        enabled = false;
+    }
+
+    public List<Team> getTeams() {
+        return new ArrayList<>(teams.values());
+    }
+
+    public void restart() {
+        getTeams().forEach(team -> {
+            team.getMembers().clear();
+            team.resetPoints();
+        });
+        new ArrayList<>(getPlayers()).forEach(this::removePlayer);
+        setGameState(GameState.WAITING);
+        setRound(0);
+    }
+
     public String getTimerFormatted() {
-        return timerTask.getTimerFormatted();
+        int minutes = (timer / 60) % 60;
+        int seconds = (timer) % 60;
+        return (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 
 }

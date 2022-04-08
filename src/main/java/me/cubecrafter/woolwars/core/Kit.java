@@ -1,12 +1,14 @@
 package me.cubecrafter.woolwars.core;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import org.bukkit.inventory.ItemStack;
 
-@RequiredArgsConstructor
+import java.util.List;
+
+@Data
 public class Kit {
 
     private final String name;
-    private final ItemStack[] items;
+    private final List<ItemStack> items;
 
 }

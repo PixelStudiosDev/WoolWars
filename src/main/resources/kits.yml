@@ -1,4 +1,6 @@
-default:
-  - WOOL:64
-  - STONE_SWORD:1
-  -
+test:
+  - WOOL
+  - STONE_SWORD
+  - OAK_PLANKS
+  - BOW
+  - ARROW

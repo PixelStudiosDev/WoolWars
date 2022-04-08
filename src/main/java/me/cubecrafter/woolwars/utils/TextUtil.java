@@ -1,7 +1,6 @@
 package me.cubecrafter.woolwars.utils;
 
 import lombok.experimental.UtilityClass;
-import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
 import me.cubecrafter.woolwars.core.Team;
@@ -12,9 +11,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @UtilityClass
@@ -66,11 +66,25 @@ public class TextUtil {
     }
 
     public String parsePlaceholders(String s, Arena arena) {
-        String parsed = s.replace("{time}", arena.getTimerFormatted())
-                        .replace("{arenaname}", arena.getId())
-                        .replace("{arenadisplayname}", arena.getDisplayName());
-        for (Team team : arena.getTeams().values()) {
-            parsed = parsed.replace("{points_" + team.getName() + "}", String.valueOf(team.getPoints()));
+        String parsed = s.replace("{time}", arena.getTimerFormatted() != null ? arena.getTimerFormatted() : "")
+                        .replace("{arena_name}", arena.getId())
+                        .replace("{arena_displayname}", arena.getDisplayName())
+                        .replace("{date}", TextUtil.getCurrentDate())
+                        .replace("{round}", String.valueOf(arena.getRound()))
+                        .replace("{arena_state}", arena.getGameState().getName())
+                        .replace("{required_points}", String.valueOf(arena.getRequiredPoints()));
+        for (Team team : arena.getTeams()) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < arena.getRequiredPoints(); i++) {
+                if (team.getPoints() <= i) {
+                    builder.append(TextUtil.color("&7●"));
+                } else {
+                    builder.append(TextUtil.color(team.getTeamColor().getChatColor() + "●"));
+                }
+            }
+            parsed = parsed.replace("{" + team.getName() + "_points_formatted}", builder.toString())
+                    .replace("{" + team.getName() + "_points}", String.valueOf(team.getPoints()))
+                    .replace("{" + team.getName() + "_players}", String.valueOf(team.getMembers().stream().filter(player ->  !arena.getDeadPlayers().contains(player)).count()));
         }
         return parsed;
     }
@@ -79,6 +93,11 @@ public class TextUtil {
         List<String> parsed = new ArrayList<>();
         lines.forEach(s -> parsed.add(parsePlaceholders(s, arena)));
         return parsed;
+    }
+
+    public String getCurrentDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+        return dateFormat.format(new Date());
     }
 
 }

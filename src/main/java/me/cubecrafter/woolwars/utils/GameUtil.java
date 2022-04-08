@@ -12,34 +12,19 @@ import java.util.List;
 public class GameUtil {
 
     public Arena getArenaByPlayer(Player player) {
-        for (Arena arena : GameUtil.getArenas()) {
-            if (arena.getPlayers().contains(player) || arena.getSpectators().contains(player)) {
-                return arena;
-            }
-        }
-        return null;
+        return GameUtil.getArenas().stream().filter(arena -> arena.getPlayers().contains(player) || arena.getSpectators().contains(player)).findAny().orElse(null);
     }
 
     public Arena getArenaByName(String name) {
-        return WoolWars.getInstance().getGameManager().getArenas().get(name);
+        return WoolWars.getInstance().getGameManager().getArena(name);
     }
 
     public boolean isSpectating(Player player) {
-        for (Arena arena : GameUtil.getArenas()) {
-            if (arena.getSpectators().contains(player)) {
-                return true;
-            }
-        }
-        return false;
+        return GameUtil.getArenas().stream().anyMatch(arena -> arena.getSpectators().contains(player));
     }
 
     public boolean isPlaying(Player player) {
-        for (Arena arena : GameUtil.getArenas()) {
-            if (arena.getPlayers().contains(player)) {
-                return true;
-            }
-        }
-        return false;
+        return GameUtil.getArenas().stream().anyMatch(arena -> arena.getPlayers().contains(player));
     }
 
     public List<Arena> getArenas() {
