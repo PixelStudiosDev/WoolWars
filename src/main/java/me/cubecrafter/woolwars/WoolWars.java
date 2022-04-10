@@ -3,18 +3,18 @@ package me.cubecrafter.woolwars;
 import lombok.Getter;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
+import me.cubecrafter.woolwars.core.ArenaListener;
 import me.cubecrafter.woolwars.core.GameManager;
 import me.cubecrafter.woolwars.core.KitManager;
 import me.cubecrafter.woolwars.core.PlayerDataHandler;
 import me.cubecrafter.woolwars.core.ScoreboardHandler;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
-import me.cubecrafter.woolwars.listeners.DeathListener;
-import me.cubecrafter.woolwars.listeners.FoodChangeListener;
+import me.cubecrafter.woolwars.hooks.VaultHook;
+import me.cubecrafter.woolwars.libs.bstats.Metrics;
 import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WoolWars extends JavaPlugin {
@@ -27,6 +27,7 @@ public final class WoolWars extends JavaPlugin {
     @Getter private PlayerDataHandler playerDataHandler;
     @Getter private KitManager kitManager;
     @Getter private ScoreboardHandler scoreboardHandler;
+    @Getter private VaultHook vaultHook;
 
     @Override
     public void onEnable() {
@@ -47,15 +48,14 @@ public final class WoolWars extends JavaPlugin {
         fileManager = new FileManager();
         SQLdatabase = new Database();
         gameManager = new GameManager();
-        commandManager = new CommandManager(this);
+        commandManager = new CommandManager();
         kitManager = new KitManager();
         playerDataHandler = new PlayerDataHandler();
         scoreboardHandler = new ScoreboardHandler();
 
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new InteractListener(), this);
-        getServer().getPluginManager().registerEvents(new DeathListener(), this);
-        getServer().getPluginManager().registerEvents(new FoodChangeListener(), this);
+        getServer().getPluginManager().registerEvents(new ArenaListener(), this);
     }
 
     @Override
@@ -70,7 +70,7 @@ public final class WoolWars extends JavaPlugin {
             TextUtil.info("Hooked into PlaceholderAPI!");
         }
         if (isVaultEnabled()) {
-            // TODO Vault Hook
+            vaultHook = new VaultHook();
             TextUtil.info("Hooked into Vault!");
         }
     }

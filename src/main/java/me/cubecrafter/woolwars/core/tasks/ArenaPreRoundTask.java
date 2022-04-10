@@ -1,25 +1,22 @@
 package me.cubecrafter.woolwars.core.tasks;
 
-import com.cryptomorin.xseries.XSound;
-import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
 import me.cubecrafter.woolwars.core.GameState;
 import me.cubecrafter.woolwars.core.Team;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-public class ArenaSelectKitTask implements Runnable {
+public class ArenaPreRoundTask implements Runnable {
 
     @Getter private final BukkitTask task;
     private final Arena arena;
 
-    public ArenaSelectKitTask(Arena arena) {
+    public ArenaPreRoundTask(Arena arena) {
         this.arena = arena;
         arena.setTimer(10);
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
@@ -44,10 +41,8 @@ public class ArenaSelectKitTask implements Runnable {
     public void run() {
         if (arena.getTimer() == 0) {
             arena.setGameState(GameState.PLAYING);
-            for (Player player : arena.getPlayers()) {
-                Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&a&lROUND START"), TextUtil.color("&bRound {round}".replace("{round}", String.valueOf(arena.getRound()))));
-                XSound.play(player, "BLOCK_ANVIL_LAND");
-            }
+            arena.sendTitle(40, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
+            arena.playSound("BLOCK_ANVIL_LAND");
             /*
             for (Team team : arena.getTeams().values()) {
                 for (Player player : team.getMembers()) {
@@ -66,10 +61,8 @@ public class ArenaSelectKitTask implements Runnable {
              */
             task.cancel();
         } else if (arena.getTimer() <= 3 && arena.getTimer() > 0) {
-            for (Player player : arena.getPlayers()) {
-                Titles.sendTitle(player, 0, 20, 0, TextUtil.color("&c&l{seconds}".replace("{seconds}", String.valueOf(arena.getTimer()))), TextUtil.color("&6Get Ready"));
-                XSound.play(player, "ENTITY_CHICKEN_EGG");
-            }
+            arena.sendTitle(20, "&c&l{seconds}".replace("{seconds}", String.valueOf(arena.getTimer())), "&6Get Ready");
+            arena.playSound("ENTITY_CHICKEN_EGG");
             arena.setTimer(arena.getTimer() - 1);
         } else {
             arena.setTimer(arena.getTimer() - 1);

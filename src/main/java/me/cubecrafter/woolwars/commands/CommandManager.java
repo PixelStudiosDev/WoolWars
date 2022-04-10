@@ -10,15 +10,13 @@ import me.cubecrafter.woolwars.commands.subcommands.LobbyCommand;
 
 public class CommandManager {
 
-    public CommandManager(WoolWars plugin) {
-        CommandService drink = Drink.get(plugin);
-
+    public CommandManager() {
+        CommandService drink = Drink.get(WoolWars.getInstance());
         drink.register(new BaseCommand(), "woolwars", "ww")
                 .registerSub(new JoinCommand())
                 .registerSub(new LeaveCommand())
                 .registerSub(new SetSpawnCommand());
         drink.register(new LobbyCommand(), "lobby");
-
         drink.registerCommands();
     }
 

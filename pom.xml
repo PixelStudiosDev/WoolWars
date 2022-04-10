@@ -59,10 +59,6 @@
                                     <pattern>de.tr7zw.annotations</pattern>
                                     <shadedPattern>me.cubecrafter.woolwars.libs.tr7zw-annotations</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>me.cubecrafter.woolwars.libs.bstats</shadedPattern>
-                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>
@@ -166,12 +162,6 @@
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api</artifactId>
             <version>2.9.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

@@ -1,19 +1,24 @@
 package me.cubecrafter.woolwars.core;
 
+import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
-import me.cubecrafter.woolwars.core.tasks.ArenaSelectKitTask;
+import me.cubecrafter.woolwars.core.tasks.ArenaPreRoundTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,7 +38,7 @@ public class Arena {
     private final Cuboid blocksRegion;
     private ArenaStartingTask startingTask;
     private ArenaPlayingTask playingTask;
-    private ArenaSelectKitTask selectKitTask;
+    private ArenaPreRoundTask selectKitTask;
     private GameState gameState = GameState.WAITING;
     private boolean enabled = true;
     @Setter private int round = 0;
@@ -68,7 +73,7 @@ public class Arena {
         }
         players.add(player);
         player.teleport(lobbyLocation);
-        broadcast(TextUtil.color("&b{player} &ejoined the game! &7({currentplayers}/{maxplayers})"
+        sendMessage(TextUtil.color("&b{player} &ejoined the game! &7({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
                 .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam()))));
@@ -79,12 +84,15 @@ public class Arena {
 
     public void removePlayer(Player player) {
         players.remove(player);
+        player.setPlayerListName(player.getName());
+        player.setDisplayName(player.getName());
+        player.getInventory().setArmorContents(null);
         player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
-        broadcast(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
+        sendMessage(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
         if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             setGameState(GameState.WAITING);
             startingTask.getTask().cancel();
-            broadcast(TextUtil.color("&cNot enough players! Countdown stopped!"));
+            sendMessage(TextUtil.color("&cNot enough players! Countdown stopped!"));
         }
     }
 
@@ -97,7 +105,7 @@ public class Arena {
                 startingTask = new ArenaStartingTask(this);
                 break;
             case PRE_ROUND:
-                selectKitTask = new ArenaSelectKitTask(this);
+                selectKitTask = new ArenaPreRoundTask(this);
                 break;
             case PLAYING:
                 playingTask = new ArenaPlayingTask(this);
@@ -109,13 +117,8 @@ public class Arena {
 
     public void assignTeams() {
         for (Player player : getPlayers()) {
-            Team team = getTeams().get(0);
-            for (Team t : getTeams()) {
-                if (t.getMembers().size() < team.getMembers().size() && t.getMembers().size() < getMaxPlayersPerTeam()) {
-                    team = t;
-                }
-            }
-            team.addMember(player);
+            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(getTeams().get(0));
+            minPlayers.addMember(player);
         }
     }
 
@@ -124,39 +127,15 @@ public class Arena {
     }
 
     public Team getTeamByPlayer(Player player) {
-        for (Team team : getTeams()) {
-            if (team.getMembers().contains(player)) {
-                return team;
-            }
-        }
-        return null;
-    }
-
-    public Team getTeamByWool(Material wool) {
-        for (Team team : getTeams()) {
-            if (team.getTeamColor().getWoolMaterial().equals(wool)) {
-                return team;
-            }
-        }
-        return null;
-    }
-
-    public void broadcast(String msg) {
-        for (Player player : getPlayers()) {
-            player.sendMessage(TextUtil.color(msg));
-        }
-    }
-
-    public void enable() {
-        enabled = true;
-    }
-
-    public void disable() {
-        enabled = false;
+        return getTeams().stream().filter(team -> team.getMembers().contains(player)).findAny().orElse(null);
     }
 
     public List<Team> getTeams() {
         return new ArrayList<>(teams.values());
+    }
+
+    public boolean isTeammate(Player player, Player other) {
+        return getTeamByPlayer(player).getMembers().contains(other);
     }
 
     public void restart() {
@@ -173,6 +152,16 @@ public class Arena {
         int minutes = (timer / 60) % 60;
         int seconds = (timer) % 60;
         return (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
+    }
+
+    public void sendMessage(String msg) {
+        getPlayers().forEach(player -> player.sendMessage(TextUtil.color(msg)));
+    }
+    public void sendTitle(int stay, String title, String subtitle) {
+        getPlayers().forEach(player -> Titles.sendTitle(player, 0, stay, 0, TextUtil.color(title), TextUtil.color(subtitle)));
+    }
+    public void playSound(String sound) {
+        getPlayers().forEach(player -> XSound.play(player, sound));
     }
 
 }

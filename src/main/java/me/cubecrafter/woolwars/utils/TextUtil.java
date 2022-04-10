@@ -77,9 +77,9 @@ public class TextUtil {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < arena.getRequiredPoints(); i++) {
                 if (team.getPoints() <= i) {
-                    builder.append(TextUtil.color("&7●"));
+                    builder.append(TextUtil.color("&7⬤"));
                 } else {
-                    builder.append(TextUtil.color(team.getTeamColor().getChatColor() + "●"));
+                    builder.append(TextUtil.color(team.getTeamColor().getChatColor() + "⬤"));
                 }
             }
             parsed = parsed.replace("{" + team.getName() + "_points_formatted}", builder.toString())
