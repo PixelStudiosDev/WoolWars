@@ -20,7 +20,7 @@ public class FileManager {
         new File(WoolWars.getInstance().getDataFolder(), "arenas").mkdirs();
         configFile = new File(WoolWars.getInstance().getDataFolder(), "config.yml");
         messagesFile = new File(WoolWars.getInstance().getDataFolder(), "messages.yml");
-        kitsFile = new File(WoolWars.getInstance().getDataFolder(), "kits.yml");
+        kitsFile = new File(WoolWars.getInstance().getDataFolder(), "kits/builder.yml");
         if (!configFile.exists()) {
             WoolWars.getInstance().saveResource("config.yml", false);
         }
@@ -28,7 +28,7 @@ public class FileManager {
             WoolWars.getInstance().saveResource("messages.yml", false);
         }
         if (!kitsFile.exists()) {
-            WoolWars.getInstance().saveResource("kits.yml", false);
+            WoolWars.getInstance().saveResource("kits/builder.yml", false);
         }
         reload();
     }
