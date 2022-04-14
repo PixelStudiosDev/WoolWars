@@ -5,7 +5,6 @@ import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.core.ArenaListener;
 import me.cubecrafter.woolwars.core.GameManager;
-import me.cubecrafter.woolwars.core.KitManager;
 import me.cubecrafter.woolwars.core.PlayerDataHandler;
 import me.cubecrafter.woolwars.core.ScoreboardHandler;
 import me.cubecrafter.woolwars.database.Database;
@@ -25,7 +24,6 @@ public final class WoolWars extends JavaPlugin {
     @Getter private CommandManager commandManager;
     @Getter private Database SQLdatabase;
     @Getter private PlayerDataHandler playerDataHandler;
-    @Getter private KitManager kitManager;
     @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private VaultHook vaultHook;
 
@@ -49,7 +47,6 @@ public final class WoolWars extends JavaPlugin {
         SQLdatabase = new Database();
         gameManager = new GameManager();
         commandManager = new CommandManager();
-        kitManager = new KitManager();
         playerDataHandler = new PlayerDataHandler();
         scoreboardHandler = new ScoreboardHandler();
 

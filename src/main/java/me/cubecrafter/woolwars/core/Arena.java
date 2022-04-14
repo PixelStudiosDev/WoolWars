@@ -10,10 +10,7 @@ import me.cubecrafter.woolwars.core.tasks.ArenaPreRoundTask;
 import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -100,6 +97,7 @@ public class Arena {
         this.gameState = gameState;
         switch (gameState) {
             case WAITING:
+            case RESTARTING:
                 break;
             case STARTING:
                 startingTask = new ArenaStartingTask(this);
@@ -109,8 +107,6 @@ public class Arena {
                 break;
             case PLAYING:
                 playingTask = new ArenaPlayingTask(this);
-                break;
-            case RESTARTING:
                 break;
         }
     }
@@ -163,5 +159,4 @@ public class Arena {
     public void playSound(String sound) {
         getPlayers().forEach(player -> XSound.play(player, sound));
     }
-
 }
