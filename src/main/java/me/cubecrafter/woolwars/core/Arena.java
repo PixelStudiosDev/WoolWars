@@ -99,6 +99,7 @@ public class Arena {
             case WAITING:
             case RESTARTING:
                 break;
+                // comment
             case STARTING:
                 startingTask = new ArenaStartingTask(this);
                 break;
