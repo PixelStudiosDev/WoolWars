@@ -1,8 +1,11 @@
 package me.cubecrafter.woolwars.core;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,20 +13,25 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Team {
 
-    @Getter private final String name;
-    @Getter private final Location spawnLocation;
-    @Getter private final TeamColor teamColor;
-    @Getter private final List<Player> members = new ArrayList<>();
-    @Getter private final String teamLetter;
-    @Getter private int points;
+    private final List<Player> members = new ArrayList<>();
+    private final String name;
+    private final Arena arena;
+    private final Location spawnLocation;
+    private final TeamColor teamColor;
+    private final Cuboid barrier;
+    private final String barrierBlock;
+    private int points;
 
-    public Team(String name, Location spawnLocation, TeamColor color) {
+    public Team(String name, Arena arena, Location spawnLocation, TeamColor color, Cuboid barrier) {
         this.name = name;
+        this.arena = arena;
         this.spawnLocation = spawnLocation;
         this.teamColor = color;
-        this.teamLetter = name.substring(0,1).toUpperCase();
+        this.barrier = barrier;
+        this.barrierBlock = "GLASS";
     }
 
     public void addMember(Player player) {
@@ -32,6 +40,10 @@ public class Team {
 
     public void removeMember(Player player) {
         members.remove(player);
+    }
+
+    public String getTeamLetter() {
+        return name.substring(0,1).toUpperCase();
     }
 
     public void setNameTags() {

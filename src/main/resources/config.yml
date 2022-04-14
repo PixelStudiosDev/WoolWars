@@ -1,3 +1,8 @@
+disabled-interaction-blocks:
+  - CRAFTING_TABLE
+  - HOPPER
+  - FURNACE
+
 mysql:
   enabled: false
   host: localhost
@@ -8,3 +13,4 @@ mysql:
   useSSL: false
 
 lobby-location:
+

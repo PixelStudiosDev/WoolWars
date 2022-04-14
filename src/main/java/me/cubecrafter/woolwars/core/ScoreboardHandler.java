@@ -22,10 +22,11 @@ public class ScoreboardHandler implements Listener, Runnable {
     private final List<String> lobbyLines = TextUtil.color(messages.getStringList("scoreboard.lobby-board"));
     private final List<String> waitingLines =  TextUtil.color(messages.getStringList("scoreboard.waiting-board"));
     private final List<String> startingLines = TextUtil.color(messages.getStringList("scoreboard.starting-board"));
+    private final List<String> preRoundLines = TextUtil.color(messages.getStringList("scoreboard.preround-board"));
     private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
     private final String title = TextUtil.color(messages.getString("scoreboard.title"));
 
-    private final HashMap<Player, SimpleScoreboard> scoreboards = new HashMap<>();
+    private final Map<Player, SimpleScoreboard> scoreboards = new HashMap<>();
 
     public ScoreboardHandler() {
         Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
@@ -59,16 +60,19 @@ public class ScoreboardHandler implements Listener, Runnable {
                         scoreboard.addRows(TextUtil.parsePlaceholders(waitingLines, arena));
                         break;
                     case PRE_ROUND:
+                        scoreboard.addRows(TextUtil.parsePlaceholders(preRoundLines, arena));
+                        break;
                     case STARTING:
                         scoreboard.addRows(TextUtil.parsePlaceholders(startingLines, arena));
                         break;
+                    case ROUND_OVER:
                     case RESTARTING:
                     case PLAYING:
                         scoreboard.addRows(TextUtil.parsePlaceholders(playingLines, arena));
                         break;
                 }
             } else {
-                scoreboard.addRows(lobbyLines);
+                scoreboard.addRows(TextUtil.parsePlaceholders(lobbyLines));
             }
         }
     }

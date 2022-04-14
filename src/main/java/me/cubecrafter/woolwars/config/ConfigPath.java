@@ -10,7 +10,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public enum ConfigPath {
 
-    PREFIX("prefix", WoolWars.getInstance().getFileManager().getMessages());
+    PREFIX("prefix", WoolWars.getInstance().getFileManager().getMessages()),
+    DISABLED_INTERACTION_BLOCKS("disabled-interaction-blocks", WoolWars.getInstance().getFileManager().getConfig());
 
     private final String path;
     private final YamlConfiguration file;
