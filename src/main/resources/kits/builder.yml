@@ -1,3 +1,5 @@
+displayname: "Builder"
+default-kit: true
 cost: 1000
 armor:
   helmet: true
@@ -5,30 +7,44 @@ armor:
   leggins: true
   boots: true
 items:
-  0:
-    material: WOOL
-    amount: 64
-    displayname: "{team_color}Wool"
-    lore: []
-    enchantments: []
-    slot:
   1:
-    material: WOODEN_SWORD
+    material: STONE_SWORD
     amount: 1
     displayname: ""
     lore: []
-    enchantments: []
+    slot: 0
   2:
-    material:
-    amount: 64
-    displayname: "{team_color}Wool"
+    material: WOODEN_PICKAXE
+    amount: 1
+    displayname: ""
     lore: []
-    enchantments: []
+    slot: 1
+  3:
+    material: SHEARS
+    amount: 1
+    displayname: ""
+    lore: []
+    slot: 2
+  4:
+    material: GLASS
+    amount: 64
+    displayname: ""
+    lore: []
+    slot: 3
+  5:
+    material: WOOL
+    amount: 64
+    displayname: ""
+    lore: [ ]
+    slot: 4
 ability:
-  type:
+  type: POPUP_SHELL
   slot: 8
-  material:
-  amount:
-  displayname:
+  material: BLAZE_POWDER
+  amount: 1
+  displayname: "&eKeystone Ability: {ability}"
   lore: []
-  enchantments: []
+menu-item:
+  material: WHITE_WOOL
+  displayname: "Builder Kit"
+  lore: []

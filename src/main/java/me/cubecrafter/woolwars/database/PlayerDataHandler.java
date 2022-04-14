@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.core;
+package me.cubecrafter.woolwars.database;
 
 import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.entity.Player;
@@ -26,7 +26,6 @@ public class PlayerDataHandler implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         PlayerData data = new PlayerData(player.getUniqueId());
-        data.setKit(WoolWars.getInstance().getKitManager().getKit("test"));
         playerData.put(player.getUniqueId(), data);
     }
 

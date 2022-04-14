@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -79,10 +78,6 @@ public class ArenaPlayingTask implements Runnable {
 
     public void removePlacedBlock(Team team) {
         placedBlocks.put(team, placedBlocks.get(team) - 1);
-    }
-
-    public Team getBestTeam() {
-        return placedBlocks.keySet().stream().max(Comparator.comparing(placedBlocks::get)).orElse(null);
     }
 
     public void checkWinners() {

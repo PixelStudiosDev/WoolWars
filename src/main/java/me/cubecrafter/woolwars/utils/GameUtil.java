@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.utils;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.core.Arena;
+import me.cubecrafter.woolwars.kits.Kit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -19,6 +20,10 @@ public class GameUtil {
         return WoolWars.getInstance().getGameManager().getArena(name);
     }
 
+    public Kit getKit(String id) {
+        return WoolWars.getInstance().getKitManager().getKit(id);
+    }
+
     public boolean isSpectating(Player player) {
         return GameUtil.getArenas().stream().anyMatch(arena -> arena.getSpectators().contains(player));
     }
@@ -29,6 +34,10 @@ public class GameUtil {
 
     public List<Arena> getArenas() {
         return new ArrayList<>(WoolWars.getInstance().getGameManager().getArenas().values());
+    }
+
+    public List<Kit> getKits() {
+        return new ArrayList<>(WoolWars.getInstance().getKitManager().getKits().values());
     }
 
 }

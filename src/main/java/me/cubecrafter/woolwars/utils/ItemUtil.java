@@ -9,8 +9,8 @@ public class ItemUtil {
 
     public boolean hasId(ItemStack item, String id) {
         NBTItem nbtItem = new NBTItem(item);
-        if (nbtItem.hasKey("id")) {
-            return nbtItem.getString("id").equals(id);
+        if (nbtItem.hasKey("woolwars")) {
+            return nbtItem.getString("woolwars").equals(id);
         }
         return false;
     }

@@ -14,7 +14,7 @@ public class InteractListener implements Listener {
     public void onInteract(PlayerInteractEvent e) {
         if (e.getItem() == null || e.getItem().getType().equals(Material.AIR)) return;
         Player player = e.getPlayer();
-        if (ItemUtil.hasId(e.getItem(), "select_kit")) {
+        if (ItemUtil.hasId(e.getItem(), "kit-item")) {
             new KitsMenu(player).openMenu();
         }
     }

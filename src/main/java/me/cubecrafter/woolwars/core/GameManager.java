@@ -17,13 +17,15 @@ public class GameManager {
     }
 
     private void loadArenas() {
+        int loaded = 0;
         for (File file : WoolWars.getInstance().getFileManager().getArenas()) {
             YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
             String id = file.getName().replace(".yml", "");
             Arena arena = new Arena(id, arenaConfig);
             registerArena(arena);
-            TextUtil.info("Arena " + id + " loaded!");
+            loaded++;
         }
+        TextUtil.info(loaded + " arenas loaded!");
     }
 
     public void registerArena(Arena arena) {

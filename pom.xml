@@ -10,6 +10,7 @@
     <packaging>jar</packaging>
 
     <name>WoolWars</name>
+    <description>Minigame inspired by Hypixel's WoolWars</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,10 +35,6 @@
                                 <relocation>
                                     <pattern>com.cryptomorin.xseries</pattern>
                                     <shadedPattern>me.cubecrafter.woolwars.libs.xseries</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.apache.commons.io</pattern>
-                                    <shadedPattern>me.cubecrafter.woolwars.libs.commons-io</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.jonahseguin.drink</pattern>
@@ -120,12 +117,6 @@
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
             <version>8.7.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -5,11 +5,12 @@ import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.core.ArenaListener;
 import me.cubecrafter.woolwars.core.GameManager;
-import me.cubecrafter.woolwars.core.PlayerDataHandler;
+import me.cubecrafter.woolwars.database.PlayerDataHandler;
 import me.cubecrafter.woolwars.core.ScoreboardHandler;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
+import me.cubecrafter.woolwars.kits.KitManager;
 import me.cubecrafter.woolwars.libs.bstats.Metrics;
 import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
@@ -27,6 +28,7 @@ public final class WoolWars extends JavaPlugin {
     @Getter private FileManager fileManager;
     @Getter private CommandManager commandManager;
     @Getter private Database SQLdatabase;
+    @Getter private KitManager kitManager;
     @Getter private PlayerDataHandler playerDataHandler;
     @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private VaultHook vaultHook;
@@ -51,6 +53,7 @@ public final class WoolWars extends JavaPlugin {
         commandManager = new CommandManager();
         playerDataHandler = new PlayerDataHandler();
         scoreboardHandler = new ScoreboardHandler();
+        kitManager = new KitManager();
 
         Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));

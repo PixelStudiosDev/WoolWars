@@ -14,6 +14,7 @@ import org.bukkit.Location;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,8 @@ public class TextUtil {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
 
-    public List<String> color(List<String> lines){
+    public List<String> color(List<String> lines) {
+        if (lines == null || lines.isEmpty()) return Collections.emptyList();
         List<String> color = new ArrayList<>();
         lines.forEach(s -> color.add(color(s)));
         return color;

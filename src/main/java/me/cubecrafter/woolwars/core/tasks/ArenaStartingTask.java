@@ -26,7 +26,6 @@ public class ArenaStartingTask implements Runnable {
             arena.assignTeams();
             for (Team team : arena.getTeams()) {
                 team.setNameTags();
-                team.applyArmor();
                 team.teleportToSpawn();
             }
             arena.sendTitle(40, "&e&lPRE ROUND", "&bSelect your kit!");

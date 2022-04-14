@@ -4,8 +4,6 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -65,19 +63,6 @@ public class Team {
 
     public void resetPoints() {
         points = 0;
-    }
-
-    public void applyArmor() {
-        ItemStack helmet = new ItemBuilder("LEATHER_HELMET").setColor(teamColor.getColor()).build();
-        ItemStack chestplate = new ItemBuilder("LEATHER_CHESTPLATE").setColor(teamColor.getColor()).build();
-        ItemStack leggins = new ItemBuilder("LEATHER_LEGGINGS").setColor(teamColor.getColor()).build();
-        ItemStack boots = new ItemBuilder("LEATHER_BOOTS").setColor(teamColor.getColor()).build();
-        for (Player player : members) {
-            player.getInventory().setHelmet(helmet);
-            player.getInventory().setChestplate(chestplate);
-            player.getInventory().setLeggings(leggins);
-            player.getInventory().setBoots(boots);
-        }
     }
 
 }
