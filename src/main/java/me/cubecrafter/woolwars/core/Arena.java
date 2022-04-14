@@ -71,6 +71,7 @@ public class Arena {
         Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
         Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
+        //
     }
 
     public void addPlayer(Player player) {
