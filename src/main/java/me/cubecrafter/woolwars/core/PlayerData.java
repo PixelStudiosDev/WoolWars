@@ -8,6 +8,5 @@ import java.util.UUID;
 public class PlayerData {
 
     private final UUID uuid;
-    private Kit kit;
 
 }

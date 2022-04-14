@@ -1,0 +1,34 @@
+cost: 1000
+armor:
+  helmet: true
+  chestplate: true
+  leggins: true
+  boots: true
+items:
+  0:
+    material: WOOL
+    amount: 64
+    displayname: "{team_color}Wool"
+    lore: []
+    enchantments: []
+    slot:
+  1:
+    material: WOODEN_SWORD
+    amount: 1
+    displayname: ""
+    lore: []
+    enchantments: []
+  2:
+    material:
+    amount: 64
+    displayname: "{team_color}Wool"
+    lore: []
+    enchantments: []
+ability:
+  type:
+  slot: 8
+  material:
+  amount:
+  displayname:
+  lore: []
+  enchantments: []
