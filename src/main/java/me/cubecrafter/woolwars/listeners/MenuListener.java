@@ -22,9 +22,9 @@ public class MenuListener implements Listener {
             e.setCancelled(true);
             Player player = (Player) e.getWhoClicked();
             Menu menu = (Menu) e.getInventory().getHolder();
-            MenuItem item = menu.getMenuItem(e.getRawSlot());
-            if (item == null || item.getClickActions() == null) return;
-            for (Map.Entry<Consumer<InventoryClickEvent>, ClickType[]> entry : item.getClickActions().entrySet()) {
+            MenuItem item = menu.getItems().stream().filter(menuItem -> menuItem.getSlot() == e.getRawSlot()).findAny().orElse(null);
+            if (item == null) return;
+            for (Map.Entry<Consumer<InventoryClickEvent>, ClickType[]> entry : item.getActions().entrySet()) {
                 for (ClickType clickType : entry.getValue())
                     if (e.getClick().equals(clickType)) {
                         if (item.getClickSound() != null) {

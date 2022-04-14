@@ -13,8 +13,12 @@ import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.libs.bstats.Metrics;
 import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
+import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Arrays;
 
 public final class WoolWars extends JavaPlugin {
 
@@ -31,14 +35,12 @@ public final class WoolWars extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        TextUtil.info("\n" +
-                " __          __         ___          __            \n" +
-                " \\ \\        / /        | \\ \\        / /            \n" +
-                "  \\ \\  /\\  / /__   ___ | |\\ \\  /\\  / /_ _ _ __ ___ \n" +
-                "   \\ \\/  \\/ / _ \\ / _ \\| | \\ \\/  \\/ / _` | '__/ __|\n" +
-                "    \\  /\\  / (_) | (_) | |  \\  /\\  / (_| | |  \\__ \\\n" +
-                "     \\/  \\/ \\___/ \\___/|_|   \\/  \\/ \\__,_|_|  |___/\n" +
-                "                                                          \n");
+        ConsoleCommandSender console = getServer().getConsoleSender();
+        console.sendMessage(TextUtil.color("&c __      __        ___      __                       "));
+        console.sendMessage(TextUtil.color("&c \\ \\    / /__  ___| \\ \\    / /_ _ _ _ ___   &7Author: &aCubeCrafter"));
+        console.sendMessage(TextUtil.color("&c  \\ \\/\\/ / _ \\/ _ \\ |\\ \\/\\/ / _` | '_(_-<   &7Plugin version: &a" + getDescription().getVersion()));
+        console.sendMessage(TextUtil.color("&c   \\_/\\_/\\___/\\___/_| \\_/\\_/\\__,_|_| /__/   &7Running on: &a" + getServer().getVersion()));
+        console.sendMessage("");
 
         new Metrics(this, 14788);
         registerHooks();
@@ -50,9 +52,8 @@ public final class WoolWars extends JavaPlugin {
         playerDataHandler = new PlayerDataHandler();
         scoreboardHandler = new ScoreboardHandler();
 
-        getServer().getPluginManager().registerEvents(new MenuListener(), this);
-        getServer().getPluginManager().registerEvents(new InteractListener(), this);
-        getServer().getPluginManager().registerEvents(new ArenaListener(), this);
+        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener())
+                .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 
     @Override

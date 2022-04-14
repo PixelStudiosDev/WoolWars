@@ -1,33 +1,26 @@
 package me.cubecrafter.woolwars.menu;
 
-import me.cubecrafter.woolwars.WoolWars;
+import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+@RequiredArgsConstructor
 public abstract class Menu implements InventoryHolder {
 
-    protected final YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
-    protected final YamlConfiguration config = WoolWars.getInstance().getFileManager().getConfig();
     protected final Player player;
     private Inventory inventory;
-    private final Map<Integer, MenuItem> items = new HashMap<>();
     public abstract String getTitle();
     public abstract int getRows();
-    public abstract void setItems();
-
-    public Menu(Player player) {
-        this.player = player;
-    }
+    public abstract List<MenuItem> getItems();
 
     public void openMenu() {
-        setItems();
+        getItems().forEach(item -> getInventory().setItem(item.getSlot(), item.getItem()));
         player.openInventory(getInventory());
     }
 
@@ -35,17 +28,14 @@ public abstract class Menu implements InventoryHolder {
         player.closeInventory();
     }
 
-    public void addMenuItem(int slot, MenuItem menuItem) {
-        items.put(slot, menuItem);
-        getInventory().setItem(slot, menuItem.getItem());
-    }
-
-    public MenuItem getMenuItem(int slot) {
-        return items.get(slot);
-    }
-
     public void updateMenu() {
-        setItems();
+        getItems().forEach(item -> getInventory().setItem(item.getSlot(), item.getItem()));
+    }
+
+    public void addFiller(ItemStack filler, List<Integer> slots) {
+        for (Integer slot : slots) {
+            getInventory().setItem(slot, filler);
+        }
     }
 
     @Override

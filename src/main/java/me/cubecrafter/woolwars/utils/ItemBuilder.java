@@ -18,11 +18,7 @@ public class ItemBuilder {
     private ItemStack item;
 
     public ItemBuilder(String material) {
-        item = XMaterial.matchXMaterial(material).get().parseItem();
-    }
-
-    public ItemBuilder(Material material) {
-        item = XMaterial.matchXMaterial(material).parseItem();
+        item = XMaterial.matchXMaterial(material).orElse(XMaterial.STONE).parseItem();
     }
 
     public ItemBuilder setDisplayName(String name) {

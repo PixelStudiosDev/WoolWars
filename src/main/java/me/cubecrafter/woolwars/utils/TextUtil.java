@@ -66,13 +66,15 @@ public class TextUtil {
     }
 
     public String parsePlaceholders(String s, Arena arena) {
-        String parsed = s.replace("{time}", arena.getTimerFormatted() != null ? arena.getTimerFormatted() : "")
+        String parsed = s.replace("{time}", arena.getTimerFormatted())
                         .replace("{arena_name}", arena.getId())
                         .replace("{arena_displayname}", arena.getDisplayName())
                         .replace("{date}", TextUtil.getCurrentDate())
                         .replace("{round}", String.valueOf(arena.getRound()))
                         .replace("{arena_state}", arena.getGameState().getName())
-                        .replace("{required_points}", String.valueOf(arena.getRequiredPoints()));
+                        .replace("{required_points}", String.valueOf(arena.getRequiredPoints()))
+                        .replace("{total_players}", String.valueOf(arena.getPlayers().size()))
+                        .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
         for (Team team : arena.getTeams()) {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < arena.getRequiredPoints(); i++) {
@@ -86,6 +88,16 @@ public class TextUtil {
                     .replace("{" + team.getName() + "_points}", String.valueOf(team.getPoints()))
                     .replace("{" + team.getName() + "_players}", String.valueOf(team.getMembers().stream().filter(player ->  !arena.getDeadPlayers().contains(player)).count()));
         }
+        return parsed;
+    }
+
+    public String parsePlaceholders(String s) {
+        return s.replace("{date}", TextUtil.getCurrentDate());
+    }
+
+    public List<String> parsePlaceholders(List<String> lines) {
+        List<String> parsed = new ArrayList<>();
+        lines.forEach(s -> parsed.add(parsePlaceholders(s)));
         return parsed;
     }
 
