@@ -1,14 +1,14 @@
-package me.cubecrafter.woolwars.core;
+package me.cubecrafter.woolwars.arena;
 
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.core.tasks.ArenaPlayingTask;
-import me.cubecrafter.woolwars.core.tasks.ArenaPreRoundTask;
-import me.cubecrafter.woolwars.core.tasks.ArenaRoundOverTask;
-import me.cubecrafter.woolwars.core.tasks.ArenaStartingTask;
+import me.cubecrafter.woolwars.arena.tasks.ArenaPlayingTask;
+import me.cubecrafter.woolwars.arena.tasks.ArenaPreRoundTask;
+import me.cubecrafter.woolwars.arena.tasks.ArenaRoundOverTask;
+import me.cubecrafter.woolwars.arena.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.GameMode;
@@ -38,6 +38,7 @@ public class Arena {
     private final List<Block> placedBlocks = new ArrayList<>();
     private final List<Team> teams = new ArrayList<>();
     private final List<Location> jumpPads = new ArrayList<>();
+    private final List<PowerUp> powerUps = new ArrayList<>();
     private final Cuboid blocksRegion;
     private final Cuboid arenaRegion;
     private ArenaStartingTask startingTask;
@@ -71,7 +72,7 @@ public class Arena {
         Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
         Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
-        //
+        new PowerUp(TextUtil.deserializeLocation("world:4.00:80.00:10.00:0:0"), this);
     }
 
     public void addPlayer(Player player) {

@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.kits;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.core.Team;
+import me.cubecrafter.woolwars.arena.Team;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;

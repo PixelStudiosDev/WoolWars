@@ -1,14 +1,13 @@
-package me.cubecrafter.woolwars.core.tasks;
+package me.cubecrafter.woolwars.arena.tasks;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.core.Arena;
-import me.cubecrafter.woolwars.core.GameState;
-import me.cubecrafter.woolwars.core.Team;
+import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.arena.Team;
 import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

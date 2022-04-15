@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.core;
+package me.cubecrafter.woolwars.arena;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;

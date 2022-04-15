@@ -1,12 +1,10 @@
-package me.cubecrafter.woolwars.core;
+package me.cubecrafter.woolwars.arena;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.utils.Cuboid;
-import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;

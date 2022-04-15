@@ -2,7 +2,7 @@ package me.cubecrafter.woolwars.commands.subcommands;
 
 import com.jonahseguin.drink.annotation.Command;
 import com.jonahseguin.drink.annotation.Sender;
-import me.cubecrafter.woolwars.core.Arena;
+import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import org.bukkit.entity.Player;
 

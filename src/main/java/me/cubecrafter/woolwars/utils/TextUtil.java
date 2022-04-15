@@ -2,8 +2,8 @@ package me.cubecrafter.woolwars.utils;
 
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.core.Arena;
-import me.cubecrafter.woolwars.core.Team;
+import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.Team;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
