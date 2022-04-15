@@ -15,6 +15,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class Arena {
         Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
         new PowerUp(TextUtil.deserializeLocation("world:4.00:80.00:10.00:0:0"), this);
+        killEntities();
     }
 
     public void addPlayer(Player player) {
@@ -188,6 +191,15 @@ public class Arena {
         return (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 
+    public void killEntities() {
+        for (Entity entity : arenaRegion.getWorld().getEntities()) {
+            if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PLAYER) || entity.getType().equals(EntityType.PAINTING)) continue;
+            if (arenaRegion.isInside(entity.getLocation())) {
+                entity.remove();
+            }
+        }
+    }
+
     public boolean isLastRound() {
         return round == maxRounds;
     }
@@ -195,9 +207,11 @@ public class Arena {
     public void sendMessage(String msg) {
         getPlayers().forEach(player -> player.sendMessage(TextUtil.color(msg)));
     }
+
     public void sendTitle(int stay, String title, String subtitle) {
         getPlayers().forEach(player -> Titles.sendTitle(player, 0, stay, 0, TextUtil.color(title), TextUtil.color(subtitle)));
     }
+
     public void playSound(String sound) {
         getPlayers().forEach(player -> XSound.play(player, sound));
     }

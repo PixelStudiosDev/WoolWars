@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import com.cryptomorin.xseries.XMaterial;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,7 +18,7 @@ public class Cuboid {
     private final int yMax;
     private final int zMin;
     private final int zMax;
-    private final World world;
+    @Getter private final World world;
 
     public Cuboid(Location point1, Location point2) {
         this.xMin = Math.min(point1.getBlockX(), point2.getBlockX());
