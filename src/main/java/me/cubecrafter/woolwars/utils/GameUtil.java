@@ -3,11 +3,15 @@ package me.cubecrafter.woolwars.utils;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.kits.Kit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class GameUtil {
@@ -38,6 +42,13 @@ public class GameUtil {
 
     public List<Kit> getKits() {
         return new ArrayList<>(WoolWars.getInstance().getKitManager().getKits().values());
+    }
+
+    public void joinRandom(Player player) {
+        List<Arena> available = GameUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
+        Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size()))
+                .orElse(available.get(new Random().nextInt(available.size())));
+        random.addPlayer(player);
     }
 
 }

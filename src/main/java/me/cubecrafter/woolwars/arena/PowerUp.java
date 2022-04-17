@@ -1,14 +1,13 @@
 package me.cubecrafter.woolwars.arena;
 
+import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
@@ -17,40 +16,56 @@ import java.util.List;
 @Getter
 public class PowerUp {
 
-    private final ArmorStand armorStand;
+    private ArmorStand armorStand;
     private final List<ArmorStand> holoLines = new ArrayList<>();
     private final Location location;
     private final Arena arena;
-    private BukkitTask rotateTask;
+    private final List<String> actions;
     private int rotation = 0;
 
-    public PowerUp(Location location, Arena arena) {
+    public PowerUp(Location location, Arena arena, List<String> actions) {
         this.arena = arena;
         this.location = location;
+        this.actions = actions;
+    }
+
+    public void use(Player player) {
+        remove();
+        XSound.play(player, "ENTITY_PLAYER_LEVELUP");
+        for (String line : actions) {
+            if (!line.contains("[") || !line.contains("]")) continue;
+            String type = line.substring(line.indexOf("[") + 1, line.indexOf("]")).toUpperCase();
+            String other = line.substring(line.indexOf("]") + 1).replace(" ", "");
+            TextUtil.info(type + ":" + other);
+        }
+    }
+
+    public void spawn() {
         armorStand = spawnArmorStand(null, location);
         armorStand.getEquipment().setHelmet(new ItemBuilder("PLAYER_HEAD").setTexture("CubeCrafter72").build());
         setupHolo();
-        rotate();
     }
 
     public void remove() {
-        rotateTask.cancel();
+        armorStand.remove();
         for (ArmorStand stand : holoLines) {
             stand.remove();
         }
-        armorStand.remove();
+        holoLines.clear();
     }
 
     public void rotate() {
-        rotateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> {
-            armorStand.setHeadPose(new EulerAngle(0, Math.toRadians(rotation), 0));
-            rotation += 5;
-        }, 0L, 1L);
+        armorStand.setHeadPose(new EulerAngle(0, Math.toRadians(rotation), 0));
+        rotation += 5;
     }
 
-    public void setupHolo() {
+    private void setupHolo() {
         holoLines.add(spawnArmorStand("&e&lPOWER UP", location.clone().add(0, 2, 0)));
         holoLines.add(spawnArmorStand("&d&lEXCLUSIVE", location.clone().add(0, 2.3, 0)));
+    }
+
+    public boolean isActive() {
+        return armorStand.isValid();
     }
 
     private ArmorStand spawnArmorStand(String name, Location location) {

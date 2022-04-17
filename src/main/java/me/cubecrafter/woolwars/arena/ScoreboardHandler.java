@@ -12,9 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ScoreboardHandler implements Listener, Runnable {
 
@@ -26,7 +26,7 @@ public class ScoreboardHandler implements Listener, Runnable {
     private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
     private final String title = TextUtil.color(messages.getString("scoreboard.title"));
 
-    private final Map<Player, SimpleScoreboard> scoreboards = new HashMap<>();
+    private final Map<Player, SimpleScoreboard> scoreboards = new ConcurrentHashMap<>();
 
     public ScoreboardHandler() {
         Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());

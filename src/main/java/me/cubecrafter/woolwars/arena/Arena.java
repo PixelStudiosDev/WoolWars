@@ -74,7 +74,12 @@ public class Arena {
         Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
         Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
-        new PowerUp(TextUtil.deserializeLocation("world:4.00:80.00:10.00:0:0"), this);
+        for (String key : arenaConfig.getConfigurationSection("powerups").getKeys(false)) {
+            Location location = TextUtil.deserializeLocation(arenaConfig.getString("powerups." + key + ".location"));
+            List<String> actions = arenaConfig.getStringList("powerups." + key + ".actions");
+            PowerUp powerUp = new PowerUp(location, this, actions);
+            powerUps.add(powerUp);
+        }
         killEntities();
     }
 
@@ -135,6 +140,7 @@ public class Arena {
                 if (startingTask.getTask() != null) startingTask.getTask().cancel();
                 if (roundOverTask.getTask() != null) roundOverTask.getTask().cancel();
                 if (playingTask.getTask() != null) playingTask.getTask().cancel();
+                if (playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
                 if (preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
                 break;
             case STARTING:
@@ -202,6 +208,10 @@ public class Arena {
 
     public boolean isLastRound() {
         return round == maxRounds;
+    }
+
+    public boolean isExtraRound() {
+        return round > maxRounds;
     }
 
     public void sendMessage(String msg) {

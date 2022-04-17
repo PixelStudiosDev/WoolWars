@@ -7,8 +7,10 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +21,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -51,17 +54,24 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         if (!GameUtil.isPlaying(player)) return;
         Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena.getDeadPlayers().contains(player)) {
+            e.setCancelled(true);
+            player.sendMessage(TextUtil.color("&cYou can't break this block!"));
+            return;
+        }
         if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
             if (e.getBlock().hasMetadata("team")) {
                 String teamName = e.getBlock().getMetadata("team").get(0).asString();
                 Team team = arena.getTeamByName(teamName);
                 arena.getPlayingTask().removePlacedBlock(team);
+                e.getBlock().setType(Material.AIR);
             }
         } else if (!arena.getPlacedBlocks().contains(e.getBlock())) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));
         } else {
             arena.getPlacedBlocks().remove(e.getBlock());
+            e.getBlock().setType(Material.AIR);
         }
     }
 
@@ -122,6 +132,7 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent e) {
         if (GameUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInside(e.getLocation()))) {
+            if (e.getEntity().getType().equals(EntityType.ARMOR_STAND)) return;
             e.setCancelled(true);
         }
     }
@@ -146,6 +157,20 @@ public class ArenaListener implements Listener {
             player.setVelocity(player.getLocation().getDirection().setY(2));
             player.setFallDistance(0.0F);
             XSound.play(player, "ENTITY_BAT_TAKEOFF");
+        }
+        if (!(e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ())) return;
+        for (PowerUp powerUp : GameUtil.getArenaByPlayer(player).getPowerUps()) {
+            double distance = player.getLocation().distance(powerUp.getLocation());
+            if (distance <= 1 && powerUp.isActive()) {
+                powerUp.use(player);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent e) {
+        if (GameUtil.isPlaying(e.getPlayer())) {
+            e.setCancelled(true);
         }
     }
 

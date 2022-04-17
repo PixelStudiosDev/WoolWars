@@ -74,4 +74,12 @@ public class ItemBuilder {
         return item;
     }
 
+    public static boolean hasId(ItemStack item, String id) {
+        NBTItem nbtItem = new NBTItem(item);
+        if (nbtItem.hasKey("woolwars")) {
+            return nbtItem.getString("woolwars").equals(id);
+        }
+        return false;
+    }
+
 }

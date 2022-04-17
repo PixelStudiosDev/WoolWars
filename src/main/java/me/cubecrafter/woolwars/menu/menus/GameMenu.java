@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.menu.menus;
 
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
+import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -31,7 +32,8 @@ public class GameMenu extends Menu {
         List<MenuItem> items = new ArrayList<>();
 
         items.add(new MenuItem(22, new ItemBuilder("WOODEN_SWORD").setDisplayName("&dWool Wars").setLore(Arrays.asList("&eClick to play!", "&7{total_players_count} currently playing!")).build()).addAction(e -> {
-            player.sendMessage("join");
+            closeMenu();
+            GameUtil.joinRandom(player);
         }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
 
         items.add(new MenuItem(39, new ItemBuilder("CLOCK").setDisplayName("&aAvailable Arenas").setLore(Arrays.asList("&eClick to browse!")).build()).addAction(e -> {

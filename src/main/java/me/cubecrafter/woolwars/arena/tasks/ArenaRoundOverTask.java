@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.arena.PowerUp;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -15,6 +16,7 @@ public class ArenaRoundOverTask implements Runnable {
     public ArenaRoundOverTask(Arena arena) {
         this.arena = arena;
         arena.setTimer(5);
+        arena.getPowerUps().forEach(PowerUp::remove);
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
     }
 

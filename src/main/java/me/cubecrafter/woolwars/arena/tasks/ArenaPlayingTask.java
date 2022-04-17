@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.arena.PowerUp;
 import me.cubecrafter.woolwars.arena.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
@@ -16,6 +17,7 @@ import java.util.Objects;
 public class ArenaPlayingTask implements Runnable {
 
     @Getter private final BukkitTask task;
+    @Getter private final BukkitTask rotatePowerUpsTask;
     private final Arena arena;
     private final Map<Team, Integer> placedBlocks = new HashMap<>();
 
@@ -23,6 +25,7 @@ public class ArenaPlayingTask implements Runnable {
         this.arena = arena;
         arena.setTimer(60);
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
+        rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
     }
 
     @Override
@@ -68,6 +71,7 @@ public class ArenaPlayingTask implements Runnable {
             }
             placedBlocks.clear();
             task.cancel();
+            rotatePowerUpsTask.cancel();
         }
 
     }
@@ -77,6 +81,7 @@ public class ArenaPlayingTask implements Runnable {
     }
 
     public void removePlacedBlock(Team team) {
+        if (placedBlocks.get(team) == null) return;
         placedBlocks.put(team, placedBlocks.get(team) - 1);
     }
 
@@ -92,10 +97,12 @@ public class ArenaPlayingTask implements Runnable {
                 arena.sendTitle(40, team.getName(), "&e&lWINNER TEAM");
                 arena.restart();
                 task.cancel();
+                rotatePowerUpsTask.cancel();
                 return;
             }
             arena.setGameState(GameState.ROUND_OVER);
             task.cancel();
+            rotatePowerUpsTask.cancel();
         }
     }
 
