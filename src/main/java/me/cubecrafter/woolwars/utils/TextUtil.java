@@ -68,14 +68,15 @@ public class TextUtil {
     }
 
     public String parsePlaceholders(String s, Arena arena) {
-        String parsed = s.replace("{time}", arena.getTimerFormatted())
-                        .replace("{arena_name}", arena.getId())
-                        .replace("{arena_displayname}", arena.getDisplayName())
-                        .replace("{date}", TextUtil.getCurrentDate())
+        String parsed = parsePlaceholders(s)
+                        .replace("{time}", arena.getTimerFormatted())
+                        .replace("{id}", arena.getId())
+                        .replace("{displayname}", arena.getDisplayName())
                         .replace("{round}", String.valueOf(arena.getRound()))
-                        .replace("{arena_state}", arena.getGameState().getName())
+                        .replace("{group}", arena.getGroup())
+                        .replace("{state}", arena.getGameState().getName())
                         .replace("{required_points}", String.valueOf(arena.getRequiredPoints()))
-                        .replace("{total_players}", String.valueOf(arena.getPlayers().size()))
+                        .replace("{players}", String.valueOf(arena.getPlayers().size()))
                         .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
         for (Team team : arena.getTeams()) {
             StringBuilder builder = new StringBuilder();
@@ -94,7 +95,12 @@ public class TextUtil {
     }
 
     public String parsePlaceholders(String s) {
-        return s.replace("{date}", TextUtil.getCurrentDate());
+        String parsed = s.replace("{date}", TextUtil.getCurrentDate());
+        for (String group : GameUtil.getGroups()) {
+            parsed = parsed.replace("{" + group + "_players}", String.valueOf(GameUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
+                    .replace("{total_players}", String.valueOf(GameUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
+        }
+        return parsed;
     }
 
     public List<String> parsePlaceholders(List<String> lines) {

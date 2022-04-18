@@ -22,14 +22,14 @@ public class ItemBuilder {
 
     public ItemBuilder setDisplayName(String name) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(TextUtil.color(name));
+        meta.setDisplayName(TextUtil.color(TextUtil.parsePlaceholders(name)));
         item.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(TextUtil.color(lore));
+        meta.setLore(TextUtil.color(TextUtil.parsePlaceholders(lore)));
         item.setItemMeta(meta);
         return this;
     }

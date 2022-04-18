@@ -29,7 +29,6 @@ public class ArenaStartingTask implements Runnable {
                 team.teleportToSpawn();
             }
             arena.sendTitle(40, "&e&lPRE ROUND", "&7Select your kit!");
-            arena.playSound("BLOCK_ANVIL_LAND");
             task.cancel();
         } else {
             arena.sendMessage("&7The game starts in &a{seconds} &7seconds!".replace("{seconds}", String.valueOf(arena.getTimer())));

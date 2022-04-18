@@ -31,13 +31,13 @@ public class GameMenu extends Menu {
     public List<MenuItem> getItems() {
         List<MenuItem> items = new ArrayList<>();
 
-        items.add(new MenuItem(22, new ItemBuilder("WOODEN_SWORD").setDisplayName("&dWool Wars").setLore(Arrays.asList("&eClick to play!", "&7{total_players_count} currently playing!")).build()).addAction(e -> {
+        items.add(new MenuItem(22, new ItemBuilder("WOODEN_SWORD").setDisplayName("&dWool Wars").setLore(Arrays.asList("&eClick to play!", "&7{total_players} currently playing!")).build()).addAction(e -> {
             closeMenu();
             GameUtil.joinRandom(player);
         }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
 
         items.add(new MenuItem(39, new ItemBuilder("CLOCK").setDisplayName("&aAvailable Arenas").setLore(Arrays.asList("&eClick to browse!")).build()).addAction(e -> {
-            player.sendMessage("arenas menu");
+            new ArenaListMenu(player).openMenu();
         }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
 
         items.add(new MenuItem(40, new ItemBuilder("BARRIER").setDisplayName("&cClose").build()).addAction(e -> {
@@ -49,6 +49,11 @@ public class GameMenu extends Menu {
         }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
 
         return items;
+    }
+
+    @Override
+    public boolean autoUpdate() {
+        return false;
     }
 
 }

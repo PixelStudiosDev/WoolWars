@@ -10,7 +10,7 @@ public class JoinCommand {
 
     @Command(name = "join", desc = "Join a game")
     public void joinCommand(@Sender Player player, String arena) {
-        Arena found = GameUtil.getArenaByName(arena);
+        Arena found = GameUtil.getArenaById(arena);
         if (found != null) {
             found.addPlayer(player);
         }

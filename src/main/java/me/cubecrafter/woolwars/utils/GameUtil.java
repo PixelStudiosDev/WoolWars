@@ -20,8 +20,16 @@ public class GameUtil {
         return GameUtil.getArenas().stream().filter(arena -> arena.getPlayers().contains(player) || arena.getSpectators().contains(player)).findAny().orElse(null);
     }
 
-    public Arena getArenaByName(String name) {
+    public Arena getArenaById(String name) {
         return WoolWars.getInstance().getGameManager().getArena(name);
+    }
+
+    public List<Arena> getArenasByGroup(String group) {
+        return GameUtil.getArenas().stream().filter(arena -> arena.getGroup().equals(group)).collect(Collectors.toList());
+    }
+
+    public List<String> getGroups() {
+        return GameUtil.getArenas().stream().map(Arena::getGroup).distinct().collect(Collectors.toList());
     }
 
     public Kit getKit(String id) {
@@ -47,7 +55,7 @@ public class GameUtil {
     public void joinRandom(Player player) {
         List<Arena> available = GameUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size()))
-                .orElse(available.get(new Random().nextInt(available.size())));
+                .orElse(available.get(new Random().nextInt(available.size() - 1)));
         random.addPlayer(player);
     }
 

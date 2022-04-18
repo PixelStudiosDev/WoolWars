@@ -33,6 +33,7 @@ public class Arena {
 
     private final String id;
     private final String displayName;
+    private final String group;
     private final Location lobbyLocation;
     private final int maxPlayersPerTeam;
     private final int minPlayers;
@@ -56,6 +57,7 @@ public class Arena {
 
     public Arena(String id, YamlConfiguration arenaConfig) {
         this.id = id;
+        group = arenaConfig.getString("group");
         lobbyLocation = TextUtil.deserializeLocation(arenaConfig.getString("lobby-location"));
         displayName = TextUtil.color(arenaConfig.getString("displayname"));
         maxPlayersPerTeam = arenaConfig.getInt("max-players-per-team");
@@ -92,6 +94,10 @@ public class Arena {
         }
         if (!getGameState().equals(GameState.WAITING) && !getGameState().equals(GameState.STARTING)) {
             player.sendMessage(TextUtil.color("&cThe game is already started!"));
+            return;
+        }
+        if (players.size() >= maxPlayersPerTeam * teams.size()) {
+            player.sendMessage(TextUtil.color("&cThis arena is full!"));
             return;
         }
         players.add(player);
@@ -198,7 +204,7 @@ public class Arena {
 
     public void assignTeams() {
         for (Player player : getPlayers()) {
-            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(getTeams().get(0));
+            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size() - 1)));
             minPlayers.addMember(player);
         }
     }
@@ -254,11 +260,11 @@ public class Arena {
     }
 
     public void cancelTasks() {
-        if (startingTask.getTask() != null) startingTask.getTask().cancel();
-        if (roundOverTask.getTask() != null) roundOverTask.getTask().cancel();
-        if (playingTask.getTask() != null) playingTask.getTask().cancel();
-        if (playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
-        if (preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
+        if (startingTask != null && startingTask.getTask() != null) startingTask.getTask().cancel();
+        if (roundOverTask != null && roundOverTask.getTask() != null) roundOverTask.getTask().cancel();
+        if (playingTask != null && playingTask.getTask() != null) playingTask.getTask().cancel();
+        if (playingTask != null && playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
+        if (preRoundTask != null && preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
     }
 
     public boolean isLastRound() {
