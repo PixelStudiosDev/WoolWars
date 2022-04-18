@@ -13,7 +13,8 @@ public class CommandManager {
                 .registerSub(new JoinCommand())
                 .registerSub(new LeaveCommand())
                 .registerSub(new SetSpawnCommand())
-                .registerSub(new MenuCommand());
+                .registerSub(new MenuCommand())
+                .registerSub(new TestCommand());
         drink.register(new LobbyCommand(), "lobby");
         drink.registerCommands();
     }

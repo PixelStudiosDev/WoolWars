@@ -28,11 +28,11 @@ public class ArenaStartingTask implements Runnable {
                 team.setNameTags();
                 team.teleportToSpawn();
             }
-            arena.sendTitle(40, "&e&lPRE ROUND", "&bSelect your kit!");
+            arena.sendTitle(40, "&e&lPRE ROUND", "&7Select your kit!");
             arena.playSound("BLOCK_ANVIL_LAND");
             task.cancel();
         } else {
-            arena.sendMessage("&eThe game starts in &c{seconds} &eseconds!".replace("{seconds}", String.valueOf(arena.getTimer())));
+            arena.sendMessage("&7The game starts in &a{seconds} &eseconds!".replace("{seconds}", String.valueOf(arena.getTimer())));
             arena.playSound("ENTITY_CHICKEN_EGG");
             arena.setTimer(arena.getTimer() - 1);
         }

@@ -22,6 +22,7 @@ public class PowerUp {
     private final Arena arena;
     private final List<String> actions;
     private int rotation = 0;
+    private boolean active = false;
 
     public PowerUp(Location location, Arena arena, List<String> actions) {
         this.arena = arena;
@@ -44,9 +45,11 @@ public class PowerUp {
         armorStand = spawnArmorStand(null, location);
         armorStand.getEquipment().setHelmet(new ItemBuilder("PLAYER_HEAD").setTexture("CubeCrafter72").build());
         setupHolo();
+        active = true;
     }
 
     public void remove() {
+        active = false;
         armorStand.remove();
         for (ArmorStand stand : holoLines) {
             stand.remove();
@@ -62,10 +65,6 @@ public class PowerUp {
     private void setupHolo() {
         holoLines.add(spawnArmorStand("&e&lPOWER UP", location.clone().add(0, 2, 0)));
         holoLines.add(spawnArmorStand("&d&lEXCLUSIVE", location.clone().add(0, 2.3, 0)));
-    }
-
-    public boolean isActive() {
-        return armorStand.isValid();
     }
 
     private ArmorStand spawnArmorStand(String name, Location location) {

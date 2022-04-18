@@ -105,7 +105,7 @@ public class Arena {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        sendMessage(TextUtil.color("&b{player} &ejoined the game! &7({currentplayers}/{maxplayers})"
+        sendMessage(TextUtil.color("&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
                 .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam()))));
@@ -132,11 +132,14 @@ public class Arena {
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
-        sendMessage(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
+        sendMessage(TextUtil.color("&e{player} &7left the game! &8({currentplayers}/{maxplayers})"
+                .replace("{player}", player.getName())
+                .replace("{currentplayers}", String.valueOf(players.size()))
+                .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam()))));
         if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
-            setGameState(GameState.WAITING);
-            startingTask.getTask().cancel();
             sendMessage(TextUtil.color("&cNot enough players! Countdown stopped!"));
+            startingTask.getTask().cancel();
+            setGameState(GameState.WAITING);
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
             TextUtil.info("Not enough players in arena " + id + ". Restarting...");
@@ -229,9 +232,9 @@ public class Arena {
 
     public void resetBlocks() {
         List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
-        blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(new Random().nextInt(defaultBlocks.size()))).get().parseMaterial()));
         placedBlocks.forEach(block -> block.setType(Material.AIR));
         placedBlocks.clear();
+        blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(new Random().nextInt(defaultBlocks.size()))).get().parseMaterial()));
         teams.forEach(Team::spawnBarrier);
     }
 
@@ -272,6 +275,18 @@ public class Arena {
 
     public void playSound(String sound) {
         getPlayers().forEach(player -> XSound.play(player, sound));
+    }
+
+    public String getTeamPointsFormatted() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < teams.size(); i++) {
+            Team team = teams.get(i);
+            builder.append(team.getTeamColor().getChatColor()).append(team.getPoints());
+            if (!(i == teams.size() - 1)) {
+                builder.append(" &7- ");
+            }
+        }
+        return TextUtil.color(builder.toString());
     }
 
 }

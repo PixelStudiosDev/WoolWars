@@ -1,0 +1,62 @@
+displayname: "Utility"
+default-kit: true
+cost: 1000
+armor:
+  helmet: false
+  chestplate: false
+  leggins: true
+  boots: true
+items:
+  1:
+    material: WOODEN_SWORD
+    amount: 1
+    displayname: ""
+    lore: []
+    slot: 0
+  2:
+    material: SHEARS
+    amount: 1
+    displayname: ""
+    lore: []
+    slot: 1
+  3:
+    material: IRON_PICKAXE
+    amount: 1
+    displayname: ""
+    lore: []
+    slot: 2
+  4:
+    material: STONE_SHOVEL
+    amount: 1
+    displayname: ""
+    lore: [ ]
+    slot: 3
+  5:
+    material: SPLASH_POTION{Potion:healing}
+    amount: 1
+    displayname: ""
+    lore: [ ]
+    slot: 4
+  6:
+    material: SPLASH_POTION{Potion:harming}
+    amount: 1
+    displayname: ""
+    lore: [ ]
+    slot: 5
+  7:
+    material: WOOL
+    amount: 1
+    displayname: ""
+    lore: [ ]
+    slot: 6
+ability:
+  type: KNOCKBACK_TNT
+  slot: 9
+  material: BLAZE_POWDER
+  amount: 1
+  displayname: "&eKeystone Ability: {ability}"
+  lore: []
+menu-item:
+  material: WHITE_WOOL
+  displayname: "Utility Kit"
+  lore: []

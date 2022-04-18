@@ -30,12 +30,12 @@ public class ArenaPreRoundTask implements Runnable {
         arena.killEntities();
         arena.resetBlocks();
         arena.respawnPlayers();
-        task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
         ItemStack kitItem = new ItemBuilder("CHEST").setDisplayName("&eSelect Kit").setNBT("woolwars", "kit-item").build();
         for (Player player : arena.getPlayers()) {
             player.getInventory().clear();
             player.getInventory().setItem(0, kitItem);
         }
+        task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ArenaPreRoundTask implements Runnable {
             arena.setGameState(GameState.PLAYING);
             task.cancel();
         } else if (arena.getTimer() <= 3) {
-            arena.sendTitle(20, "&c&l{seconds}".replace("{seconds}", String.valueOf(arena.getTimer())), "&6Get Ready");
+            arena.sendTitle(20, "&c{seconds}".replace("{seconds}", String.valueOf(arena.getTimer())), "&7Get Ready");
             arena.playSound("ENTITY_CHICKEN_EGG");
             arena.setTimer(arena.getTimer() - 1);
         } else {

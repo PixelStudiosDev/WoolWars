@@ -1,5 +1,7 @@
 package me.cubecrafter.woolwars.arena;
 
+import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -51,6 +53,7 @@ public class Team {
 
     public void teleportToSpawn() {
         members.forEach(player -> player.teleport(spawnLocation));
+        playSound("ENDERMAN_TELEPORT");
     }
 
     public void addPoint() {
@@ -68,6 +71,18 @@ public class Team {
     public void reset() {
         points = 0;
         members.clear();
+    }
+
+    public void sendMessage(String msg) {
+        members.forEach(player -> player.sendMessage(TextUtil.color(msg)));
+    }
+
+    public void sendTitle(int stay, String title, String subtitle) {
+        members.forEach(player -> Titles.sendTitle(player, 0, stay, 0, TextUtil.color(title), TextUtil.color(subtitle)));
+    }
+
+    public void playSound(String sound) {
+        members.forEach(player -> XSound.play(player, sound));
     }
 
 }
