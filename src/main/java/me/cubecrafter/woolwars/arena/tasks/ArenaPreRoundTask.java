@@ -10,6 +10,7 @@ import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -41,6 +42,7 @@ public class ArenaPreRoundTask implements Runnable {
     @Override
     public void run() {
         if (arena.getTimer() == 0) {
+            arena.getPlayers().forEach(HumanEntity::closeInventory);
             if (arena.isLastRound()) {
                 arena.sendTitle(40, "&a&lROUND START", "&bLast Round!");
             } else if (arena.isExtraRound()) {
@@ -54,7 +56,7 @@ public class ArenaPreRoundTask implements Runnable {
             });
             kitSelected.clear();
             arena.playSound("BLOCK_ANVIL_LAND");
-            arena.getTeams().forEach(team -> team.getBarrier().fill("AIR"));
+            arena.getTeams().forEach(Team::removeBarrier);
             arena.getPowerUps().forEach(PowerUp::spawn);
             arena.setGameState(GameState.PLAYING);
             task.cancel();

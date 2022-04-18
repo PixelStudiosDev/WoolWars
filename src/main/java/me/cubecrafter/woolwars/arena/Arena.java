@@ -43,7 +43,6 @@ public class Arena {
     private final List<Player> deadPlayers = new ArrayList<>();
     private final List<Block> placedBlocks = new ArrayList<>();
     private final List<Team> teams = new ArrayList<>();
-    private final List<Location> jumpPads = new ArrayList<>();
     private final List<PowerUp> powerUps = new ArrayList<>();
     private final Cuboid blocksRegion;
     private final Cuboid arenaRegion;
@@ -185,8 +184,13 @@ public class Arena {
             case RESTARTING:
                 cancelTasks();
                 getTeams().forEach(Team::reset);
+                resetBlocks();
+                powerUps.forEach(PowerUp::remove);
                 removeAllPlayers();
                 setRound(0);
+                setTimer(0);
+                killEntities();
+                deadPlayers.clear();
                 setGameState(GameState.WAITING);
                 break;
         }
@@ -223,7 +227,7 @@ public class Arena {
 
     public void killEntities() {
         for (Entity entity : arenaRegion.getWorld().getEntities()) {
-            if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PLAYER) || entity.getType().equals(EntityType.PAINTING)) continue;
+            if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PAINTING)) continue;
             if (arenaRegion.isInside(entity.getLocation())) {
                 entity.remove();
             }

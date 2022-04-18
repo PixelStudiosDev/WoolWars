@@ -28,6 +28,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ArenaListener implements Listener {
 
     @EventHandler
@@ -35,16 +38,19 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         if (!GameUtil.isPlaying(player)) return;
         Arena arena = GameUtil.getArenaByPlayer(player);
-        if (arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
-            arena.getPlacedBlocks().add(e.getBlock());
-        }
-        if (!arena.getGameState().equals(GameState.PLAYING)) return;
-        if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
+        if (arena.getBlocksRegion().isInside(e.getBlock().getLocation()) && arena.getGameState().equals(GameState.PLAYING)) {
             Team team = arena.getTeamByPlayer(player);
             if (e.getBlock().getType().toString().contains("WOOL")) {
                 e.getBlock().setMetadata("team", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
                 arena.getPlayingTask().addPlacedBlock(team);
                 arena.getPlayingTask().checkWinners();
+            }
+        } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
+            if (e.getBlock().getType().toString().contains("GLASS")) {
+                arena.getPlacedBlocks().add(e.getBlock());
+            } else {
+                e.setCancelled(true);
+                player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
             }
         }
     }
@@ -83,11 +89,18 @@ public class ArenaListener implements Listener {
         }
     }
 
+    private final Set<Player> jumping = new HashSet<>();
+
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         Player player = (Player) e.getEntity();
         if (!GameUtil.isPlaying(player)) return;
+        if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && jumping.contains(player)) {
+            e.setCancelled(true);
+            jumping.remove(player);
+            return;
+        }
         Arena arena = GameUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.PLAYING) || arena.getDeadPlayers().contains(player)) {
             player.setFireTicks(0);
@@ -104,6 +117,7 @@ public class ArenaListener implements Listener {
             }
         }
         if (((player.getHealth() - e.getFinalDamage()) <= 0)) {
+            e.setCancelled(true);
             if (e instanceof EntityDamageByEntityEvent) {
                 if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Player)) return;
                 Player damager = (Player) ((EntityDamageByEntityEvent) e).getDamager();
@@ -112,19 +126,19 @@ public class ArenaListener implements Listener {
                 arena.sendMessage(TextUtil.color(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName()));
             }
             arena.getDeadPlayers().add(player);
-            player.setFireTicks(0);
-            player.setHealth(20);
             player.setAllowFlight(true);
             player.setFlying(true);
             player.spigot().setCollidesWithEntities(false);
             player.getInventory().setArmorContents(null);
             player.getInventory().clear();
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+            player.setFireTicks(0);
+            player.setHealth(20);
             Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
             if (arena.getAlivePlayers().size() == 0) {
-                arena.getBlocksRegion().fill("AIR");
                 arena.getPlayingTask().getTask().cancel();
-                arena.setGameState(GameState.PRE_ROUND);
+                arena.sendMessage("&cAll players died!");
+                arena.setGameState(GameState.ROUND_OVER);
             }
         }
     }
@@ -154,8 +168,8 @@ public class ArenaListener implements Listener {
         if (!GameUtil.isPlaying(player)) return;
         Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
         if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial()) && !GameUtil.getArenaByPlayer(player).getDeadPlayers().contains(player)) {
-            player.setVelocity(player.getLocation().getDirection().setY(1));
-            player.setFallDistance(-9999f);
+            jumping.add(player);
+            player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
             XSound.play(player, "ENTITY_BAT_TAKEOFF");
         }
         if (!(e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ())) return;

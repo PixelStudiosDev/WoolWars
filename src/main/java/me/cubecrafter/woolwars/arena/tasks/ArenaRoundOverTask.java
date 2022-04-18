@@ -22,14 +22,12 @@ public class ArenaRoundOverTask implements Runnable {
 
     @Override
     public void run() {
-
         if (arena.getTimer() > 0) {
             arena.setTimer(arena.getTimer() - 1);
         } else if (arena.getTimer() == 0) {
             arena.setGameState(GameState.PRE_ROUND);
             task.cancel();
         }
-
     }
 
 }

@@ -20,7 +20,11 @@ public class FileManager {
         messagesFile = new File(WoolWars.getInstance().getDataFolder(), "messages.yml");
         File kitsFolder = new File(WoolWars.getInstance().getDataFolder(), "kits");
         if (kitsFolder.mkdirs()) {
+            WoolWars.getInstance().saveResource("kits/archer.yml", false);
+            WoolWars.getInstance().saveResource("kits/berserker.yml", false);
             WoolWars.getInstance().saveResource("kits/builder.yml", false);
+            WoolWars.getInstance().saveResource("kits/tank.yml", false);
+            WoolWars.getInstance().saveResource("kits/utility.yml", false);
         }
         if (!configFile.exists()) {
             WoolWars.getInstance().saveResource("config.yml", false);

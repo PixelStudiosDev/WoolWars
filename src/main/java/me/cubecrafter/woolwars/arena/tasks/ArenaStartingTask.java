@@ -32,7 +32,7 @@ public class ArenaStartingTask implements Runnable {
             arena.playSound("BLOCK_ANVIL_LAND");
             task.cancel();
         } else {
-            arena.sendMessage("&7The game starts in &a{seconds} &eseconds!".replace("{seconds}", String.valueOf(arena.getTimer())));
+            arena.sendMessage("&7The game starts in &a{seconds} &7seconds!".replace("{seconds}", String.valueOf(arena.getTimer())));
             arena.playSound("ENTITY_CHICKEN_EGG");
             arena.setTimer(arena.getTimer() - 1);
         }
