@@ -56,12 +56,12 @@ public class ArenaPlayingTask implements Runnable {
                 if (winner.getPoints() == arena.getRequiredPoints()) {
                     arena.sendTitle(40, winner.getName(), "&e&lWINNER TEAM!!!");
                     arena.playSound("ENTITY_PLAYER_LEVELUP");
-                    arena.restart();
+                    arena.setGameState(GameState.RESTARTING);
                 } else {
                     if (arena.isLastRound()) {
                         arena.sendTitle(40, winner.getName(), "&e&lWINNER TEAM!!!");
                         arena.playSound("ENTITY_PLAYER_LEVELUP");
-                        arena.restart();
+                        arena.setGameState(GameState.RESTARTING);
                     } else {
                         arena.sendTitle(40, "{teamcolor}{teamname}".replace("{teamcolor}", winner.getTeamColor().getChatColor().toString()).replace("{teamname}", winner.getName()), "&e&lWINNER");
                         arena.playSound("ENTITY_PLAYER_LEVELUP");
@@ -95,7 +95,7 @@ public class ArenaPlayingTask implements Runnable {
             arena.playSound("ENTITY_PLAYER_LEVELUP");
             if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
                 arena.sendTitle(40, team.getName(), "&e&lWINNER TEAM");
-                arena.restart();
+                arena.setGameState(GameState.WAITING);
                 task.cancel();
                 rotatePowerUpsTask.cancel();
                 return;

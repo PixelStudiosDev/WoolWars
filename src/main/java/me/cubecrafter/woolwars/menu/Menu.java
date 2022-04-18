@@ -20,7 +20,7 @@ public abstract class Menu implements InventoryHolder {
     public abstract List<MenuItem> getItems();
 
     public void openMenu() {
-        getItems().forEach(item -> getInventory().setItem(item.getSlot(), item.getItem()));
+        updateMenu();
         player.openInventory(getInventory());
     }
 
@@ -33,9 +33,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void addFiller(ItemStack filler, List<Integer> slots) {
-        for (Integer slot : slots) {
-            getInventory().setItem(slot, filler);
-        }
+        slots.forEach(slot -> getInventory().setItem(slot, filler));
     }
 
     @Override

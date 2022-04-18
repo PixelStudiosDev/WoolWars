@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.arena;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -20,8 +22,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Getter
@@ -48,7 +52,6 @@ public class Arena {
     private ArenaPreRoundTask preRoundTask;
     private ArenaRoundOverTask roundOverTask;
     private GameState gameState = GameState.WAITING;
-    private boolean enabled = true;
     @Setter private int round = 0;
     @Setter private int timer = 0;
 
@@ -84,10 +87,6 @@ public class Arena {
     }
 
     public void addPlayer(Player player) {
-        if (!isEnabled()) {
-            player.sendMessage(TextUtil.color("&cThis arena is currently disabled!"));
-            return;
-        }
         if (getPlayers().contains(player)) {
             player.sendMessage(TextUtil.color("&cYou are already in this arena!"));
             return;
@@ -101,6 +100,10 @@ public class Arena {
         player.setGameMode(GameMode.SURVIVAL);
         player.setFoodLevel(20);
         player.setHealth(20);
+        player.getInventory().setArmorContents(null);
+        player.getInventory().clear();
+        player.setFlying(false);
+        player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         sendMessage(TextUtil.color("&b{player} &ejoined the game! &7({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
@@ -120,6 +123,14 @@ public class Arena {
         player.setPlayerListName(player.getName());
         player.setDisplayName(player.getName());
         player.getInventory().setArmorContents(null);
+        player.getInventory().clear();
+        player.setFlying(false);
+        player.setAllowFlight(false);
+        player.spigot().setCollidesWithEntities(true);
+        player.setFoodLevel(20);
+        player.setHealth(20);
+        player.setGameMode(GameMode.SURVIVAL);
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
         sendMessage(player.getName() + " has left! (" + getPlayers().size() + "/" + getMaxPlayersPerTeam()*getTeams().size() + ")");
         if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
@@ -129,19 +140,32 @@ public class Arena {
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
             TextUtil.info("Not enough players in arena " + id + ". Restarting...");
-            restart();
+            setGameState(GameState.RESTARTING);
         }
+    }
+
+    public void removeAllPlayers() {
+        for (Player player : players) {
+            player.setPlayerListName(player.getName());
+            player.setDisplayName(player.getName());
+            player.getInventory().setArmorContents(null);
+            player.getInventory().clear();
+            player.setFlying(false);
+            player.setAllowFlight(false);
+            player.spigot().setCollidesWithEntities(true);
+            player.setFoodLevel(20);
+            player.setHealth(20);
+            player.setGameMode(GameMode.SURVIVAL);
+            player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+            player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
+        }
+        players.clear();
     }
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
         switch (gameState) {
             case WAITING:
-                if (startingTask.getTask() != null) startingTask.getTask().cancel();
-                if (roundOverTask.getTask() != null) roundOverTask.getTask().cancel();
-                if (playingTask.getTask() != null) playingTask.getTask().cancel();
-                if (playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
-                if (preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
                 break;
             case STARTING:
                 startingTask = new ArenaStartingTask(this);
@@ -154,6 +178,13 @@ public class Arena {
                 break;
             case ROUND_OVER:
                 roundOverTask = new ArenaRoundOverTask(this);
+                break;
+            case RESTARTING:
+                cancelTasks();
+                getTeams().forEach(Team::reset);
+                removeAllPlayers();
+                setRound(0);
+                setGameState(GameState.WAITING);
                 break;
         }
     }
@@ -181,16 +212,6 @@ public class Arena {
         return getTeamByPlayer(player).getMembers().contains(other);
     }
 
-    public void restart() {
-        setGameState(GameState.WAITING);
-        getTeams().forEach(team -> {
-            team.getMembers().clear();
-            team.resetPoints();
-        });
-        new ArrayList<>(getPlayers()).forEach(this::removePlayer);
-        setRound(0);
-    }
-
     public String getTimerFormatted() {
         int minutes = (timer / 60) % 60;
         int seconds = (timer) % 60;
@@ -204,6 +225,33 @@ public class Arena {
                 entity.remove();
             }
         }
+    }
+
+    public void resetBlocks() {
+        List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
+        blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(new Random().nextInt(defaultBlocks.size()))).get().parseMaterial()));
+        placedBlocks.forEach(block -> block.setType(Material.AIR));
+        placedBlocks.clear();
+        teams.forEach(Team::spawnBarrier);
+    }
+
+    public void respawnPlayers() {
+        for (Player player : deadPlayers) {
+            player.setFlying(false);
+            player.setAllowFlight(false);
+            player.spigot().setCollidesWithEntities(true);
+            player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        }
+        deadPlayers.clear();
+        teams.forEach(Team::teleportToSpawn);
+    }
+
+    public void cancelTasks() {
+        if (startingTask.getTask() != null) startingTask.getTask().cancel();
+        if (roundOverTask.getTask() != null) roundOverTask.getTask().cancel();
+        if (playingTask.getTask() != null) playingTask.getTask().cancel();
+        if (playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
+        if (preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
     }
 
     public boolean isLastRound() {

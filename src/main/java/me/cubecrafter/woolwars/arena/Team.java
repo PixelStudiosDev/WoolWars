@@ -50,17 +50,24 @@ public class Team {
     }
 
     public void teleportToSpawn() {
-        for (Player player : getMembers()) {
-            player.teleport(spawnLocation);
-        }
+        members.forEach(player -> player.teleport(spawnLocation));
     }
 
     public void addPoint() {
         points++;
     }
 
-    public void resetPoints() {
+    public void removeBarrier() {
+        barrier.fill("AIR");
+    }
+
+    public void spawnBarrier() {
+        barrier.fill(barrierBlock);
+    }
+
+    public void reset() {
         points = 0;
+        members.clear();
     }
 
 }

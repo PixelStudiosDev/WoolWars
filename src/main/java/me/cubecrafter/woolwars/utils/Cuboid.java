@@ -3,7 +3,6 @@ package me.cubecrafter.woolwars.utils;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -41,12 +40,6 @@ public class Cuboid {
             }
         }
         return blocks;
-    }
-
-    public void clear() {
-        for (Block block : getBlocks()) {
-            block.setType(Material.AIR);
-        }
     }
 
     public void fill(String material) {

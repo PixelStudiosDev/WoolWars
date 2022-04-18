@@ -19,7 +19,7 @@ public class GameMenu extends Menu {
 
     @Override
     public String getTitle() {
-        return "Play Wool Wars";
+        return "● Play Wool Wars";
     }
 
     @Override
@@ -47,8 +47,6 @@ public class GameMenu extends Menu {
         items.add(new MenuItem(41, new ItemBuilder("PAPER").setDisplayName("&aStatistics").setLore(Arrays.asList("")).build()).addAction(e -> {
             player.sendMessage("stats");
         }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
-
-        addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8));
 
         return items;
     }

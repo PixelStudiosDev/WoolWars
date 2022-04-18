@@ -55,6 +55,7 @@ public class ConnectionPool {
         hikariConfig.setUsername(username);
         hikariConfig.setPassword(password);
         hikariConfig.setConnectionTestQuery("SELECT 1;");
+        hikariConfig.setPoolName("WoolWars-Pool");
         dataSource = new HikariDataSource(hikariConfig);
     }
 

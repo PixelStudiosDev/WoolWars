@@ -122,7 +122,7 @@ public class ArenaListener implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
             Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
             if (arena.getAlivePlayers().size() == 0) {
-                arena.getBlocksRegion().clear();
+                arena.getBlocksRegion().fill("AIR");
                 arena.getPlayingTask().getTask().cancel();
                 arena.setGameState(GameState.PRE_ROUND);
             }
@@ -153,9 +153,9 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         if (!GameUtil.isPlaying(player)) return;
         Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
-        if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial())) {
-            player.setVelocity(player.getLocation().getDirection().setY(2));
-            player.setFallDistance(0.0F);
+        if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial()) && !GameUtil.getArenaByPlayer(player).getDeadPlayers().contains(player)) {
+            player.setVelocity(player.getLocation().getDirection().setY(1));
+            player.setFallDistance(-9999f);
             XSound.play(player, "ENTITY_BAT_TAKEOFF");
         }
         if (!(e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ())) return;
@@ -169,7 +169,7 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (GameUtil.isPlaying(e.getPlayer())) {
+        if (GameUtil.isPlaying(e.getPlayer()) || GameUtil.isSpectating(e.getPlayer())) {
             e.setCancelled(true);
         }
     }
