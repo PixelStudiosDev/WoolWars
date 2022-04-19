@@ -49,6 +49,7 @@ public class PowerUp {
     }
 
     public void remove() {
+        if (!active) return;
         active = false;
         armorStand.remove();
         for (ArmorStand stand : holoLines) {

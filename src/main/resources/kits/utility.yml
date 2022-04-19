@@ -36,12 +36,14 @@ items:
     amount: 1
     displayname: ""
     lore: [ ]
+    effect:
     slot: 4
   6:
     material: SPLASH_POTION{Potion:harming}
     amount: 1
     displayname: ""
     lore: [ ]
+    effect:
     slot: 5
   7:
     material: WOOL

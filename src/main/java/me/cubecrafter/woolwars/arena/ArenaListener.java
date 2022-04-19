@@ -166,17 +166,24 @@ public class ArenaListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         if (!GameUtil.isPlaying(player)) return;
-        Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
-        if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial()) && !GameUtil.getArenaByPlayer(player).getDeadPlayers().contains(player)) {
-            jumping.add(player);
-            player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
-            XSound.play(player, "ENTITY_BAT_TAKEOFF");
-        }
-        if (!(e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ())) return;
-        for (PowerUp powerUp : GameUtil.getArenaByPlayer(player).getPowerUps()) {
-            double distance = player.getLocation().distance(powerUp.getLocation());
-            if (distance <= 1 && powerUp.isActive()) {
-                powerUp.use(player);
+        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
+            if (player.getLocation().getBlock().getType().equals(Material.LAVA) || player.getLocation().getBlock().getType().equals(Material.STATIONARY_LAVA)) {
+                player.teleport(arena.getLobbyLocation());
+                XSound.play(player, "ENTITY_ENDERMAN_TELEPORT");
+            }
+        } else if (arena.getGameState().equals(GameState.PLAYING)) {
+            Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+            if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial()) && !arena.getDeadPlayers().contains(player)) {
+                jumping.add(player);
+                player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
+                XSound.play(player, "ENTITY_BAT_TAKEOFF");
+            }
+            for (PowerUp powerUp : arena.getPowerUps()) {
+                double distance = player.getLocation().distance(powerUp.getLocation());
+                if (distance <= 1 && powerUp.isActive()) {
+                    powerUp.use(player);
+                }
             }
         }
     }

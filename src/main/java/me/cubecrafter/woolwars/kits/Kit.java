@@ -1,5 +1,7 @@
 package me.cubecrafter.woolwars.kits;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.arena.Team;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -8,6 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +47,15 @@ public class Kit {
             String displayName = kitConfig.getString("items." + item + ".displayname");
             List<String> lore = kitConfig.getStringList("items." + item + ".lore");
             int slot = kitConfig.getInt("items." + item + ".slot");
-            ItemStack created = new ItemBuilder(material).setAmount(amount).setDisplayName(displayName).setLore(lore).build();
+            PotionEffect potionEffect = null;
+            if (kitConfig.isSet("items." + item + ".effect")) {
+                String[] effect = kitConfig.getString("items." + item + ".effect").split(":");
+                PotionEffectType type = XPotion.matchXPotion(effect[0]).get().getPotionEffectType();
+                int amplifier = Integer.parseInt(effect[1]);
+                int duration = Integer.parseInt(effect[2]);
+                potionEffect = new PotionEffect(type, duration, amplifier, false, false);
+            }
+            ItemStack created = new ItemBuilder(material).setAmount(amount).setDisplayName(displayName).setLore(lore).setPotionEffect(potionEffect).build();
             contents.put(created, slot);
         }
     }

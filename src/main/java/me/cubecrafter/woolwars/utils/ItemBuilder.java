@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
 
@@ -67,6 +69,15 @@ public class ItemBuilder {
 
     public ItemBuilder setAmount(int amount) {
         item.setAmount(amount);
+        return this;
+    }
+
+    public ItemBuilder setPotionEffect(PotionEffect effect) {
+        if (effect == null) return this;
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.setMainEffect(effect.getType());
+        meta.addCustomEffect(effect, true);
+        item.setItemMeta(meta);
         return this;
     }
 

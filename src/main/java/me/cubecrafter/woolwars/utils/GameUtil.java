@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -55,7 +54,7 @@ public class GameUtil {
     public void joinRandom(Player player) {
         List<Arena> available = GameUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size()))
-                .orElse(available.get(new Random().nextInt(available.size() - 1)));
+                .orElse(available.get(0));
         random.addPlayer(player);
     }
 

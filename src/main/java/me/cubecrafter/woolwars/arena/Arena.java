@@ -101,6 +101,7 @@ public class Arena {
             return;
         }
         players.add(player);
+        XSound.play(player, "ENTITY_CHICKEN_EGG");
         player.teleport(lobbyLocation);
         player.setGameMode(GameMode.SURVIVAL);
         player.setFoodLevel(20);

@@ -38,17 +38,26 @@ public class ArenaListMenu extends Menu {
 
         for (Arena arena : GameUtil.getArenas()) {
             if (index.hasNext()) {
-                items.add(new MenuItem(index.next(), new ItemBuilder("PAPER").setDisplayName(arena.getDisplayName())
-                        .setLore(Arrays.asList(TextUtil.parsePlaceholders("Players: {players}/{max_players}", arena), TextUtil.parsePlaceholders("Group: {group}", arena))).build()).addAction(e -> {
+                items.add(new MenuItem(index.next(), new ItemBuilder("PAPER").setDisplayName(TextUtil.parsePlaceholders("&a{displayname}", arena))
+                        .setLore(Arrays.asList(TextUtil.parsePlaceholders("&7Players: &e{players}&7/&e{max_players}", arena),
+                                TextUtil.parsePlaceholders("&7Group: &b{group}", arena),
+                                "",
+                                "&cLeft Click &8➽ &7Join",
+                                "&dRight Click &8➽ &7Spectate"
+                                )).build()).addAction(e -> {
                     closeMenu();
                     arena.addPlayer(player);
                 }, ClickType.LEFT, ClickType.SHIFT_LEFT, ClickType.RIGHT, ClickType.SHIFT_RIGHT));
             }
         }
 
+        items.add(new MenuItem(40, new ItemBuilder("ARROW").setDisplayName("&cGo Back").setLore(Arrays.asList("&7To Main Menu")).build()).addAction(e -> {
+            new GameMenu(player).openMenu();
+        }, ClickType.LEFT, ClickType.SHIFT_LEFT, ClickType.RIGHT, ClickType.SHIFT_RIGHT).setClickSound("UI_BUTTON_CLICK"));
+
         // ARENA GROUP SORTING
 
-        addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,40,41,42,43,44));
+        addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,41,42,43,44));
 
         return items;
     }
