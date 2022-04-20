@@ -32,7 +32,6 @@ public final class WoolWars extends JavaPlugin {
     @Getter private Database SQLdatabase;
     @Getter private KitManager kitManager;
     @Getter private PlayerDataHandler playerDataHandler;
-    @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private VaultHook vaultHook;
 
     @Override
@@ -54,10 +53,9 @@ public final class WoolWars extends JavaPlugin {
         gameManager = new GameManager();
         commandManager = new CommandManager();
         playerDataHandler = new PlayerDataHandler();
-        scoreboardHandler = new ScoreboardHandler();
         kitManager = new KitManager();
 
-        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener())
+        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener(), new ScoreboardHandler())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 

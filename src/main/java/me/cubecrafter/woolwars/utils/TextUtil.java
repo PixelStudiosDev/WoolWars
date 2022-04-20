@@ -26,7 +26,7 @@ public class TextUtil {
     }
 
     public List<String> color(List<String> lines) {
-        if (lines == null || lines.isEmpty()) return Collections.emptyList();
+        if (lines == null) return Collections.emptyList();
         List<String> color = new ArrayList<>();
         lines.forEach(s -> color.add(color(s)));
         return color;
@@ -104,12 +104,14 @@ public class TextUtil {
     }
 
     public List<String> parsePlaceholders(List<String> lines) {
+        if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
         lines.forEach(s -> parsed.add(parsePlaceholders(s)));
         return parsed;
     }
 
     public List<String> parsePlaceholders(List<String> lines, Arena arena) {
+        if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
         lines.forEach(s -> parsed.add(parsePlaceholders(s, arena)));
         return parsed;

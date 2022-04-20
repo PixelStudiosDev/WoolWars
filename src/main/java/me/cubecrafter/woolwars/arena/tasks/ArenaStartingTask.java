@@ -22,13 +22,13 @@ public class ArenaStartingTask implements Runnable {
     @Override
     public void run() {
         if (arena.getTimer() == 0) {
-            arena.setGameState(GameState.PRE_ROUND);
             arena.assignTeams();
             for (Team team : arena.getTeams()) {
                 team.setNameTags();
                 team.teleportToSpawn();
             }
             arena.sendTitle(40, "&e&lPRE ROUND", "&7Select your kit!");
+            arena.setGameState(GameState.PRE_ROUND);
             task.cancel();
         } else {
             arena.sendMessage("&7The game starts in &a{seconds} &7seconds!".replace("{seconds}", String.valueOf(arena.getTimer())));

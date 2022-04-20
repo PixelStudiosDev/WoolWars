@@ -238,7 +238,7 @@ public class Arena {
 
     public void killEntities() {
         for (Entity entity : arenaRegion.getWorld().getEntities()) {
-            if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PAINTING)) continue;
+            if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PAINTING) || entity.getType().equals(EntityType.PLAYER)) continue;
             if (arenaRegion.isInside(entity.getLocation())) {
                 entity.remove();
             }

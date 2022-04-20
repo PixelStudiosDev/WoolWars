@@ -25,7 +25,6 @@ public class ScoreboardHandler implements Listener, Runnable {
     private final String title = TextUtil.color(messages.getString("scoreboard.title"));
 
     public ScoreboardHandler() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
         Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 10L);
     }
 
