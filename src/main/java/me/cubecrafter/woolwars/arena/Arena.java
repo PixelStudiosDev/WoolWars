@@ -11,6 +11,7 @@ import me.cubecrafter.woolwars.arena.tasks.ArenaPreRoundTask;
 import me.cubecrafter.woolwars.arena.tasks.ArenaRoundOverTask;
 import me.cubecrafter.woolwars.arena.tasks.ArenaStartingTask;
 import me.cubecrafter.woolwars.utils.Cuboid;
+import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -20,6 +21,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,6 +113,8 @@ public class Arena {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby").setLore(Arrays.asList("&7Click to return to the lobby!")).setNBT("woolwars", "leave-item").build();
+        player.getInventory().setItem(8, leaveItem);
         sendMessage(TextUtil.color("&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))

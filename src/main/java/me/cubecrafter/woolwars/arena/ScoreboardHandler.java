@@ -55,6 +55,7 @@ public class ScoreboardHandler implements Listener, Runnable {
         } else {
             scoreboard = GameScoreboard.createScoreboard(player);
         }
+        scoreboard.setTitle(title);
         if (GameUtil.isPlaying(player) || GameUtil.isSpectating(player)) {
             Arena arena = GameUtil.getArenaByPlayer(player);
             switch (arena.getGameState()) {

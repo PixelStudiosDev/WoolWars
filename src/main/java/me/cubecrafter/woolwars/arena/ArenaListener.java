@@ -6,6 +6,7 @@ import com.cryptomorin.xseries.messages.Titles;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -60,21 +61,16 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         if (!GameUtil.isPlaying(player)) return;
         Arena arena = GameUtil.getArenaByPlayer(player);
-        if (arena.getDeadPlayers().contains(player)) {
+        if (!arena.getGameState().equals(GameState.PLAYING) || arena.getDeadPlayers().contains(player) || !arena.getPlacedBlocks().contains(e.getBlock())) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));
-            return;
-        }
-        if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
+        } else if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
             if (e.getBlock().hasMetadata("team")) {
                 String teamName = e.getBlock().getMetadata("team").get(0).asString();
                 Team team = arena.getTeamByName(teamName);
                 arena.getPlayingTask().removePlacedBlock(team);
                 e.getBlock().setType(Material.AIR);
             }
-        } else if (!arena.getPlacedBlocks().contains(e.getBlock())) {
-            e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't break this block!"));
         } else {
             arena.getPlacedBlocks().remove(e.getBlock());
             e.getBlock().setType(Material.AIR);
@@ -153,12 +149,18 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        if (GameUtil.getArenaByPlayer(e.getPlayer()) == null) return;
-        if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-        for (String material : ConfigPath.DISABLED_INTERACTION_BLOCKS.getStringList()) {
-            if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
-                e.setCancelled(true);
+        Player player = e.getPlayer();
+        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            for (String material : ConfigPath.DISABLED_INTERACTION_BLOCKS.getStringList()) {
+                if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
+                    e.setCancelled(true);
+                }
             }
+        }
+        if (ItemBuilder.hasId(e.getItem(), "leave-item")) {
+            arena.removePlayer(player);
         }
     }
 
