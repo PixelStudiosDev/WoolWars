@@ -1,8 +1,8 @@
 package me.cubecrafter.woolwars.arena;
 
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.utils.GameScoreboard;
 import me.cubecrafter.woolwars.utils.GameUtil;
-import me.cubecrafter.woolwars.utils.SimpleScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,8 +13,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ScoreboardHandler implements Listener, Runnable {
 
@@ -26,55 +24,67 @@ public class ScoreboardHandler implements Listener, Runnable {
     private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
     private final String title = TextUtil.color(messages.getString("scoreboard.title"));
 
-    private final Map<Player, SimpleScoreboard> scoreboards = new ConcurrentHashMap<>();
-
     public ScoreboardHandler() {
         Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
-        Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
+        Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 10L);
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        SimpleScoreboard scoreboard = new SimpleScoreboard(WoolWars.getInstance());
-        scoreboard.setTitle(title);
-        scoreboard.addRows(lobbyLines);
-        scoreboard.show(e.getPlayer());
-        scoreboards.put(e.getPlayer(), scoreboard);
+        Player player = e.getPlayer();
+        createScoreboard(player);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        scoreboards.remove(e.getPlayer());
+        Player player = e.getPlayer();
+        if (GameScoreboard.hasScoreboard(player)) {
+            GameScoreboard.removeScoreboard(player);
+        }
+    }
+
+    public void createScoreboard(Player player) {
+        GameScoreboard scoreboard = GameScoreboard.createScoreboard(player);
+        scoreboard.setTitle(title);
+        updateScoreboard(player);
+    }
+
+    public void updateScoreboard(Player player) {
+        GameScoreboard scoreboard;
+        if (GameScoreboard.hasScoreboard(player)) {
+            scoreboard = GameScoreboard.getScoreboard(player);
+        } else {
+            scoreboard = GameScoreboard.createScoreboard(player);
+        }
+        if (GameUtil.isPlaying(player) || GameUtil.isSpectating(player)) {
+            Arena arena = GameUtil.getArenaByPlayer(player);
+            switch (arena.getGameState()) {
+                case WAITING:
+                    scoreboard.setLines(TextUtil.parsePlaceholders(waitingLines, arena));
+                    break;
+                case PRE_ROUND:
+                    scoreboard.setLines(TextUtil.parsePlaceholders(preRoundLines, arena));
+                    break;
+                case STARTING:
+                    scoreboard.setLines(TextUtil.parsePlaceholders(startingLines, arena));
+                    break;
+                case ROUND_OVER:
+                case RESTARTING:
+                case PLAYING:
+                    scoreboard.setLines(TextUtil.parsePlaceholders(playingLines, arena));
+                    break;
+            }
+        } else {
+            scoreboard.setLines(TextUtil.parsePlaceholders(lobbyLines));
+        }
     }
 
     @Override
     public void run() {
-        for (Map.Entry<Player, SimpleScoreboard> entry : scoreboards.entrySet()) {
-            Player player = entry.getKey();
-            SimpleScoreboard scoreboard = entry.getValue();
-            scoreboard.clearRows();
-            if (GameUtil.isPlaying(player)) {
-                Arena arena = GameUtil.getArenaByPlayer(player);
-                switch (arena.getGameState()) {
-                    case WAITING:
-                        scoreboard.addRows(TextUtil.parsePlaceholders(waitingLines, arena));
-                        break;
-                    case PRE_ROUND:
-                        scoreboard.addRows(TextUtil.parsePlaceholders(preRoundLines, arena));
-                        break;
-                    case STARTING:
-                        scoreboard.addRows(TextUtil.parsePlaceholders(startingLines, arena));
-                        break;
-                    case ROUND_OVER:
-                    case RESTARTING:
-                    case PLAYING:
-                        scoreboard.addRows(TextUtil.parsePlaceholders(playingLines, arena));
-                        break;
-                }
-            } else {
-                scoreboard.addRows(TextUtil.parsePlaceholders(lobbyLines));
-            }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            updateScoreboard(player);
         }
     }
 
 }
+

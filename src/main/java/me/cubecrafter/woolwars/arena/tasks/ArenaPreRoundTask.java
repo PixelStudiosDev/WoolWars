@@ -15,14 +15,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ArenaPreRoundTask implements Runnable {
 
     @Getter private final BukkitTask task;
     private final Arena arena;
-    @Getter private final List<Player> kitSelected = new ArrayList<>();
+    @Getter private final Set<Player> kitSelected = new HashSet<>();
 
     public ArenaPreRoundTask(Arena arena) {
         this.arena = arena;

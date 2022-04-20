@@ -59,6 +59,7 @@ public class PowerUp {
     }
 
     public void rotate() {
+        if (!active) return;
         armorStand.setHeadPose(new EulerAngle(0, Math.toRadians(rotation), 0));
         rotation += 5;
     }

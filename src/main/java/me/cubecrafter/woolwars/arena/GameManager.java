@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.arena;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -38,6 +39,10 @@ public class GameManager {
 
     public void unregisterArena(String id) {
         arenas.remove(id);
+    }
+
+    public void disableArenas() {
+        GameUtil.getArenas().forEach(arena -> arena.setGameState(GameState.RESTARTING));
     }
 
 }

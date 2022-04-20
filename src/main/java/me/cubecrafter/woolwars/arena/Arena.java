@@ -189,18 +189,22 @@ public class Arena {
                 roundOverTask = new ArenaRoundOverTask(this);
                 break;
             case RESTARTING:
-                cancelTasks();
-                getTeams().forEach(Team::reset);
-                resetBlocks();
-                powerUps.forEach(PowerUp::remove);
-                removeAllPlayers();
-                setRound(0);
-                setTimer(0);
-                killEntities();
-                deadPlayers.clear();
-                setGameState(GameState.WAITING);
+                restart();
                 break;
         }
+    }
+
+    public void restart() {
+        cancelTasks();
+        getTeams().forEach(Team::reset);
+        resetBlocks();
+        powerUps.forEach(PowerUp::remove);
+        removeAllPlayers();
+        setRound(0);
+        setTimer(0);
+        killEntities();
+        deadPlayers.clear();
+        setGameState(GameState.WAITING);
     }
 
     public void assignTeams() {

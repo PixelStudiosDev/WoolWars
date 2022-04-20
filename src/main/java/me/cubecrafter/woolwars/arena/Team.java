@@ -52,7 +52,9 @@ public class Team {
     }
 
     public void teleportToSpawn() {
-        members.forEach(player -> player.teleport(spawnLocation));
+        for (Player player : members) {
+            player.teleport(spawnLocation);
+        }
         playSound("ENDERMAN_TELEPORT");
     }
 

@@ -64,7 +64,7 @@ public final class WoolWars extends JavaPlugin {
     @Override
     public void onDisable() {
         SQLdatabase.close();
-        GameUtil.getArenas().forEach(arena -> arena.setGameState(GameState.RESTARTING));
+        gameManager.disableArenas();
         getServer().getScheduler().cancelTasks(this);
     }
 
