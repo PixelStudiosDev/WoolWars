@@ -16,20 +16,6 @@ import java.util.UUID;
 public class GameScoreboard {
 
     private static final Map<UUID, GameScoreboard> scoreboards = new HashMap<>();
-    private static final Map<Integer, String> lineEntries = new HashMap<>();
-    private static final String COLOR_CHAR = "\u00A7";
-
-    static {
-        for (int i = 0; i < 10; i++) {
-            lineEntries.put(i, COLOR_CHAR + i + COLOR_CHAR + "r");
-        }
-        lineEntries.put(10, COLOR_CHAR + "a" + COLOR_CHAR + "r");
-        lineEntries.put(11, COLOR_CHAR + "b" + COLOR_CHAR + "r");
-        lineEntries.put(12, COLOR_CHAR + "c" + COLOR_CHAR + "r");
-        lineEntries.put(13, COLOR_CHAR + "d" + COLOR_CHAR + "r");
-        lineEntries.put(14, COLOR_CHAR + "e" + COLOR_CHAR + "r");
-        lineEntries.put(15, COLOR_CHAR + "f" + COLOR_CHAR + "r");
-    }
 
     public static boolean hasScoreboard(Player player) {
         return scoreboards.containsKey(player.getUniqueId());
@@ -104,7 +90,7 @@ public class GameScoreboard {
     }
 
     private String getEntry(int slot) {
-        return lineEntries.get(slot);
+        return ChatColor.values()[slot].toString();
     }
 
     private String getFirstSplit(String text) {

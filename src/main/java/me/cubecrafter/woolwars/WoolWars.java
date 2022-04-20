@@ -1,14 +1,13 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.commands.CommandManager;
-import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.arena.ArenaListener;
 import me.cubecrafter.woolwars.arena.GameManager;
-import me.cubecrafter.woolwars.database.PlayerDataHandler;
 import me.cubecrafter.woolwars.arena.ScoreboardHandler;
+import me.cubecrafter.woolwars.commands.CommandManager;
+import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.database.Database;
+import me.cubecrafter.woolwars.database.PlayerDataHandler;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.kits.KitManager;
@@ -16,7 +15,6 @@ import me.cubecrafter.woolwars.libs.bstats.Metrics;
 import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
 import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
-import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
