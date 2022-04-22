@@ -1,9 +1,9 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.arena.ArenaListener;
+import me.cubecrafter.woolwars.listeners.*;
 import me.cubecrafter.woolwars.arena.GameManager;
-import me.cubecrafter.woolwars.arena.ScoreboardHandler;
+import me.cubecrafter.woolwars.utils.ScoreboardHandler;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.database.Database;
@@ -12,9 +12,6 @@ import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.kits.KitManager;
 import me.cubecrafter.woolwars.libs.bstats.Metrics;
-import me.cubecrafter.woolwars.listeners.InteractListener;
-import me.cubecrafter.woolwars.listeners.MenuListener;
-import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,6 +26,7 @@ public final class WoolWars extends JavaPlugin {
     @Getter private CommandManager commandManager;
     @Getter private Database SQLdatabase;
     @Getter private KitManager kitManager;
+    @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private PlayerDataHandler playerDataHandler;
     @Getter private VaultHook vaultHook;
 
@@ -51,9 +49,10 @@ public final class WoolWars extends JavaPlugin {
         gameManager = new GameManager();
         commandManager = new CommandManager();
         playerDataHandler = new PlayerDataHandler();
+        scoreboardHandler = new ScoreboardHandler();
         kitManager = new KitManager();
 
-        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener(), new ScoreboardHandler())
+        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener(), new BlockPlaceListener(), new BlockBreakListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 
@@ -61,6 +60,7 @@ public final class WoolWars extends JavaPlugin {
     public void onDisable() {
         SQLdatabase.close();
         gameManager.disableArenas();
+        scoreboardHandler.disable();
         getServer().getScheduler().cancelTasks(this);
     }
 

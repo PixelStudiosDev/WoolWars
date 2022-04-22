@@ -14,7 +14,8 @@ public class CommandManager {
                 .registerSub(new LeaveCommand())
                 .registerSub(new SetSpawnCommand())
                 .registerSub(new MenuCommand())
-                .registerSub(new TestCommand());
+                .registerSub(new TestCommand())
+                .registerSub(new FSCommand());
         drink.register(new LobbyCommand(), "lobby");
         drink.registerCommands();
     }

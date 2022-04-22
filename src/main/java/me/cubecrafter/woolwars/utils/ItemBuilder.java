@@ -4,12 +4,14 @@ import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XMaterial;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
@@ -75,9 +77,16 @@ public class ItemBuilder {
     public ItemBuilder setPotionEffect(PotionEffect effect) {
         if (effect == null) return this;
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        meta.setMainEffect(effect.getType());
         meta.addCustomEffect(effect, true);
+        meta.setMainEffect(effect.getType());
         item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setSplash(boolean splash) {
+        Potion potion = Potion.fromItemStack(item);
+        potion.setSplash(splash);
+        item = potion.toItemStack(1);
         return this;
     }
 
@@ -86,6 +95,7 @@ public class ItemBuilder {
     }
 
     public static boolean hasId(ItemStack item, String id) {
+        if (item == null || item.getType().equals(Material.AIR)) return false;
         NBTItem nbtItem = new NBTItem(item);
         if (nbtItem.hasKey("woolwars")) {
             return nbtItem.getString("woolwars").equals(id);

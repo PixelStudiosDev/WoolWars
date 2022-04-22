@@ -1,9 +1,12 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
-import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.arena.PowerUp;
+import me.cubecrafter.woolwars.arena.Team;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -16,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -25,7 +26,6 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -33,49 +33,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ArenaListener implements Listener {
-
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent e) {
-        Player player = e.getPlayer();
-        if (!GameUtil.isPlaying(player)) return;
-        Arena arena = GameUtil.getArenaByPlayer(player);
-        if (arena.getBlocksRegion().isInside(e.getBlock().getLocation()) && arena.getGameState().equals(GameState.PLAYING)) {
-            Team team = arena.getTeamByPlayer(player);
-            if (e.getBlock().getType().toString().contains("WOOL")) {
-                e.getBlock().setMetadata("team", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
-                arena.getPlayingTask().addPlacedBlock(team);
-                arena.getPlayingTask().checkWinners();
-            }
-        } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
-            if (e.getBlock().getType().toString().contains("GLASS")) {
-                arena.getPlacedBlocks().add(e.getBlock());
-            } else {
-                e.setCancelled(true);
-                player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
-            }
-        }
-    }
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        Player player = e.getPlayer();
-        if (!GameUtil.isPlaying(player)) return;
-        Arena arena = GameUtil.getArenaByPlayer(player);
-        if (!arena.getGameState().equals(GameState.PLAYING) || arena.getDeadPlayers().contains(player) || !arena.getPlacedBlocks().contains(e.getBlock())) {
-            e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't break this block!"));
-        } else if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
-            if (e.getBlock().hasMetadata("team")) {
-                String teamName = e.getBlock().getMetadata("team").get(0).asString();
-                Team team = arena.getTeamByName(teamName);
-                arena.getPlayingTask().removePlacedBlock(team);
-                e.getBlock().setType(Material.AIR);
-            }
-        } else {
-            arena.getPlacedBlocks().remove(e.getBlock());
-            e.getBlock().setType(Material.AIR);
-        }
-    }
 
     @EventHandler
     public void onFoodChange(FoodLevelChangeEvent e) {
@@ -131,6 +88,8 @@ public class ArenaListener implements Listener {
             player.setFireTicks(0);
             player.setHealth(20);
             Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
+            arena.getAlivePlayers().forEach(alive -> alive.hidePlayer(player));
+            arena.getDeadPlayers().forEach(player::showPlayer);
             if (arena.getAlivePlayers().size() == 0) {
                 arena.getPlayingTask().getTask().cancel();
                 arena.sendMessage("&cAll players died!");
@@ -178,7 +137,7 @@ public class ArenaListener implements Listener {
             Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
             if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial()) && !arena.getDeadPlayers().contains(player)) {
                 jumping.add(player);
-                player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
+                player.setVelocity(player.getLocation().getDirection().setY(1));
                 XSound.play(player, "ENTITY_BAT_TAKEOFF");
             }
             for (PowerUp powerUp : arena.getPowerUps()) {

@@ -1,6 +1,5 @@
 package me.cubecrafter.woolwars.kits;
 
-import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.arena.Team;
@@ -33,7 +32,7 @@ public class Kit {
         this.displayName = TextUtil.color(kitConfig.getString("displayname"));
         this.helmetEnabled = kitConfig.getBoolean("armor.helmet");
         this.chestplateEnabled = kitConfig.getBoolean("armor.chestplate");
-        this.leggingsEnabled = kitConfig.getBoolean("armor.leggins");
+        this.leggingsEnabled = kitConfig.getBoolean("armor.leggings");
         this.bootsEnabled = kitConfig.getBoolean("armor.boots");
         this.defaultKit = kitConfig.getBoolean("default-kit");
         this.cost = kitConfig.getDouble("cost");
@@ -48,7 +47,7 @@ public class Kit {
             List<String> lore = kitConfig.getStringList("items." + item + ".lore");
             int slot = kitConfig.getInt("items." + item + ".slot");
             PotionEffect potionEffect = null;
-            if (kitConfig.isSet("items." + item + ".effect")) {
+            if (kitConfig.isSet("items." + item + ".effect") && material.contains("POTION")) {
                 String[] effect = kitConfig.getString("items." + item + ".effect").split(":");
                 PotionEffectType type = XPotion.matchXPotion(effect[0]).get().getPotionEffectType();
                 int amplifier = Integer.parseInt(effect[1]);

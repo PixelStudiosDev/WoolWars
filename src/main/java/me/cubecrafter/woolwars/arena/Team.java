@@ -4,7 +4,9 @@ import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import me.cubecrafter.woolwars.utils.Cuboid;
+import me.cubecrafter.woolwars.utils.GameScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -46,8 +48,10 @@ public class Team {
 
     public void setNameTags() {
         for (Player player : getMembers()) {
-            player.setDisplayName(TextUtil.color(getTeamColor().getChatColor() + "&l" + getTeamLetter() + " " + getTeamColor().getChatColor() + player.getName()));
-            player.setPlayerListName(TextUtil.color(getTeamColor().getChatColor() + "&l" + getTeamLetter() + " " + getTeamColor().getChatColor() + player.getName()));
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                GameScoreboard scoreboard = GameScoreboard.getScoreboard(online);
+                scoreboard.setTeamPrefix(player, this);
+            }
         }
     }
 
@@ -71,6 +75,12 @@ public class Team {
     }
 
     public void reset() {
+        for (Player player : members) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                GameScoreboard scoreboard = GameScoreboard.getScoreboard(online);
+                scoreboard.removeTeamPrefix(player, this);
+            }
+        }
         points = 0;
         members.clear();
     }

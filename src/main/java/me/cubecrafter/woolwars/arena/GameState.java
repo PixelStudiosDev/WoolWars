@@ -7,6 +7,7 @@ public enum GameState {
     STARTING("Starting"),
     PLAYING("Active Round"),
     ROUND_OVER("Round Over"),
+    GAME_ENDED("Game Ended"),
     RESTARTING("Restarting");
 
     private final String name;

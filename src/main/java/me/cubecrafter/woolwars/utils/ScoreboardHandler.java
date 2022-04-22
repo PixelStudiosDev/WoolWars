@@ -1,9 +1,7 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.utils;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.GameScoreboard;
-import me.cubecrafter.woolwars.utils.GameUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 
@@ -23,29 +22,23 @@ public class ScoreboardHandler implements Listener, Runnable {
     private final List<String> preRoundLines = TextUtil.color(messages.getStringList("scoreboard.preround-board"));
     private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
     private final String title = TextUtil.color(messages.getString("scoreboard.title"));
+    private final BukkitTask updateTask;
 
     public ScoreboardHandler() {
-        Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 10L);
+        Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
+        updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 10L);
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
-        createScoreboard(player);
+        updateScoreboard(player);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        if (GameScoreboard.hasScoreboard(player)) {
-            GameScoreboard.removeScoreboard(player);
-        }
-    }
-
-    public void createScoreboard(Player player) {
-        GameScoreboard scoreboard = GameScoreboard.createScoreboard(player);
-        scoreboard.setTitle(title);
-        updateScoreboard(player);
+        GameScoreboard.removeScoreboard(player);
     }
 
     public void updateScoreboard(Player player) {
@@ -54,10 +47,10 @@ public class ScoreboardHandler implements Listener, Runnable {
             scoreboard = GameScoreboard.getScoreboard(player);
         } else {
             scoreboard = GameScoreboard.createScoreboard(player);
+            scoreboard.setTitle(title);
         }
-        scoreboard.setTitle(title);
-        if (GameUtil.isPlaying(player) || GameUtil.isSpectating(player)) {
-            Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena != null) {
             switch (arena.getGameState()) {
                 case WAITING:
                     scoreboard.setLines(TextUtil.parsePlaceholders(waitingLines, arena));
@@ -83,6 +76,13 @@ public class ScoreboardHandler implements Listener, Runnable {
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             updateScoreboard(player);
+        }
+    }
+
+    public void disable() {
+        updateTask.cancel();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            GameScoreboard.removeScoreboard(player);
         }
     }
 

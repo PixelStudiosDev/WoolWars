@@ -31,6 +31,7 @@ public class GameScoreboard {
 
     public static void removeScoreboard(Player player) {
         scoreboards.remove(player.getUniqueId());
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
     private final Scoreboard scoreboard;
@@ -42,7 +43,7 @@ public class GameScoreboard {
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
         for (int i = 1; i <= 15; i++) {
             Team team = scoreboard.registerNewTeam("line_" + i);
-            team.addEntry(getEntry(i));
+            team.addEntry(generateEntry(i));
         }
         player.setScoreboard(scoreboard);
         scoreboards.put(player.getUniqueId(), this);
@@ -53,9 +54,28 @@ public class GameScoreboard {
         sidebar.setDisplayName(color.length() > 32 ? color.substring(0, 32) : color);
     }
 
+    public void setTeamPrefix(Player player, me.cubecrafter.woolwars.arena.Team team) {
+        Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
+        if (scoreboardTeam == null) {
+            scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
+        }
+        String color = TextUtil.color(team.getTeamColor().getChatColor() + "&l" + team.getTeamLetter() + " " + team.getTeamColor().getChatColor());
+        scoreboardTeam.setPrefix(getFirstSplit(color));
+        scoreboardTeam.addEntry(player.getName());
+    }
+
+    public void removeTeamPrefix(Player player, me.cubecrafter.woolwars.arena.Team team) {
+        Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
+        if (scoreboardTeam == null) return;
+        scoreboardTeam.removeEntry(player.getName());
+        if (scoreboardTeam.getSize() == 0) {
+            scoreboardTeam.unregister();
+        }
+    }
+
     public void setLine(int line, String text) {
         Team team = scoreboard.getTeam("line_" + line);
-        String entry = getEntry(line);
+        String entry = generateEntry(line);
         if (!scoreboard.getEntries().contains(entry)) {
             sidebar.getScore(entry).setScore(line);
         }
@@ -67,7 +87,7 @@ public class GameScoreboard {
     }
 
     public void removeLine(int line) {
-        String entry = getEntry(line);
+        String entry = generateEntry(line);
         if (scoreboard.getEntries().contains(entry)) {
             scoreboard.resetScores(entry);
         }
@@ -89,7 +109,7 @@ public class GameScoreboard {
         }
     }
 
-    private String getEntry(int slot) {
+    private String generateEntry(int slot) {
         return ChatColor.values()[slot].toString();
     }
 

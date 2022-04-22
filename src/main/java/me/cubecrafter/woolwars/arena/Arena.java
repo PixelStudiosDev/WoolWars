@@ -6,13 +6,12 @@ import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.tasks.ArenaPlayingTask;
-import me.cubecrafter.woolwars.arena.tasks.ArenaPreRoundTask;
-import me.cubecrafter.woolwars.arena.tasks.ArenaRoundOverTask;
-import me.cubecrafter.woolwars.arena.tasks.ArenaStartingTask;
+import me.cubecrafter.woolwars.arena.tasks.*;
 import me.cubecrafter.woolwars.utils.Cuboid;
+import me.cubecrafter.woolwars.utils.GameScoreboard;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,6 +52,7 @@ public class Arena {
     private ArenaPlayingTask playingTask;
     private ArenaPreRoundTask preRoundTask;
     private ArenaRoundOverTask roundOverTask;
+    private ArenaGameEndedTask gameEndedTask;
     private GameState gameState = GameState.WAITING;
     @Setter private int round = 0;
     @Setter private int timer = 0;
@@ -124,10 +124,18 @@ public class Arena {
         }
     }
 
+    public void forceStart() {
+        if (gameState.equals(GameState.WAITING)) setGameState(GameState.STARTING);
+    }
+
     public void removePlayer(Player player) {
         players.remove(player);
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                GameScoreboard scoreboard = GameScoreboard.getScoreboard(online);
+                scoreboard.removeTeamPrefix(player, playerTeam);
+            }
             playerTeam.removeMember(player);
         }
         player.setPlayerListName(player.getName());
@@ -192,6 +200,8 @@ public class Arena {
             case ROUND_OVER:
                 roundOverTask = new ArenaRoundOverTask(this);
                 break;
+            case GAME_ENDED:
+                gameEndedTask = new ArenaGameEndedTask(this);
             case RESTARTING:
                 restart();
                 break;
@@ -262,10 +272,11 @@ public class Arena {
             player.setFlying(false);
             player.setAllowFlight(false);
             player.spigot().setCollidesWithEntities(true);
-            player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         }
+        players.forEach(player -> player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType())));
         deadPlayers.clear();
         teams.forEach(Team::teleportToSpawn);
+        players.forEach(player -> players.forEach(player::showPlayer));
     }
 
     public void cancelTasks() {
@@ -274,6 +285,7 @@ public class Arena {
         if (playingTask != null && playingTask.getTask() != null) playingTask.getTask().cancel();
         if (playingTask != null && playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
         if (preRoundTask != null && preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
+        if (gameEndedTask != null && gameEndedTask.getTask() != null) gameEndedTask.getTask().cancel();
     }
 
     public boolean isLastRound() {

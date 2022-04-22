@@ -7,12 +7,17 @@ import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.arena.PowerUp;
 import me.cubecrafter.woolwars.arena.Team;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ArenaPlayingTask implements Runnable {
 
@@ -20,10 +25,12 @@ public class ArenaPlayingTask implements Runnable {
     @Getter private final BukkitTask rotatePowerUpsTask;
     private final Arena arena;
     private final Map<Team, Integer> placedBlocks = new HashMap<>();
+    private final List<Block> jumpPads;
 
     public ArenaPlayingTask(Arena arena) {
         this.arena = arena;
         arena.setTimer(60);
+        jumpPads = arena.getArenaRegion().getBlocks().stream().filter(block -> block.getType().equals(Material.SLIME_BLOCK)).collect(Collectors.toList());
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
         rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
     }
@@ -81,6 +88,9 @@ public class ArenaPlayingTask implements Runnable {
             placedBlocks.clear();
             task.cancel();
             rotatePowerUpsTask.cancel();
+        }
+        for (Block block : jumpPads) {
+            block.getWorld().playEffect(block.getLocation().add(0, 1.3, 0.5).subtract(-0.5, 0, 0), Effect.HAPPY_VILLAGER, 0);
         }
     }
 
