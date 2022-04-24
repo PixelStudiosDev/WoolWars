@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import lombok.experimental.UtilityClass;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.Team;
@@ -11,6 +12,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,8 +69,8 @@ public class TextUtil {
         return new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]), Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
     }
 
-    public String parsePlaceholders(String s, Arena arena) {
-        String parsed = parsePlaceholders(s)
+    public String format(String s, Arena arena) {
+        String parsed = format(s)
                         .replace("{time}", arena.getTimerFormatted())
                         .replace("{id}", arena.getId())
                         .replace("{displayname}", arena.getDisplayName())
@@ -94,26 +96,39 @@ public class TextUtil {
         return parsed;
     }
 
-    public String parsePlaceholders(String s) {
+    public String format(String s) {
+        s = PlaceholderAPI.setPlaceholders(null, s);
         String parsed = s.replace("{date}", TextUtil.getCurrentDate());
         for (String group : GameUtil.getGroups()) {
             parsed = parsed.replace("{" + group + "_players}", String.valueOf(GameUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
                     .replace("{total_players}", String.valueOf(GameUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
         }
+        return color(parsed);
+    }
+
+    public String format(String s, Player player) {
+        s = PlaceholderAPI.setPlaceholders(player, s);
+        return format(s);
+    }
+
+    public List<String> format(List<String> lines, Player player) {
+        if (lines == null) return Collections.emptyList();
+        List<String> parsed = new ArrayList<>();
+        lines.forEach(s -> parsed.add(format(s, player)));
         return parsed;
     }
 
-    public List<String> parsePlaceholders(List<String> lines) {
+    public List<String> format(List<String> lines) {
         if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
-        lines.forEach(s -> parsed.add(parsePlaceholders(s)));
+        lines.forEach(s -> parsed.add(format(s)));
         return parsed;
     }
 
-    public List<String> parsePlaceholders(List<String> lines, Arena arena) {
+    public List<String> format(List<String> lines, Arena arena) {
         if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
-        lines.forEach(s -> parsed.add(parsePlaceholders(s, arena)));
+        lines.forEach(s -> parsed.add(format(s, arena)));
         return parsed;
     }
 

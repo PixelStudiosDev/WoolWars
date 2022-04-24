@@ -77,8 +77,10 @@ public class Team {
     public void reset() {
         for (Player player : members) {
             for (Player online : Bukkit.getOnlinePlayers()) {
-                GameScoreboard scoreboard = GameScoreboard.getScoreboard(online);
-                scoreboard.removeTeamPrefix(player, this);
+                if (GameScoreboard.hasScoreboard(online)) {
+                    GameScoreboard scoreboard = GameScoreboard.getScoreboard(online);
+                    scoreboard.removeTeamPrefix(player, this);
+                }
             }
         }
         points = 0;

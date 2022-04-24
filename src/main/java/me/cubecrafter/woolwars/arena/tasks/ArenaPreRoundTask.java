@@ -10,6 +10,7 @@ import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -58,6 +59,11 @@ public class ArenaPreRoundTask implements Runnable {
             arena.playSound("BLOCK_ANVIL_LAND");
             arena.getTeams().forEach(Team::removeBarrier);
             arena.getPowerUps().forEach(PowerUp::spawn);
+            for (Block block : arena.getBlocksRegion().getBlocks()) {
+                if (block.hasMetadata("woolwars")) {
+                    block.removeMetadata("woolwars", WoolWars.getInstance());
+                }
+            }
             arena.setGameState(GameState.PLAYING);
             task.cancel();
         } else if (arena.getTimer() <= 3) {

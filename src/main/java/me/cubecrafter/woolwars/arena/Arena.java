@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.tasks.*;
-import me.cubecrafter.woolwars.utils.Cuboid;
-import me.cubecrafter.woolwars.utils.GameScoreboard;
-import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -113,6 +110,7 @@ public class Arena {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        ArenaUtil.hidePlayersOutsideArena(player, this);
         ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby").setLore(Arrays.asList("&7Click to return to the lobby!")).setNBT("woolwars", "leave-item").build();
         player.getInventory().setItem(8, leaveItem);
         sendMessage(TextUtil.color("&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
@@ -144,12 +142,12 @@ public class Arena {
         player.getInventory().clear();
         player.setFlying(false);
         player.setAllowFlight(false);
-        player.spigot().setCollidesWithEntities(true);
         player.setFoodLevel(20);
         player.setHealth(20);
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
+        ArenaUtil.showPlayersOutsideArena(player);
         sendMessage(TextUtil.color("&e{player} &7left the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
@@ -173,11 +171,11 @@ public class Arena {
             player.getInventory().clear();
             player.setFlying(false);
             player.setAllowFlight(false);
-            player.spigot().setCollidesWithEntities(true);
             player.setFoodLevel(20);
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+            ArenaUtil.showPlayersOutsideArena(player);
             player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
         }
         players.clear();
@@ -202,6 +200,7 @@ public class Arena {
                 break;
             case GAME_ENDED:
                 gameEndedTask = new ArenaGameEndedTask(this);
+                break;
             case RESTARTING:
                 restart();
                 break;
@@ -276,7 +275,7 @@ public class Arena {
         players.forEach(player -> player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType())));
         deadPlayers.clear();
         teams.forEach(Team::teleportToSpawn);
-        players.forEach(player -> players.forEach(player::showPlayer));
+        ArenaUtil.showDeadPlayers(this);
     }
 
     public void cancelTasks() {

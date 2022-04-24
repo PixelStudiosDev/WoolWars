@@ -53,22 +53,23 @@ public class ScoreboardHandler implements Listener, Runnable {
         if (arena != null) {
             switch (arena.getGameState()) {
                 case WAITING:
-                    scoreboard.setLines(TextUtil.parsePlaceholders(waitingLines, arena));
+                    scoreboard.setLines(TextUtil.format(waitingLines, arena));
                     break;
                 case PRE_ROUND:
-                    scoreboard.setLines(TextUtil.parsePlaceholders(preRoundLines, arena));
+                    scoreboard.setLines(TextUtil.format(preRoundLines, arena));
                     break;
                 case STARTING:
-                    scoreboard.setLines(TextUtil.parsePlaceholders(startingLines, arena));
+                    scoreboard.setLines(TextUtil.format(startingLines, arena));
                     break;
                 case ROUND_OVER:
                 case RESTARTING:
+                case GAME_ENDED:
                 case PLAYING:
-                    scoreboard.setLines(TextUtil.parsePlaceholders(playingLines, arena));
+                    scoreboard.setLines(TextUtil.format(playingLines, arena));
                     break;
             }
         } else {
-            scoreboard.setLines(TextUtil.parsePlaceholders(lobbyLines));
+            scoreboard.setLines(TextUtil.format(lobbyLines));
         }
     }
 

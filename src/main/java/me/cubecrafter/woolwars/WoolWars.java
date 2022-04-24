@@ -1,8 +1,14 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.listeners.*;
 import me.cubecrafter.woolwars.arena.GameManager;
+import me.cubecrafter.woolwars.listeners.ArenaListener;
+import me.cubecrafter.woolwars.listeners.BlockBreakListener;
+import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
+import me.cubecrafter.woolwars.listeners.InteractListener;
+import me.cubecrafter.woolwars.listeners.MenuListener;
+import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
+import me.cubecrafter.woolwars.utils.LicenseVerifier;
 import me.cubecrafter.woolwars.utils.ScoreboardHandler;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.FileManager;
@@ -18,17 +24,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
+@Getter
 public final class WoolWars extends JavaPlugin {
 
     @Getter private static WoolWars instance;
-    @Getter private GameManager gameManager;
-    @Getter private FileManager fileManager;
-    @Getter private CommandManager commandManager;
-    @Getter private Database SQLdatabase;
-    @Getter private KitManager kitManager;
-    @Getter private ScoreboardHandler scoreboardHandler;
-    @Getter private PlayerDataHandler playerDataHandler;
-    @Getter private VaultHook vaultHook;
+    private GameManager gameManager;
+    private FileManager fileManager;
+    private CommandManager commandManager;
+    private Database SQLdatabase;
+    private KitManager kitManager;
+    private ScoreboardHandler scoreboardHandler;
+    private PlayerDataHandler playerDataHandler;
+    private VaultHook vaultHook;
 
     @Override
     public void onEnable() {
@@ -41,10 +48,17 @@ public final class WoolWars extends JavaPlugin {
         console.sendMessage(TextUtil.color("&c   \\_/\\_/\\___/\\___/_| \\_/\\_/\\__,_|_| /__/   &7Running on: &a" + getServer().getVersion()));
         console.sendMessage("");
 
+        fileManager = new FileManager();
+
+        if (!new LicenseVerifier(this, fileManager.getConfig().getString("license-key"), "http://142.132.151.133:1452/api/client", "565a2feab733667b66246aab765d03623fab8f1d").verify()) {
+            getServer().getScheduler().cancelTasks(this);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         new Metrics(this, 14788);
         registerHooks();
 
-        fileManager = new FileManager();
         SQLdatabase = new Database();
         gameManager = new GameManager();
         commandManager = new CommandManager();

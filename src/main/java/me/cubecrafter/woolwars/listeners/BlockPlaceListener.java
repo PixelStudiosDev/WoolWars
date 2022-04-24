@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Map;
+
 public class BlockPlaceListener implements Listener {
 
     @EventHandler
@@ -25,6 +27,11 @@ public class BlockPlaceListener implements Listener {
                 e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
                 arena.getPlayingTask().addPlacedBlock(team);
                 arena.getPlayingTask().checkWinners();
+                arena.sendMessage("&7-------------------------------------");
+                for (Map.Entry<Team, Integer> loop : arena.getPlayingTask().getPlacedBlocks().entrySet()) {
+                    arena.sendMessage("TEAM " + loop.getKey().getName() + ": " + loop.getValue());
+                }
+                arena.sendMessage("&7-------------------------------------");
             }
         } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
             if (e.getBlock().getType().toString().contains("GLASS")) {

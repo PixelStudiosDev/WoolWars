@@ -8,6 +8,7 @@ import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.arena.PowerUp;
 import me.cubecrafter.woolwars.arena.Team;
 import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -22,6 +23,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -81,15 +83,13 @@ public class ArenaListener implements Listener {
             arena.getDeadPlayers().add(player);
             player.setAllowFlight(true);
             player.setFlying(true);
-            player.spigot().setCollidesWithEntities(false);
             player.getInventory().setArmorContents(null);
             player.getInventory().clear();
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
             player.setFireTicks(0);
             player.setHealth(20);
             Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
-            arena.getAlivePlayers().forEach(alive -> alive.hidePlayer(player));
-            arena.getDeadPlayers().forEach(player::showPlayer);
+            ArenaUtil.hideDeadPlayer(player, arena);
             if (arena.getAlivePlayers().size() == 0) {
                 arena.getPlayingTask().getTask().cancel();
                 arena.sendMessage("&cAll players died!");
@@ -133,9 +133,9 @@ public class ArenaListener implements Listener {
                 player.teleport(arena.getLobbyLocation());
                 XSound.play(player, "ENTITY_ENDERMAN_TELEPORT");
             }
-        } else if (arena.getGameState().equals(GameState.PLAYING)) {
+        } else if (arena.getGameState().equals(GameState.PLAYING) && !arena.getDeadPlayers().contains(player)) {
             Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
-            if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial()) && !arena.getDeadPlayers().contains(player)) {
+            if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial())) {
                 jumping.add(player);
                 player.setVelocity(player.getLocation().getDirection().setY(1));
                 XSound.play(player, "ENTITY_BAT_TAKEOFF");
@@ -152,6 +152,17 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
         if (GameUtil.isPlaying(e.getPlayer()) || GameUtil.isSpectating(e.getPlayer())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onShoot(EntityShootBowEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        if (!arena.getGameState().equals(GameState.PLAYING)) {
             e.setCancelled(true);
         }
     }

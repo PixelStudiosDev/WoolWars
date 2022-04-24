@@ -58,6 +58,7 @@ public class GameScoreboard {
         Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
         if (scoreboardTeam == null) {
             scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
+            scoreboardTeam.setCanSeeFriendlyInvisibles(false);
         }
         String color = TextUtil.color(team.getTeamColor().getChatColor() + "&l" + team.getTeamLetter() + " " + team.getTeamColor().getChatColor());
         scoreboardTeam.setPrefix(getFirstSplit(color));

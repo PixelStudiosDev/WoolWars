@@ -24,7 +24,7 @@ public class ArenaPlayingTask implements Runnable {
     @Getter private final BukkitTask task;
     @Getter private final BukkitTask rotatePowerUpsTask;
     private final Arena arena;
-    private final Map<Team, Integer> placedBlocks = new HashMap<>();
+    @Getter private final Map<Team, Integer> placedBlocks = new HashMap<>();
     private final List<Block> jumpPads;
 
     public ArenaPlayingTask(Arena arena) {
@@ -67,7 +67,7 @@ public class ArenaPlayingTask implements Runnable {
                             loop.playSound("GHAST_MOAN");
                         }
                     }
-                    arena.setGameState(GameState.RESTARTING);
+                    arena.setGameState(GameState.GAME_ENDED);
                 } else {
                     for (Team loop : arena.getTeams()) {
                         if (loop.equals(winner)) {
@@ -79,7 +79,7 @@ public class ArenaPlayingTask implements Runnable {
                         }
                     }
                     if (arena.isLastRound()) {
-                        arena.setGameState(GameState.RESTARTING);
+                        arena.setGameState(GameState.GAME_ENDED);
                     } else {
                         arena.setGameState(GameState.ROUND_OVER);
                     }
@@ -123,7 +123,7 @@ public class ArenaPlayingTask implements Runnable {
             if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
                 task.cancel();
                 rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.RESTARTING);
+                arena.setGameState(GameState.GAME_ENDED);
                 return;
             }
             task.cancel();

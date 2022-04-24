@@ -38,9 +38,9 @@ public class ArenaListMenu extends Menu {
 
         for (Arena arena : GameUtil.getArenas()) {
             if (index.hasNext()) {
-                items.add(new MenuItem(index.next(), new ItemBuilder("PAPER").setDisplayName(TextUtil.parsePlaceholders("&a{displayname}", arena))
-                        .setLore(Arrays.asList(TextUtil.parsePlaceholders("&7Players: &e{players}&7/&e{max_players}", arena),
-                                TextUtil.parsePlaceholders("&7Group: &b{group}", arena),
+                items.add(new MenuItem(index.next(), new ItemBuilder("PAPER").setDisplayName(TextUtil.format("&a{displayname}", arena))
+                        .setLore(Arrays.asList(TextUtil.format("&7Players: &e{players}&7/&e{max_players}", arena),
+                                TextUtil.format("&7Group: &b{group}", arena),
                                 "",
                                 "&cLeft Click &8➽ &7Join",
                                 "&dRight Click &8➽ &7Spectate"
