@@ -22,16 +22,18 @@ public class Team {
     private final Location spawnLocation;
     private final TeamColor teamColor;
     private final Cuboid barrier;
+    private final Cuboid base;
     private final String barrierBlock;
     private int points;
 
-    public Team(String name, Arena arena, Location spawnLocation, TeamColor color, Cuboid barrier) {
+    public Team(String name, Arena arena, Location spawnLocation, TeamColor color, Cuboid barrier, Cuboid base) {
         this.name = name;
         this.arena = arena;
         this.spawnLocation = spawnLocation;
         this.teamColor = color;
         this.barrier = barrier;
         this.barrierBlock = "GLASS";
+        this.base = base;
     }
 
     public void addMember(Player player) {

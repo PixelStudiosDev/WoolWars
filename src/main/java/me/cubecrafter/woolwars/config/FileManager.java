@@ -11,13 +11,16 @@ public class FileManager {
 
     private final File configFile;
     private final File messagesFile;
+    private final File powerUpsFile;
     @Getter private YamlConfiguration config;
     @Getter private YamlConfiguration messages;
+    @Getter private YamlConfiguration powerUps;
 
     public FileManager() {
         new File(WoolWars.getInstance().getDataFolder(), "arenas").mkdirs();
         configFile = new File(WoolWars.getInstance().getDataFolder(), "config.yml");
         messagesFile = new File(WoolWars.getInstance().getDataFolder(), "messages.yml");
+        powerUpsFile = new File(WoolWars.getInstance().getDataFolder(), "powerups.yml");
         File kitsFolder = new File(WoolWars.getInstance().getDataFolder(), "kits");
         if (kitsFolder.mkdirs()) {
             WoolWars.getInstance().saveResource("kits/archer.yml", false);
@@ -32,6 +35,9 @@ public class FileManager {
         if (!messagesFile.exists()) {
             WoolWars.getInstance().saveResource("messages.yml", false);
         }
+        if (!powerUpsFile.exists()) {
+            WoolWars.getInstance().saveResource("powerups.yml", false);
+        }
         reload();
     }
 
@@ -39,6 +45,7 @@ public class FileManager {
         try {
             config.save(configFile);
             messages.save(messagesFile);
+            powerUps.save(powerUpsFile);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -47,6 +54,7 @@ public class FileManager {
     public void reload() {
         config = YamlConfiguration.loadConfiguration(configFile);
         messages = YamlConfiguration.loadConfiguration(messagesFile);
+        powerUps = YamlConfiguration.loadConfiguration(powerUpsFile);
     }
 
     public File[] getArenas() {

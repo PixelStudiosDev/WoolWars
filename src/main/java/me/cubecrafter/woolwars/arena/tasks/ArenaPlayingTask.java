@@ -23,8 +23,8 @@ public class ArenaPlayingTask implements Runnable {
 
     @Getter private final BukkitTask task;
     @Getter private final BukkitTask rotatePowerUpsTask;
-    private final Arena arena;
     @Getter private final Map<Team, Integer> placedBlocks = new HashMap<>();
+    private final Arena arena;
     private final List<Block> jumpPads;
 
     public ArenaPlayingTask(Arena arena) {
@@ -45,6 +45,54 @@ public class ArenaPlayingTask implements Runnable {
                 }
             }
         } else if (arena.getTimer() == 0) {
+            checkWinners();
+            placedBlocks.clear();
+            task.cancel();
+            rotatePowerUpsTask.cancel();
+        }
+        for (Block block : jumpPads) {
+            block.getWorld().playEffect(block.getLocation().add(0, 1.3, 0.5).subtract(-0.5, 0, 0), Effect.HAPPY_VILLAGER, 0);
+        }
+    }
+
+    public void addPlacedBlock(Team team) {
+        if (team == null) return;
+        placedBlocks.merge(team, 1, Integer::sum);
+    }
+
+    public void removePlacedBlock(Team team) {
+        if (placedBlocks.get(team) == null) return;
+        placedBlocks.put(team, placedBlocks.get(team) - 1);
+        if (placedBlocks.get(team) == 0) placedBlocks.remove(team);
+    }
+
+    public void checkWinners() {
+        if (arena.getTimer() > 0) {
+            for (Map.Entry<Team, Integer> entry : placedBlocks.entrySet()) {
+                if (entry.getValue() != arena.getBlocksRegion().getTotalBlocks()) continue;
+                Team team = entry.getKey();
+                team.addPoint();
+                placedBlocks.clear();
+                for (Team loop : arena.getTeams()) {
+                    if (loop.equals(team)) {
+                        loop.sendTitle(40, "&a&lWINNER", arena.getTeamPointsFormatted());
+                        loop.playSound("ENTITY_PLAYER_LEVELUP");
+                    } else {
+                        loop.sendTitle(40, "&c&lLOSER", arena.getTeamPointsFormatted());
+                        loop.playSound("GHAST_MOAN");
+                    }
+                }
+                if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
+                    task.cancel();
+                    rotatePowerUpsTask.cancel();
+                    arena.setGameState(GameState.GAME_ENDED);
+                    return;
+                }
+                task.cancel();
+                rotatePowerUpsTask.cancel();
+                arena.setGameState(GameState.ROUND_OVER);
+            }
+        } else if (arena.getTimer() == 0) {
             Map.Entry<Team, Integer> bestTeam = placedBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
             // NO PLACED BLOCKS
             if (bestTeam == null) {
@@ -57,6 +105,7 @@ public class ArenaPlayingTask implements Runnable {
                 // WINNER TEAM FOUND
             } else {
                 Team winner = bestTeam.getKey();
+                winner.addPoint();
                 if (winner.getPoints() == arena.getRequiredPoints()) {
                     for (Team loop : arena.getTeams()) {
                         if (loop.equals(winner)) {
@@ -85,50 +134,6 @@ public class ArenaPlayingTask implements Runnable {
                     }
                 }
             }
-            placedBlocks.clear();
-            task.cancel();
-            rotatePowerUpsTask.cancel();
-        }
-        for (Block block : jumpPads) {
-            block.getWorld().playEffect(block.getLocation().add(0, 1.3, 0.5).subtract(-0.5, 0, 0), Effect.HAPPY_VILLAGER, 0);
-        }
-    }
-
-    public void addPlacedBlock(Team team) {
-        if (team == null) return;
-        placedBlocks.merge(team, 1, Integer::sum);
-    }
-
-    public void removePlacedBlock(Team team) {
-        if (placedBlocks.get(team) == null) return;
-        placedBlocks.put(team, placedBlocks.get(team) - 1);
-        if (placedBlocks.get(team) == 0) placedBlocks.remove(team);
-    }
-
-    public void checkWinners() {
-        for (Map.Entry<Team, Integer> entry : placedBlocks.entrySet()) {
-            if (entry.getValue() != arena.getBlocksRegion().getTotalBlocks()) continue;
-            Team team = entry.getKey();
-            team.addPoint();
-            placedBlocks.clear();
-            for (Team loop : arena.getTeams()) {
-                if (loop.equals(team)) {
-                    loop.sendTitle(40, "&a&lWINNER", arena.getTeamPointsFormatted());
-                    loop.playSound("ENTITY_PLAYER_LEVELUP");
-                } else {
-                    loop.sendTitle(40, "&c&lLOSER", arena.getTeamPointsFormatted());
-                    loop.playSound("GHAST_MOAN");
-                }
-            }
-            if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
-                task.cancel();
-                rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.GAME_ENDED);
-                return;
-            }
-            task.cancel();
-            rotatePowerUpsTask.cancel();
-            arena.setGameState(GameState.ROUND_OVER);
         }
     }
 

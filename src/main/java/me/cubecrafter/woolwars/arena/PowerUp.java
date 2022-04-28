@@ -20,25 +20,17 @@ public class PowerUp {
     private final List<ArmorStand> holoLines = new ArrayList<>();
     private final Location location;
     private final Arena arena;
-    private final List<String> actions;
     private int rotation = 0;
     private boolean active = false;
 
-    public PowerUp(Location location, Arena arena, List<String> actions) {
+    public PowerUp(Location location, Arena arena) {
         this.arena = arena;
         this.location = location;
-        this.actions = actions;
     }
 
     public void use(Player player) {
         remove();
         XSound.play(player, "ENTITY_PLAYER_LEVELUP");
-        for (String line : actions) {
-            if (!line.contains("[") || !line.contains("]")) continue;
-            String type = line.substring(line.indexOf("[") + 1, line.indexOf("]")).toUpperCase();
-            String other = line.substring(line.indexOf("]") + 1).replace(" ", "");
-            TextUtil.info(type + ":" + other);
-        }
     }
 
     public void spawn() {

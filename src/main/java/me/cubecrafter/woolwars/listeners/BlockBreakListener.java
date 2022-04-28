@@ -31,11 +31,6 @@ public class BlockBreakListener implements Listener {
                     Team team = arena.getTeamByName(teamName);
                     arena.getPlayingTask().removePlacedBlock(team);
                     e.getBlock().removeMetadata("woolwars", WoolWars.getInstance());
-                    arena.sendMessage("&7-------------------------------------");
-                    for (Map.Entry<Team, Integer> loop : arena.getPlayingTask().getPlacedBlocks().entrySet()) {
-                        arena.sendMessage("TEAM " + loop.getKey().getName() + ": " + loop.getValue());
-                    }
-                    arena.sendMessage("&7-------------------------------------");
                 }
             }
             e.getBlock().setType(Material.AIR);

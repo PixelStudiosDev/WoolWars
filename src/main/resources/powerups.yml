@@ -1,0 +1,16 @@
+powerup-1:
+  displayed-item:
+    material: PLAYER_HEAD
+  hologram-lines:
+    - "FRAN GAY"
+    - "CLICK TO GAY"
+  effects: []
+  items: []
+powerup-2:
+  displayed-item:
+    material: PLAYER_HEAD
+  hologram-lines:
+    - "FRAN GAY"
+    - "CLICK TO GAY"
+  effects: []
+  items: []

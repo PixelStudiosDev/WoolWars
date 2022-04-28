@@ -4,6 +4,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.arena.Team;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
@@ -12,8 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Map;
-
 public class BlockPlaceListener implements Listener {
 
     @EventHandler
@@ -21,26 +20,24 @@ public class BlockPlaceListener implements Listener {
         Player player = e.getPlayer();
         if (!GameUtil.isPlaying(player)) return;
         Arena arena = GameUtil.getArenaByPlayer(player);
-        if (arena.getBlocksRegion().isInside(e.getBlock().getLocation()) && arena.getGameState().equals(GameState.PLAYING)) {
+        if (!arena.getGameState().equals(GameState.PLAYING)) {
+            e.setCancelled(true);
+            player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
+        } else if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
             Team team = arena.getTeamByPlayer(player);
             if (e.getBlock().getType().toString().contains("WOOL")) {
                 e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
                 arena.getPlayingTask().addPlacedBlock(team);
                 arena.getPlayingTask().checkWinners();
-                arena.sendMessage("&7-------------------------------------");
-                for (Map.Entry<Team, Integer> loop : arena.getPlayingTask().getPlacedBlocks().entrySet()) {
-                    arena.sendMessage("TEAM " + loop.getKey().getName() + ": " + loop.getValue());
-                }
-                arena.sendMessage("&7-------------------------------------");
             }
-        } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
-            if (e.getBlock().getType().toString().contains("GLASS")) {
-                arena.getPlacedBlocks().add(e.getBlock());
-            } else {
-                e.setCancelled(true);
-                player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
-            }
+        } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation()) && !ArenaUtil.isBlockInTeamBase(e.getBlock(), arena) && e.getBlock().getType().toString().contains("GLASS")) {
+            arena.getPlacedBlocks().add(e.getBlock());
+        } else {
+            e.setCancelled(true);
+            player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
         }
     }
 
 }
+
+

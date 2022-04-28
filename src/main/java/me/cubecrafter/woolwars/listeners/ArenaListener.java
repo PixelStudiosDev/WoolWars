@@ -73,12 +73,16 @@ public class ArenaListener implements Listener {
         }
         if (((player.getHealth() - e.getFinalDamage()) <= 0)) {
             e.setCancelled(true);
+            Team playerTeam = arena.getTeamByPlayer(player);
             if (e instanceof EntityDamageByEntityEvent) {
                 if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Player)) return;
                 Player damager = (Player) ((EntityDamageByEntityEvent) e).getDamager();
-                Team playerTeam = arena.getTeamByPlayer(player);
                 Team damagerTeam = arena.getTeamByPlayer(damager);
-                arena.sendMessage(TextUtil.color(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName()));
+                arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName());
+            } else if (e.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
+                arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7burned to death ");
+            } else if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
+                arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7fell from a high place ");
             }
             arena.getDeadPlayers().add(player);
             player.setAllowFlight(true);

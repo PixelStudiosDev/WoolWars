@@ -67,8 +67,10 @@ public class Arena {
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
             Location barrier1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.point1"));
             Location barrier2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.point2"));
+            Location base1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.point1"));
+            Location base2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.point2"));
             TeamColor color = TeamColor.valueOf(arenaConfig.getString("teams." + key + ".color"));
-            Team team = new Team(key, this, spawn, color, new Cuboid(barrier1, barrier2));
+            Team team = new Team(key, this, spawn, color, new Cuboid(barrier1, barrier2), new Cuboid(base1, base2));
             teams.add(team);
         }
         Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point1"));
@@ -77,10 +79,9 @@ public class Arena {
         Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
         Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
-        for (String key : arenaConfig.getConfigurationSection("powerups").getKeys(false)) {
-            Location location = TextUtil.deserializeLocation(arenaConfig.getString("powerups." + key + ".location"));
-            List<String> actions = arenaConfig.getStringList("powerups." + key + ".actions");
-            PowerUp powerUp = new PowerUp(location, this, actions);
+        for (String line : arenaConfig.getStringList("powerups")) {
+            Location location = TextUtil.deserializeLocation(line);
+            PowerUp powerUp = new PowerUp(location, this);
             powerUps.add(powerUp);
         }
         killEntities();
@@ -147,7 +148,7 @@ public class Arena {
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
-        ArenaUtil.showPlayersOutsideArena(player);
+        ArenaUtil.showLobbyPlayers(player);
         sendMessage(TextUtil.color("&e{player} &7left the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
@@ -175,7 +176,7 @@ public class Arena {
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-            ArenaUtil.showPlayersOutsideArena(player);
+            ArenaUtil.showLobbyPlayers(player);
             player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
         }
         players.clear();
@@ -228,7 +229,7 @@ public class Arena {
     }
 
     public List<Player> getAlivePlayers() {
-        return getPlayers().stream().filter(player -> !deadPlayers.contains(player)).collect(Collectors.toList());
+        return players.stream().filter(player -> !deadPlayers.contains(player)).collect(Collectors.toList());
     }
 
     public Team getTeamByName(String name) {
@@ -236,7 +237,7 @@ public class Arena {
     }
 
     public Team getTeamByPlayer(Player player) {
-        return getTeams().stream().filter(team -> team.getMembers().contains(player)).findAny().orElse(null);
+        return teams.stream().filter(team -> team.getMembers().contains(player)).findAny().orElse(null);
     }
 
     public boolean isTeammate(Player player, Player other) {
@@ -262,17 +263,17 @@ public class Arena {
         List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
         placedBlocks.forEach(block -> block.setType(Material.AIR));
         placedBlocks.clear();
-        blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(new Random().nextInt(defaultBlocks.size()))).get().parseMaterial()));
+        Random random = new Random();
+        blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
         teams.forEach(Team::spawnBarrier);
     }
 
     public void respawnPlayers() {
-        for (Player player : deadPlayers) {
+        for (Player player : players) {
             player.setFlying(false);
             player.setAllowFlight(false);
-            player.spigot().setCollidesWithEntities(true);
+            player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         }
-        players.forEach(player -> player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType())));
         deadPlayers.clear();
         teams.forEach(Team::teleportToSpawn);
         ArenaUtil.showDeadPlayers(this);

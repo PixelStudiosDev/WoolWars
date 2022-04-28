@@ -7,6 +7,7 @@ import me.cubecrafter.woolwars.listeners.BlockBreakListener;
 import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
 import me.cubecrafter.woolwars.listeners.InteractListener;
 import me.cubecrafter.woolwars.listeners.MenuListener;
+import me.cubecrafter.woolwars.listeners.PlayerJoinListener;
 import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
 import me.cubecrafter.woolwars.utils.LicenseVerifier;
 import me.cubecrafter.woolwars.utils.ScoreboardHandler;
@@ -66,7 +67,7 @@ public final class WoolWars extends JavaPlugin {
         scoreboardHandler = new ScoreboardHandler();
         kitManager = new KitManager();
 
-        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener(), new BlockPlaceListener(), new BlockBreakListener())
+        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(), new BlockPlaceListener(), new BlockBreakListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 
