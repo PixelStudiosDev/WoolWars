@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.game.arena;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
@@ -6,9 +6,12 @@ import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.tasks.*;
+import me.cubecrafter.woolwars.game.GameState;
+import me.cubecrafter.woolwars.game.powerup.PowerUp;
+import me.cubecrafter.woolwars.game.tasks.*;
+import me.cubecrafter.woolwars.game.team.Team;
+import me.cubecrafter.woolwars.game.team.TeamColor;
 import me.cubecrafter.woolwars.utils.*;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,11 +22,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -76,10 +75,10 @@ public class Arena {
         Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point1"));
         Location point2 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point2"));
         blocksRegion = new Cuboid(point1, point2);
-        Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
-        Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
+        Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("game-region.point1"));
+        Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("game-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
-        for (String line : arenaConfig.getStringList("powerups")) {
+        for (String line : arenaConfig.getStringList("powerup-locations")) {
             Location location = TextUtil.deserializeLocation(line);
             PowerUp powerUp = new PowerUp(location, this);
             powerUps.add(powerUp);
@@ -89,7 +88,7 @@ public class Arena {
 
     public void addPlayer(Player player) {
         if (getPlayers().contains(player)) {
-            player.sendMessage(TextUtil.color("&cYou are already in this arena!"));
+            player.sendMessage(TextUtil.color("&cYou are already in this game!"));
             return;
         }
         if (!getGameState().equals(GameState.WAITING) && !getGameState().equals(GameState.STARTING)) {
@@ -97,7 +96,7 @@ public class Arena {
             return;
         }
         if (players.size() >= maxPlayersPerTeam * teams.size()) {
-            player.sendMessage(TextUtil.color("&cThis arena is full!"));
+            player.sendMessage(TextUtil.color("&cThis game is full!"));
             return;
         }
         players.add(player);
@@ -131,9 +130,9 @@ public class Arena {
         players.remove(player);
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
-                GameScoreboard scoreboard = GameScoreboard.getScoreboard(online);
-                scoreboard.removeTeamPrefix(player, playerTeam);
+            for (Player arenaPlayer : players) {
+                GameScoreboard scoreboard = GameScoreboard.getScoreboard(arenaPlayer);
+                scoreboard.removeGamePrefix(playerTeam);
             }
             playerTeam.removeMember(player);
         }
@@ -155,11 +154,11 @@ public class Arena {
                 .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam()))));
         if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             sendMessage(TextUtil.color("&cNot enough players! Countdown stopped!"));
-            startingTask.getTask().cancel();
+            startingTask.cancelTask();
             setGameState(GameState.WAITING);
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
-            TextUtil.info("Not enough players in arena " + id + ". Restarting...");
+            TextUtil.info("Not enough players in game " + id + ". Restarting...");
             setGameState(GameState.RESTARTING);
         }
     }
@@ -270,6 +269,7 @@ public class Arena {
 
     public void respawnPlayers() {
         for (Player player : players) {
+            player.setGameMode(GameMode.SURVIVAL);
             player.setFlying(false);
             player.setAllowFlight(false);
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
@@ -280,12 +280,11 @@ public class Arena {
     }
 
     public void cancelTasks() {
-        if (startingTask != null && startingTask.getTask() != null) startingTask.getTask().cancel();
-        if (roundOverTask != null && roundOverTask.getTask() != null) roundOverTask.getTask().cancel();
-        if (playingTask != null && playingTask.getTask() != null) playingTask.getTask().cancel();
-        if (playingTask != null && playingTask.getRotatePowerUpsTask() != null) playingTask.getRotatePowerUpsTask().cancel();
-        if (preRoundTask != null && preRoundTask.getTask() != null) preRoundTask.getTask().cancel();
-        if (gameEndedTask != null && gameEndedTask.getTask() != null) gameEndedTask.getTask().cancel();
+        if (startingTask != null) startingTask.cancelTask();
+        if (roundOverTask != null) roundOverTask.cancelTask();
+        if (playingTask != null) playingTask.cancelTask();
+        if (preRoundTask != null) preRoundTask.cancelTask();
+        if (gameEndedTask != null) gameEndedTask.cancelTask();
     }
 
     public boolean isLastRound() {
@@ -312,10 +311,10 @@ public class Arena {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < teams.size(); i++) {
             Team team = teams.get(i);
-            builder.append(team.getTeamColor().getChatColor()).append(team.getPoints());
-            if (!(i == teams.size() - 1)) {
+            if (i > 0) {
                 builder.append(" &7- ");
             }
+            builder.append(team.getTeamColor().getChatColor()).append(team.getPoints());
         }
         return TextUtil.color(builder.toString());
     }

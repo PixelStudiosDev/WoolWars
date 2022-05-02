@@ -2,8 +2,8 @@ package me.cubecrafter.woolwars.utils;
 
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.Arena;
+import me.cubecrafter.woolwars.game.GameState;
 import me.cubecrafter.woolwars.kits.Kit;
 import org.bukkit.entity.Player;
 
@@ -20,7 +20,7 @@ public class GameUtil {
     }
 
     public Arena getArenaById(String name) {
-        return WoolWars.getInstance().getGameManager().getArena(name);
+        return WoolWars.getInstance().getArenaManager().getArena(name);
     }
 
     public List<Arena> getArenasByGroup(String group) {
@@ -44,7 +44,7 @@ public class GameUtil {
     }
 
     public List<Arena> getArenas() {
-        return new ArrayList<>(WoolWars.getInstance().getGameManager().getArenas().values());
+        return new ArrayList<>(WoolWars.getInstance().getArenaManager().getArenas().values());
     }
 
     public List<Kit> getKits() {

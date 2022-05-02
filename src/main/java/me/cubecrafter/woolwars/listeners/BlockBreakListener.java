@@ -1,9 +1,9 @@
 package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.arena.Team;
+import me.cubecrafter.woolwars.game.arena.Arena;
+import me.cubecrafter.woolwars.game.GameState;
+import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Material;
@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-
-import java.util.Map;
 
 public class BlockBreakListener implements Listener {
 
@@ -29,7 +27,7 @@ public class BlockBreakListener implements Listener {
                 if (!e.getBlock().getMetadata("woolwars").isEmpty()) {
                     String teamName = e.getBlock().getMetadata("woolwars").get(0).asString();
                     Team team = arena.getTeamByName(teamName);
-                    arena.getPlayingTask().removePlacedBlock(team);
+                    arena.getPlayingTask().removePlacedWool(team);
                     e.getBlock().removeMetadata("woolwars", WoolWars.getInstance());
                 }
             }

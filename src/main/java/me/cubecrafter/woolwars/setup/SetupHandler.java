@@ -2,7 +2,7 @@ package me.cubecrafter.woolwars.setup;
 
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

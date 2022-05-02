@@ -36,8 +36,10 @@ public class GameScoreboard {
 
     private final Scoreboard scoreboard;
     private final Objective sidebar;
+    private final Player player;
 
     private GameScoreboard(Player player) {
+        this.player = player;
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         sidebar = scoreboard.registerNewObjective("woolwars", "dummy");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -54,7 +56,8 @@ public class GameScoreboard {
         sidebar.setDisplayName(color.length() > 32 ? color.substring(0, 32) : color);
     }
 
-    public void setTeamPrefix(Player player, me.cubecrafter.woolwars.arena.Team team) {
+    /*
+    public void setTeamPrefix(Player player, me.cubecrafter.woolwars.game.team.Team team) {
         Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
         if (scoreboardTeam == null) {
             scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
@@ -65,7 +68,7 @@ public class GameScoreboard {
         scoreboardTeam.addEntry(player.getName());
     }
 
-    public void removeTeamPrefix(Player player, me.cubecrafter.woolwars.arena.Team team) {
+    public void removeTeamPrefix(Player player, me.cubecrafter.woolwars.game.team.Team team) {
         Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
         if (scoreboardTeam == null) return;
         scoreboardTeam.removeEntry(player.getName());
@@ -73,7 +76,42 @@ public class GameScoreboard {
             scoreboardTeam.unregister();
         }
     }
+     */
 
+    public void setGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            GameScoreboard sidebar = getScoreboard(player);
+            sidebar.setGamePrefixInternal(this.player, team);
+        }
+    }
+
+    private void setGamePrefixInternal(Player player, me.cubecrafter.woolwars.game.team.Team team) {
+        Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
+        if (scoreboardTeam == null) {
+            scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
+            scoreboardTeam.setCanSeeFriendlyInvisibles(false);
+        }
+        String color = TextUtil.color(team.getTeamColor().getChatColor() + "&l" + team.getTeamLetter() + " " + team.getTeamColor().getChatColor());
+        scoreboardTeam.setPrefix(getFirstSplit(color));
+        scoreboardTeam.addEntry(player.getName());
+    }
+
+    public void removeGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            GameScoreboard sidebar = getScoreboard(player);
+            sidebar.removeGamePrefixInternal(this.player, team);
+        }
+    }
+
+    private void removeGamePrefixInternal(Player player, me.cubecrafter.woolwars.game.team.Team team) {
+        Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
+        if (scoreboardTeam == null) return;
+        scoreboardTeam.removeEntry(player.getName());
+        if (scoreboardTeam.getSize() == 0) {
+            scoreboardTeam.unregister();
+        }
+    }
+    
     public void setLine(int line, String text) {
         Team team = scoreboard.getTeam("line_" + line);
         String entry = generateEntry(line);

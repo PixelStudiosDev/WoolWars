@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.arena.GameManager;
+import me.cubecrafter.woolwars.game.arena.ArenaManager;
 import me.cubecrafter.woolwars.listeners.ArenaListener;
 import me.cubecrafter.woolwars.listeners.BlockBreakListener;
 import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 public final class WoolWars extends JavaPlugin {
 
     @Getter private static WoolWars instance;
-    private GameManager gameManager;
+    private ArenaManager arenaManager;
     private FileManager fileManager;
     private CommandManager commandManager;
     private Database SQLdatabase;
@@ -61,7 +61,7 @@ public final class WoolWars extends JavaPlugin {
         registerHooks();
 
         SQLdatabase = new Database();
-        gameManager = new GameManager();
+        arenaManager = new ArenaManager();
         commandManager = new CommandManager();
         playerDataHandler = new PlayerDataHandler();
         scoreboardHandler = new ScoreboardHandler();
@@ -74,7 +74,7 @@ public final class WoolWars extends JavaPlugin {
     @Override
     public void onDisable() {
         SQLdatabase.close();
-        gameManager.disableArenas();
+        arenaManager.disableArenas();
         scoreboardHandler.disable();
         getServer().getScheduler().cancelTasks(this);
     }

@@ -83,13 +83,6 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setSplash(boolean splash) {
-        Potion potion = Potion.fromItemStack(item);
-        potion.setSplash(splash);
-        item = potion.toItemStack(1);
-        return this;
-    }
-
     public ItemStack build(){
         return item;
     }

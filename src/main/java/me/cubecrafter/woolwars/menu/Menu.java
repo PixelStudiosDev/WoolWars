@@ -21,12 +21,12 @@ public abstract class Menu implements InventoryHolder {
     public abstract String getTitle();
     public abstract int getRows();
     public abstract List<MenuItem> getItems();
-    public abstract boolean autoUpdate();
+    public abstract boolean update();
 
     public void openMenu() {
         updateMenu();
         player.openInventory(getInventory());
-        if (autoUpdate()) {
+        if (update()) {
             updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> {
                 if (player.getOpenInventory() == null) updateTask.cancel();
                 updateMenu();
@@ -48,7 +48,7 @@ public abstract class Menu implements InventoryHolder {
 
     @Override
     public Inventory getInventory() {
-        if (inventory == null) inventory = Bukkit.createInventory(this, getRows()*9, TextUtil.color(getTitle()));
+        if (inventory == null) inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(getTitle()));
         return inventory;
     }
 

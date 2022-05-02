@@ -1,6 +1,6 @@
 package me.cubecrafter.woolwars.listeners;
 
-import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

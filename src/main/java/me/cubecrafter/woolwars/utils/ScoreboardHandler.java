@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

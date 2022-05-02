@@ -35,7 +35,7 @@ public class SetupCommands {
         SetupHandler.createArena(arenaName, maxTeamPlayers, minPlayers);
         World world = Bukkit.getWorld(arenaWorldName);
         sender.teleport(new Location(world, world.getSpawnLocation().getX(), world.getSpawnLocation().getY(), world.getSpawnLocation().getZ()));
-        sender.sendMessage(TextUtil.color("&eNow use &c/arena " + arenaName + " setlobbylocation &eto set the lobby location"));
+        sender.sendMessage(TextUtil.color("&eNow use &c/game " + arenaName + " setlobbylocation &eto set the lobby location"));
     }
     */
 

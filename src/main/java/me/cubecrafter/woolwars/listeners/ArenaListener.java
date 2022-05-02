@@ -3,15 +3,14 @@ package me.cubecrafter.woolwars.listeners;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
-import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.arena.PowerUp;
-import me.cubecrafter.woolwars.arena.Team;
+import me.cubecrafter.woolwars.game.arena.Arena;
+import me.cubecrafter.woolwars.game.GameState;
+import me.cubecrafter.woolwars.game.powerup.PowerUp;
+import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.config.ConfigPath;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.GameUtil;
-import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.menu.menus.TeleportMenu;
+import me.cubecrafter.woolwars.utils.*;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -26,8 +25,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -85,6 +87,7 @@ public class ArenaListener implements Listener {
                 arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7fell from a high place ");
             }
             arena.getDeadPlayers().add(player);
+            player.setGameMode(GameMode.ADVENTURE);
             player.setAllowFlight(true);
             player.setFlying(true);
             player.getInventory().setArmorContents(null);
@@ -94,8 +97,10 @@ public class ArenaListener implements Listener {
             player.setHealth(20);
             Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
             ArenaUtil.hideDeadPlayer(player, arena);
+            ItemStack teleporter = new ItemBuilder("COMPASS").setDisplayName("&cTeleporter").setNBT("woolwars", "teleport-item").build();
+            player.getInventory().setItem(0, teleporter);
             if (arena.getAlivePlayers().size() == 0) {
-                arena.getPlayingTask().getTask().cancel();
+                arena.getPlayingTask().cancelTask();
                 arena.sendMessage("&cAll players died!");
                 arena.setGameState(GameState.ROUND_OVER);
             }
@@ -124,6 +129,9 @@ public class ArenaListener implements Listener {
         }
         if (ItemBuilder.hasId(e.getItem(), "leave-item")) {
             arena.removePlayer(player);
+        }
+        if (ItemBuilder.hasId(e.getItem(), "teleport-item")) {
+            new TeleportMenu(player).openMenu();
         }
     }
 
@@ -155,7 +163,7 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (GameUtil.isPlaying(e.getPlayer()) || GameUtil.isSpectating(e.getPlayer())) {
+        if (GameUtil.getArenaByPlayer(e.getPlayer()) != null) {
             e.setCancelled(true);
         }
     }
@@ -169,6 +177,32 @@ public class ArenaListener implements Listener {
         if (!arena.getGameState().equals(GameState.PLAYING)) {
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onSpectate(PlayerInteractEntityEvent e) {
+        Player player = e.getPlayer();
+        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        if (!arena.getDeadPlayers().contains(player)) return;
+        if (!(e.getRightClicked() instanceof Player)) return;
+        Player clicked = (Player) e.getRightClicked();
+        Arena other = GameUtil.getArenaByPlayer(clicked);
+        if (!arena.equals(other)) return;
+        player.setGameMode(GameMode.SPECTATOR);
+        player.setSpectatorTarget(clicked);
+    }
+
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent e) {
+        Player player = e.getPlayer();
+        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        if (!arena.getDeadPlayers().contains(player)) return;
+        if (player.getSpectatorTarget() == null) return;
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setAllowFlight(true);
+        player.setFlying(true);
     }
 
 }

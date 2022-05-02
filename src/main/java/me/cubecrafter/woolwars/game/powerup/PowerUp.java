@@ -1,13 +1,15 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.game.powerup;
 
 import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
-import me.cubecrafter.woolwars.utils.ItemBuilder;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
@@ -20,22 +22,30 @@ public class PowerUp {
     private final List<ArmorStand> holoLines = new ArrayList<>();
     private final Location location;
     private final Arena arena;
+    private final PowerUpData data;
     private int rotation = 0;
     private boolean active = false;
 
     public PowerUp(Location location, Arena arena) {
         this.arena = arena;
         this.location = location;
+        this.data = PowerUpData.getRandom();
     }
 
     public void use(Player player) {
         remove();
         XSound.play(player, "ENTITY_PLAYER_LEVELUP");
+        for (ItemStack item : data.getItems()) {
+            player.getInventory().addItem(item);
+        }
+        for (PotionEffect effect : data.getEffects()) {
+            player.addPotionEffect(effect);
+        }
     }
 
     public void spawn() {
         armorStand = spawnArmorStand(null, location);
-        armorStand.getEquipment().setHelmet(new ItemBuilder("PLAYER_HEAD").setTexture("CubeCrafter72").build());
+        armorStand.getEquipment().setHelmet(data.getDisplayedItem());
         setupHolo();
         active = true;
     }
@@ -57,8 +67,11 @@ public class PowerUp {
     }
 
     private void setupHolo() {
-        holoLines.add(spawnArmorStand("&e&lPOWER UP", location.clone().add(0, 2, 0)));
-        holoLines.add(spawnArmorStand("&d&lEXCLUSIVE", location.clone().add(0, 2.3, 0)));
+        double offset = 2;
+        for (String line : data.getHoloLines()) {
+            holoLines.add(spawnArmorStand(line, location.clone().add(0, offset, 0)));
+            offset += 0.3;
+        }
     }
 
     private ArmorStand spawnArmorStand(String name, Location location) {

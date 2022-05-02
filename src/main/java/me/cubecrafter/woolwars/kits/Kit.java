@@ -2,7 +2,7 @@ package me.cubecrafter.woolwars.kits;
 
 import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
-import me.cubecrafter.woolwars.arena.Team;
+import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;

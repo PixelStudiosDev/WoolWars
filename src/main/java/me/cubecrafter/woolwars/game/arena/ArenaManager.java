@@ -1,7 +1,9 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.game.arena;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.game.GameState;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,11 +11,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.HashMap;
 
-public class GameManager {
+public class ArenaManager {
 
     @Getter private final HashMap<String, Arena> arenas = new HashMap<>();
 
-    public GameManager() {
+    public ArenaManager() {
         loadArenas();
     }
 

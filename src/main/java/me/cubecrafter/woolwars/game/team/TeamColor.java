@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.game.team;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

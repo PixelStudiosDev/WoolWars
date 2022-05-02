@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.arena;
+package me.cubecrafter.woolwars.game;
 
 public enum GameState {
 

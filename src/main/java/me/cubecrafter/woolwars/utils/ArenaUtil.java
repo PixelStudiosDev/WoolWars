@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import lombok.experimental.UtilityClass;
-import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

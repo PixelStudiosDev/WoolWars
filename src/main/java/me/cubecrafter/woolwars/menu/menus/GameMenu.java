@@ -52,7 +52,7 @@ public class GameMenu extends Menu {
     }
 
     @Override
-    public boolean autoUpdate() {
+    public boolean update() {
         return false;
     }
 

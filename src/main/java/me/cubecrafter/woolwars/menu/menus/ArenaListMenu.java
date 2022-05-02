@@ -1,6 +1,6 @@
 package me.cubecrafter.woolwars.menu.menus;
 
-import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.GameUtil;
@@ -63,7 +63,7 @@ public class ArenaListMenu extends Menu {
     }
 
     @Override
-    public boolean autoUpdate() {
+    public boolean update() {
         return true;
     }
 
