@@ -48,6 +48,10 @@
                                     <pattern>org.slf4j</pattern>
                                     <shadedPattern>me.cubecrafter.woolwars.libs.slf4j</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>me.cubecrafter.woolwars.libs.bstats</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>
@@ -134,6 +138,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.36</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

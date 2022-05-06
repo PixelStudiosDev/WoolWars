@@ -11,10 +11,10 @@ import me.cubecrafter.woolwars.game.kits.KitManager;
 import me.cubecrafter.woolwars.game.listeners.*;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
-import me.cubecrafter.woolwars.libs.bstats.Metrics;
 import me.cubecrafter.woolwars.utils.LicenseVerifier;
 import me.cubecrafter.woolwars.utils.ScoreboardHandler;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
