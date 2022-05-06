@@ -1,0 +1,13 @@
+name: WoolWars
+version: '${project.version}'
+main: me.cubecrafter.woolwars.WoolWars
+api-version: 1.13
+description: Minigame inspired by Hypixel's WoolWars
+softdepend:
+  - PlaceholderAPI
+  - Vault
+commands:
+  woolwars:
+    description: Main plugin command
+    aliases:
+      - ww
