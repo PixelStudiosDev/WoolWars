@@ -4,7 +4,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.team.Team;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,8 +17,8 @@ public class BlockBreakListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
-        if (!GameUtil.isPlaying(player)) return;
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (!ArenaUtil.isPlaying(player)) return;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.PLAYING) || arena.getDeadPlayers().contains(player)) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));
@@ -32,11 +32,11 @@ public class BlockBreakListener implements Listener {
                 }
             }
             e.getBlock().setType(Material.AIR);
-        } else if (!arena.getPlacedBlocks().contains(e.getBlock())) {
+        } else if (!arena.getArenaPlacedBlocks().contains(e.getBlock())) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));
         } else {
-            arena.getPlacedBlocks().remove(e.getBlock());
+            arena.getArenaPlacedBlocks().remove(e.getBlock());
             e.getBlock().setType(Material.AIR);
         }
     }

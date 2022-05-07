@@ -7,8 +7,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 public abstract class ArenaTask {
 
-    private final BukkitTask task;
     protected final Arena arena;
+    private final BukkitTask task;
     public abstract void execute();
     public abstract void onTimerEnd();
     public abstract int getTaskDuration();

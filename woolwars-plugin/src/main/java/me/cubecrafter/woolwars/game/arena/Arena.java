@@ -6,6 +6,7 @@ import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.tasks.*;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -38,9 +39,15 @@ public class Arena {
     private final List<Player> players = new ArrayList<>();
     private final List<Player> spectators = new ArrayList<>();
     private final List<Player> deadPlayers = new ArrayList<>();
-    private final List<Block> placedBlocks = new ArrayList<>();
+    private final List<Block> arenaPlacedBlocks = new ArrayList<>();
     private final List<Team> teams = new ArrayList<>();
     private final List<PowerUp> powerUps = new ArrayList<>();
+
+    private final Map<Player, Integer> kills = new HashMap<>();
+    private final Map<Player, Integer> deaths = new HashMap<>();
+    private final Map<Player, Integer> placedBlocks = new HashMap<>();
+    private final Map<Player, Integer> brokenBlocks = new HashMap<>();
+
     private final Cuboid blocksRegion;
     private final Cuboid arenaRegion;
     private ArenaStartingTask startingTask;
@@ -109,7 +116,7 @@ public class Arena {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        ArenaUtil.hidePlayersOutsideArena(player, this);
+        ArenaUtil.hideLobbyPlayers(player, this);
         ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby").setLore(Arrays.asList("&7Click to return to the lobby!")).setTag("leave-item").build();
         player.getInventory().setItem(8, leaveItem);
         sendMessage(TextUtil.color("&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
@@ -129,14 +136,11 @@ public class Arena {
         players.remove(player);
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
-            for (Player arenaPlayer : players) {
-                GameScoreboard scoreboard = GameScoreboard.getScoreboard(arenaPlayer);
-                scoreboard.removeGamePrefix(playerTeam);
-            }
+            GameScoreboard scoreboard = GameScoreboard.getScoreboard(player);
+            TextUtil.info("REMOVED TEAM PREFIX FOR PLAYER: " + player.getName());
+            scoreboard.removeGamePrefix(playerTeam);
             playerTeam.removeMember(player);
         }
-        player.setPlayerListName(player.getName());
-        player.setDisplayName(player.getName());
         player.getInventory().setArmorContents(null);
         player.getInventory().clear();
         player.setFlying(false);
@@ -145,7 +149,7 @@ public class Arena {
         player.setHealth(20);
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        if (teleportToLobby) player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
+        if (teleportToLobby) player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
         ArenaUtil.showLobbyPlayers(player);
         if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
             sendMessage("&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
@@ -168,8 +172,6 @@ public class Arena {
 
     public void removeAllPlayers() {
         for (Player player : players) {
-            player.setPlayerListName(player.getName());
-            player.setDisplayName(player.getName());
             player.getInventory().setArmorContents(null);
             player.getInventory().clear();
             player.setFlying(false);
@@ -212,10 +214,10 @@ public class Arena {
 
     public void restart() {
         cancelTasks();
+        removeAllPlayers();
         getTeams().forEach(Team::reset);
         resetBlocks();
         powerUps.forEach(PowerUp::remove);
-        removeAllPlayers();
         setRound(0);
         setTimer(0);
         killEntities();
@@ -225,7 +227,7 @@ public class Arena {
 
     public void assignTeams() {
         for (Player player : getPlayers()) {
-            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size() - 1)));
+            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size())));
             minPlayers.addMember(player);
         }
     }
@@ -246,6 +248,14 @@ public class Arena {
         return getTeamByPlayer(player).getMembers().contains(other);
     }
 
+    public boolean isDead(Player player) {
+        return deadPlayers.contains(player);
+    }
+
+    public boolean isAlive(Player player) {
+        return !deadPlayers.contains(player);
+    }
+
     public String getTimerFormatted() {
         int minutes = (timer / 60) % 60;
         int seconds = (timer) % 60;
@@ -263,8 +273,8 @@ public class Arena {
 
     public void resetBlocks() {
         List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
-        placedBlocks.forEach(block -> block.setType(Material.AIR));
-        placedBlocks.clear();
+        arenaPlacedBlocks.forEach(block -> block.setType(Material.AIR));
+        arenaPlacedBlocks.clear();
         Random random = new Random();
         blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
     }

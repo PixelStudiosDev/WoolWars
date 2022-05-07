@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.menu.menus;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
@@ -34,11 +34,11 @@ public class KitsMenu extends Menu {
     public List<MenuItem> getItems() {
         List<MenuItem> items = new ArrayList<>();
         Iterator<Integer> index = Arrays.asList(10,11,12,13,14,15,16).iterator();
-        for (Kit kit : GameUtil.getKits()) {
+        for (Kit kit : ArenaUtil.getKits()) {
             items.add(new MenuItem(index.next(), kit.getMenuItem()).addAction( e -> {
-                kit.addToPlayer(player, GameUtil.getArenaByPlayer(player).getTeamByPlayer(player));
+                kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
                 player.sendMessage(TextUtil.color("&7Kit &b" + kit.getDisplayName() + " &7equipped!"));
-                GameUtil.getArenaByPlayer(player).getPreRoundTask().getKitSelected().add(player);
+                ArenaUtil.getArenaByPlayer(player).getPreRoundTask().getKitSelected().add(player);
                 closeMenu();
             }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
         }

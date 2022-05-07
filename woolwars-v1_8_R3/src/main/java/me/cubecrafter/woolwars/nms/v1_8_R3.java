@@ -20,8 +20,13 @@ public class v1_8_R3 implements NMS {
     @Override
     public String getTag(ItemStack item, String key) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound compound = nmsItem.getTag();
-        return compound != null ? compound.getString(key) : null;
+        if (nmsItem.hasTag()) {
+            NBTTagCompound compound = nmsItem.getTag();
+            if (compound.hasKey(key)) {
+                return compound.getString(key);
+            }
+        }
+        return null;
     }
 
 }

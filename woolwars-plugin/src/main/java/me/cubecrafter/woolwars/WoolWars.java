@@ -8,7 +8,13 @@ import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.PlayerDataManager;
 import me.cubecrafter.woolwars.game.arena.ArenaManager;
 import me.cubecrafter.woolwars.game.kits.KitManager;
-import me.cubecrafter.woolwars.game.listeners.*;
+import me.cubecrafter.woolwars.game.listeners.ArenaListener;
+import me.cubecrafter.woolwars.game.listeners.BlockBreakListener;
+import me.cubecrafter.woolwars.game.listeners.BlockPlaceListener;
+import me.cubecrafter.woolwars.game.listeners.ChatListener;
+import me.cubecrafter.woolwars.game.listeners.MenuListener;
+import me.cubecrafter.woolwars.game.listeners.PlayerJoinListener;
+import me.cubecrafter.woolwars.game.listeners.PlayerQuitListener;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.utils.LicenseVerifier;
@@ -62,9 +68,10 @@ public final class WoolWars extends JavaPlugin {
         playerDataManager = new PlayerDataManager();
         scoreboardHandler = new ScoreboardHandler();
         kitManager = new KitManager();
-        Arrays.asList(new MenuListener(), new InteractListener(), new ArenaListener(), new PlayerQuitListener(),
-                        new PlayerJoinListener(), new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())
+        Arrays.asList(new MenuListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(),
+                        new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
+        playerDataManager.forceLoad();
     }
 
     @Override

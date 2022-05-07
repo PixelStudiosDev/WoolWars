@@ -12,8 +12,10 @@ public class ArenaStartingTask extends ArenaTask {
 
     @Override
     public void execute() {
-        arena.sendMessage("&7The game starts in &a{seconds} &7seconds!".replace("{seconds}", String.valueOf(arena.getTimer())));
-        arena.playSound("ENTITY_CHICKEN_EGG");
+        if (arena.getTimer() % 5 == 0 || arena.getTimer() <= 3) {
+            arena.sendMessage("&7The game starts in &a{seconds} &7seconds!".replace("{seconds}", String.valueOf(arena.getTimer())));
+            arena.playSound("ENTITY_CHICKEN_EGG");
+        }
     }
 
     @Override

@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.menu.menus;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class TeleportMenu extends Menu {
 
     public TeleportMenu(Player player) {
         super(player);
-        arena = GameUtil.getArenaByPlayer(player);
+        arena = ArenaUtil.getArenaByPlayer(player);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class TeleportMenu extends Menu {
 
         for (int i = 0; i < arena.getAlivePlayers().size(); i++) {
             Player alive = arena.getAlivePlayers().get(i);
-            items.add(new MenuItem(i, new ItemBuilder("PLAYER_HEAD").setDisplayName(alive.getDisplayName()).setLore(Arrays.asList("&7Left click to teleport!", "&7Right click to spectate!")).setTexture(player.getName()).build()).addAction(e -> {
+            items.add(new MenuItem(i, new ItemBuilder("PLAYER_HEAD").setDisplayName(alive.getDisplayName()).setLore(Arrays.asList("&7Left click to teleport!", "&7Right click to spectate!")).setTexture(alive.getDisplayName()).build()).addAction(e -> {
                 closeMenu();
                 player.teleport(alive);
             }, ClickType.LEFT).addAction(e -> {

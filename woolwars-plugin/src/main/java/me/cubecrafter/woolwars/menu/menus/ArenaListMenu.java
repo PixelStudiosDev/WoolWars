@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.menu.menus;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
@@ -36,11 +36,11 @@ public class ArenaListMenu extends Menu {
 
         Iterator<Integer> index = Arrays.asList(10,11,12,13,14,15,16).iterator();
 
-        for (Arena arena : GameUtil.getArenas()) {
+        for (Arena arena : ArenaUtil.getArenas()) {
             if (index.hasNext()) {
-                items.add(new MenuItem(index.next(), new ItemBuilder("PAPER").setDisplayName(TextUtil.format("&a{displayname}", arena))
-                        .setLore(Arrays.asList(TextUtil.format("&7Players: &e{players}&7/&e{max_players}", arena),
-                                TextUtil.format("&7Group: &b{group}", arena),
+                items.add(new MenuItem(index.next(), new ItemBuilder("PAPER").setDisplayName(TextUtil.format("&a{displayname}", arena, player))
+                        .setLore(Arrays.asList(TextUtil.format("&7Players: &e{players}&7/&e{max_players}", arena, player),
+                                TextUtil.format("&7Group: &b{group}", arena, player),
                                 "",
                                 "&cLeft Click &8➽ &7Join",
                                 "&dRight Click &8➽ &7Spectate"

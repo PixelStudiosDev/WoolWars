@@ -85,8 +85,10 @@ public class ItemBuilder {
     }
 
     public static boolean hasTag(ItemStack item, String key) {
-        if (item == null || item.getType().equals(Material.AIR)) return false;
-        return WoolWars.getInstance().getNms().getTag(item, "woolwars").equals(key);
+        if (item == null) return false;
+        String tagValue = WoolWars.getInstance().getNms().getTag(item, "woolwars");
+        if (tagValue == null) return false;
+        return tagValue.equals(key);
     }
 
 }

@@ -49,23 +49,23 @@ public class ScoreboardHandler implements Listener, Runnable {
             scoreboard = GameScoreboard.createScoreboard(player);
             scoreboard.setTitle(title);
         }
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             switch (arena.getGameState()) {
                 case WAITING:
-                    scoreboard.setLines(TextUtil.format(waitingLines, arena));
+                    scoreboard.setLines(TextUtil.format(waitingLines, arena, player));
                     break;
                 case PRE_ROUND:
-                    scoreboard.setLines(TextUtil.format(preRoundLines, arena));
+                    scoreboard.setLines(TextUtil.format(preRoundLines, arena, player));
                     break;
                 case STARTING:
-                    scoreboard.setLines(TextUtil.format(startingLines, arena));
+                    scoreboard.setLines(TextUtil.format(startingLines, arena, player));
                     break;
                 case ROUND_OVER:
                 case RESTARTING:
                 case GAME_ENDED:
                 case PLAYING:
-                    scoreboard.setLines(TextUtil.format(playingLines, arena));
+                    scoreboard.setLines(TextUtil.format(playingLines, arena, player));
                     break;
             }
         } else {

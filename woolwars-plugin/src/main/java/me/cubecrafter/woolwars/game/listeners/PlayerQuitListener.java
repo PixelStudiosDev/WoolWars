@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.game.listeners;
 
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,8 +12,8 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        if (GameUtil.isPlaying(player)) {
-            Arena arena = GameUtil.getArenaByPlayer(player);
+        if (ArenaUtil.isPlaying(player)) {
+            Arena arena = ArenaUtil.getArenaByPlayer(player);
             arena.removePlayer(player, true);
         }
     }

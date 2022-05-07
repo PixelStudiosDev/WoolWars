@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.game.listeners;
 import com.cryptomorin.xseries.XSound;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +21,7 @@ public class MenuListener implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR)) return;
         Player player = (Player) e.getWhoClicked();
-        if (e.getSlotType().equals(InventoryType.SlotType.ARMOR) && GameUtil.getArenaByPlayer(player) != null) {
+        if (e.getSlotType().equals(InventoryType.SlotType.ARMOR) && ArenaUtil.getArenaByPlayer(player) != null) {
             e.setCancelled(true);
             return;
         }

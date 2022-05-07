@@ -3,13 +3,16 @@ package me.cubecrafter.woolwars.game.listeners;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
+import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
-import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.menu.menus.TeleportMenu;
-import me.cubecrafter.woolwars.utils.*;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.utils.ItemBuilder;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,16 +22,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -41,7 +36,7 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onFoodChange(FoodLevelChangeEvent e) {
         Player player = (Player) e.getEntity();
-        if (GameUtil.getArenaByPlayer(player) != null) {
+        if (ArenaUtil.getArenaByPlayer(player) != null) {
             e.setCancelled(true);
         }
     }
@@ -52,13 +47,13 @@ public class ArenaListener implements Listener {
     public void onDamage(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         Player player = (Player) e.getEntity();
-        if (!GameUtil.isPlaying(player)) return;
+        if (!ArenaUtil.isPlaying(player)) return;
         if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && jumping.contains(player)) {
             e.setCancelled(true);
             jumping.remove(player);
             return;
         }
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.PLAYING) || arena.getDeadPlayers().contains(player)) {
             player.setFireTicks(0);
             player.setHealth(20);
@@ -110,7 +105,7 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent e) {
-        if (GameUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInside(e.getLocation()))) {
+        if (ArenaUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInside(e.getLocation()))) {
             if (e.getEntity().getType().equals(EntityType.ARMOR_STAND)) return;
             e.setCancelled(true);
         }
@@ -119,7 +114,7 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             for (String material : ConfigPath.DISABLED_INTERACTION_BLOCKS.getAsStringList()) {
@@ -128,6 +123,7 @@ public class ArenaListener implements Listener {
                 }
             }
         }
+        if (e.getItem() == null) return;
         if (ItemBuilder.hasTag(e.getItem(), "leave-item")) {
             arena.removePlayer(player, true);
         }
@@ -136,15 +132,18 @@ public class ArenaListener implements Listener {
         }
         if (ItemBuilder.hasTag(e.getItem(), "playagain-item")) {
             arena.removePlayer(player, false);
-            GameUtil.joinRandom(player);
+            ArenaUtil.joinRandom(player);
+        }
+        if (ItemBuilder.hasTag(e.getItem(), "kit-item")) {
+            new KitsMenu(player).openMenu();
         }
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
-        if (!GameUtil.isPlaying(player)) return;
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (!ArenaUtil.isPlaying(player)) return;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
             if (player.getLocation().getBlock().getType().equals(Material.LAVA) || player.getLocation().getBlock().getType().equals(Material.STATIONARY_LAVA)) {
                 player.teleport(arena.getLobbyLocation());
@@ -168,7 +167,7 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (GameUtil.getArenaByPlayer(e.getPlayer()) != null) {
+        if (ArenaUtil.getArenaByPlayer(e.getPlayer()) != null) {
             e.setCancelled(true);
         }
     }
@@ -177,7 +176,7 @@ public class ArenaListener implements Listener {
     public void onShoot(EntityShootBowEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         Player player = (Player) e.getEntity();
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (!arena.getGameState().equals(GameState.PLAYING)) {
             e.setCancelled(true);
@@ -187,12 +186,12 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onSpectate(PlayerInteractEntityEvent e) {
         Player player = e.getPlayer();
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (!arena.getDeadPlayers().contains(player)) return;
         if (!(e.getRightClicked() instanceof Player)) return;
         Player clicked = (Player) e.getRightClicked();
-        Arena other = GameUtil.getArenaByPlayer(clicked);
+        Arena other = ArenaUtil.getArenaByPlayer(clicked);
         if (!arena.equals(other)) return;
         player.setGameMode(GameMode.SPECTATOR);
         player.setSpectatorTarget(clicked);
@@ -201,7 +200,7 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent e) {
         Player player = e.getPlayer();
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (!arena.getDeadPlayers().contains(player)) return;
         if (player.getSpectatorTarget() == null) return;

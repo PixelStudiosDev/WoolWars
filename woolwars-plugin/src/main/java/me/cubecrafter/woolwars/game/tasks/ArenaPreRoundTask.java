@@ -8,7 +8,7 @@ import me.cubecrafter.woolwars.game.kits.Kit;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.menu.Menu;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -59,7 +59,7 @@ public class ArenaPreRoundTask extends ArenaTask {
         } else {
             arena.sendTitle(40, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
         }
-        Kit defaultKit = GameUtil.getKits().stream().filter(Kit::isDefaultKit).findAny().orElse(null);
+        Kit defaultKit = ArenaUtil.getKits().stream().filter(Kit::isDefaultKit).findAny().orElse(null);
         arena.getPlayers().stream().filter(player -> !kitSelected.contains(player)).forEach(player -> defaultKit.addToPlayer(player, arena.getTeamByPlayer(player)));
         kitSelected.clear();
         arena.playSound("BLOCK_ANVIL_LAND");

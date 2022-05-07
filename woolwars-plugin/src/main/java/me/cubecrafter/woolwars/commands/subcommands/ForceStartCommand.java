@@ -2,7 +2,7 @@ package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.commands.SubCommand;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.utils.GameUtil;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,7 +13,7 @@ public class ForceStartCommand implements SubCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         arena.forceStart();
     }

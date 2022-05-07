@@ -5,7 +5,6 @@ import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.GameUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,8 +17,8 @@ public class BlockPlaceListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
-        if (!GameUtil.isPlaying(player)) return;
-        Arena arena = GameUtil.getArenaByPlayer(player);
+        if (!ArenaUtil.isPlaying(player)) return;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.PLAYING)) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
@@ -31,7 +30,7 @@ public class BlockPlaceListener implements Listener {
                 arena.getPlayingTask().checkWinners();
             }
         } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation()) && !ArenaUtil.isBlockInTeamBase(e.getBlock(), arena) && e.getBlock().getType().toString().contains("GLASS")) {
-            arena.getPlacedBlocks().add(e.getBlock());
+            arena.getArenaPlacedBlocks().add(e.getBlock());
         } else {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));

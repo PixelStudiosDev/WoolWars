@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.database;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,6 +43,13 @@ public class PlayerDataManager implements Listener {
     public void forceSave() {
         for (PlayerData data : playerData.values()) {
             database.savePlayerData(data);
+        }
+    }
+
+    public void forceLoad() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData data = database.getPlayerData(player.getUniqueId());
+            playerData.put(player.getUniqueId(), data);
         }
     }
 

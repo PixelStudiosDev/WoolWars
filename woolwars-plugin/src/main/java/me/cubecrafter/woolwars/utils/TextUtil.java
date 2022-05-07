@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.utils;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.team.Team;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -47,29 +48,28 @@ public class TextUtil {
         WoolWars.getInstance().getLogger().info(msg);
     }
 
-    public void warn(String msg) {
-        WoolWars.getInstance().getLogger().warning(msg);
-    }
-
     public void severe(String msg) {
         WoolWars.getInstance().getLogger().severe(msg);
     }
 
     public String serializeLocation(Location location) {
-        return location.getWorld().getName() + ":" +
-                location.getX() + ":" +
-                location.getY() + ":" +
-                location.getZ() + ":" +
-                location.getPitch() + ":" +
-                location.getYaw();
+        StringBuilder builder = new StringBuilder();
+        builder.append(location.getWorld().getName()).append(",").append(location.getX()).append(",").append(location.getY()).append(",").append(location.getZ());
+        if (location.getPitch() != 0 || location.getYaw() != 0) {
+            builder.append(",").append(location.getPitch()).append(",").append(location.getYaw());
+        }
+        return builder.toString();
     }
 
     public Location deserializeLocation(String location) {
-        String[] loc = location.split(":");
-        return new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]), Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
+        String[] loc = location.split(",");
+        return loc.length == 6 ? new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]), Float.parseFloat(loc[4]), Float.parseFloat(loc[5]))
+                : new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
     }
 
-    public String format(String s, Arena arena) {
+    public String format(String s, Arena arena, Player player) {
+        PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
+        s = s.replace("{wins}", String.valueOf(data.getWins()));
         String parsed = format(s)
                         .replace("{time}", arena.getTimerFormatted())
                         .replace("{id}", arena.getId())
@@ -89,9 +89,12 @@ public class TextUtil {
                     builder.append(TextUtil.color(team.getTeamColor().getChatColor() + "⬤"));
                 }
             }
+            if (arena.getTeamByPlayer(player) != null && arena.getTeamByPlayer(player).equals(team)) {
+                builder.append(TextUtil.color(" &7You"));
+            }
             parsed = parsed.replace("{" + team.getName() + "_points_formatted}", builder.toString())
                     .replace("{" + team.getName() + "_points}", String.valueOf(team.getPoints()))
-                    .replace("{" + team.getName() + "_players}", String.valueOf(team.getMembers().stream().filter(player ->  !arena.getDeadPlayers().contains(player)).count()));
+                    .replace("{" + team.getName() + "_players}", String.valueOf(team.getMembers().stream().filter(member ->  !arena.getDeadPlayers().contains(member)).count()));
         }
         return parsed;
     }
@@ -101,9 +104,9 @@ public class TextUtil {
             s = PlaceholderAPI.setPlaceholders(null, s);
         }
         String parsed = s.replace("{date}", TextUtil.getCurrentDate());
-        for (String group : GameUtil.getGroups()) {
-            parsed = parsed.replace("{" + group + "_players}", String.valueOf(GameUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
-                    .replace("{total_players}", String.valueOf(GameUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
+        for (String group : ArenaUtil.getGroups()) {
+            parsed = parsed.replace("{" + group + "_players}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
+                    .replace("{total_players}", String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
         }
         return color(parsed);
     }
@@ -129,10 +132,10 @@ public class TextUtil {
         return parsed;
     }
 
-    public List<String> format(List<String> lines, Arena arena) {
+    public List<String> format(List<String> lines, Arena arena, Player player) {
         if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
-        lines.forEach(s -> parsed.add(format(s, arena)));
+        lines.forEach(s -> parsed.add(format(s, arena, player)));
         return parsed;
     }
 

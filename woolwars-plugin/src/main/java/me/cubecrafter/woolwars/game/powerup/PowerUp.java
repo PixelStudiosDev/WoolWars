@@ -10,9 +10,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Skull;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -45,7 +48,12 @@ public class PowerUp {
     public void spawn() {
         data = PowerUpData.getRandom();
         armorStand = spawnArmorStand(null, location);
-        armorStand.getEquipment().setHelmet(data.getDisplayedItem());
+        if (data.getDisplayedItem().getType().toString().equals("PLAYER_HEAD") || data.getDisplayedItem().getType().toString().equals("SKULL_ITEM")) {
+            armorStand.getEquipment().setHelmet(data.getDisplayedItem());
+        } else {
+            armorStand.getEquipment().setItemInHand(data.getDisplayedItem());
+            armorStand.setRightArmPose(new EulerAngle(Math.toRadians(280), Math.toRadians(270), 0));
+        }
         setupHolo();
         active = true;
     }
@@ -63,12 +71,14 @@ public class PowerUp {
         Location loc = armorStand.getLocation();
         loc.setYaw(rotation);
         armorStand.teleport(loc);
-        rotation += 5;
+        rotation += 4;
     }
 
     private void setupHolo() {
         double offset = 2;
-        for (String line : data.getHoloLines()) {
+        List<String> reversed = new ArrayList<>(data.getHoloLines());
+        Collections.reverse(reversed);
+        for (String line : reversed) {
             holoLines.add(spawnArmorStand(line, location.clone().add(0, offset, 0)));
             offset += 0.3;
         }

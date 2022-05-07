@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.game.tasks;
 
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ public class ArenaGameEndedTask extends ArenaTask {
 
     public ArenaGameEndedTask(Arena arena) {
         super(arena);
+        arena.getPowerUps().forEach(PowerUp::remove);
         for (Player player : arena.getAlivePlayers()) {
             player.setAllowFlight(true);
             player.setFlying(true);
