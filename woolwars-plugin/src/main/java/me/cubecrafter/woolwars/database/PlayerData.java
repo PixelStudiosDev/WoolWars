@@ -17,8 +17,9 @@ public class PlayerData {
     private int gamesPlayed;
     private int kills;
     private int deaths;
-    private int placedBlocks;
+    private int placedWool;
     private int brokenBlocks;
+    private int powerUpsCollected;
     private String selectedKit;
 
 }

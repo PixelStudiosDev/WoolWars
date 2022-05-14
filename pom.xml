@@ -13,8 +13,8 @@
 
     <modules>
         <module>woolwars-plugin</module>
-        <module>woolwars-v1_8_R3</module>
         <module>woolwars-api</module>
+        <module>woolwars-v1_8_R3</module>
     </modules>
 
     <properties>

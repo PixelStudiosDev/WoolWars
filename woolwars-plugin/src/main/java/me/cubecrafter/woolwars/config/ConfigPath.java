@@ -14,6 +14,7 @@ public enum ConfigPath {
 
     PREFIX("prefix", WoolWars.getInstance().getFileManager().getMessages()),
     DISABLED_INTERACTION_BLOCKS("disabled-interaction-blocks", WoolWars.getInstance().getFileManager().getConfig()),
+    BLOCKED_COMMANDS("blocked-commands", WoolWars.getInstance().getFileManager().getConfig()),
     LOBBY_LOCATION("lobby-location", WoolWars.getInstance().getFileManager().getConfig());
 
     private final String path;

@@ -12,7 +12,6 @@
 
     <artifactId>woolwars-plugin</artifactId>
     <packaging>jar</packaging>
-    <version>${project.parent.version}</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

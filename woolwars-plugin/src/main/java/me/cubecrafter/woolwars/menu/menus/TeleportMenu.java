@@ -29,7 +29,7 @@ public class TeleportMenu extends Menu {
 
     @Override
     public int getRows() {
-        return 3;
+        return (int) Math.ceil(arena.getAlivePlayers().size() / 9);
     }
 
     @Override

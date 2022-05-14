@@ -18,7 +18,7 @@ public class Database {
     }
 
     private void createTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS player_data (uuid VARCHAR(36) NOT NULL PRIMARY KEY, name VARCHAR(100), wins INT(100), losses INT(100), games_played INT(100), kills INT(100), deaths INT(100), placed_blocks INT(100), broken_blocks INT(100), selected_kit VARCHAR(100))";
+        String sql = "CREATE TABLE IF NOT EXISTS player_data (uuid VARCHAR(36) NOT NULL PRIMARY KEY, name VARCHAR(100), wins INT(100), losses INT(100), games_played INT(100), kills INT(100), deaths INT(100), placed_wool INT(100), broken_blocks INT(100), powerups_collected INT(100), selected_kit VARCHAR(100))";
         try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ignored) {}
@@ -48,8 +48,9 @@ public class Database {
                 data.setGamesPlayed(resultSet.getInt("games_played"));
                 data.setKills(resultSet.getInt("kills"));
                 data.setDeaths(resultSet.getInt("deaths"));
-                data.setPlacedBlocks(resultSet.getInt("placed_blocks"));
+                data.setPlacedWool(resultSet.getInt("placed_wool"));
                 data.setBrokenBlocks(resultSet.getInt("broken_blocks"));
+                data.setPowerUpsCollected(resultSet.getInt("powerups_collected"));
                 data.setSelectedKit(resultSet.getString("selected_kit"));
             } catch (SQLException ignored) {}
         }
@@ -61,8 +62,8 @@ public class Database {
     }
 
     public void savePlayerData(PlayerData data) {
-        String update = "UPDATE player_data SET name = ?, wins = ?, losses = ?, games_played = ?, kills = ?, deaths = ?, placed_blocks = ?, broken_blocks = ?, selected_kit = ? WHERE uuid = ?";
-        String insert = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, placed_blocks, broken_blocks, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        String update = "UPDATE player_data SET name = ?, wins = ?, losses = ?, games_played = ?, kills = ?, deaths = ?, placed_blocks = ?, broken_blocks = ?, powerups_collected = ?, selected_kit = ? WHERE uuid = ?";
+        String insert = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, placed_blocks, broken_blocks, powerups_collected, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         if (hasPlayerData(data.getUuid())) {
             try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update)) {
                 preparedStatement.setString(1, Bukkit.getOfflinePlayer(data.getUuid()).getName());
@@ -71,10 +72,11 @@ public class Database {
                 preparedStatement.setInt(4, data.getGamesPlayed());
                 preparedStatement.setInt(5, data.getKills());
                 preparedStatement.setInt(6, data.getDeaths());
-                preparedStatement.setInt(7, data.getPlacedBlocks());
+                preparedStatement.setInt(7, data.getPlacedWool());
                 preparedStatement.setInt(8, data.getBrokenBlocks());
-                preparedStatement.setString(9, data.getSelectedKit());
-                preparedStatement.setString(10, data.getUuid().toString());
+                preparedStatement.setInt(9, data.getPowerUpsCollected());
+                preparedStatement.setString(10, data.getSelectedKit());
+                preparedStatement.setString(11, data.getUuid().toString());
                 preparedStatement.executeUpdate();
             } catch (SQLException ignored) {}
         } else {
@@ -86,8 +88,9 @@ public class Database {
                 preparedStatement.setInt(5, data.getGamesPlayed());
                 preparedStatement.setInt(6, data.getKills());
                 preparedStatement.setInt(7, data.getDeaths());
-                preparedStatement.setInt(8, data.getPlacedBlocks());
+                preparedStatement.setInt(8, data.getPlacedWool());
                 preparedStatement.setInt(9, data.getBrokenBlocks());
+                preparedStatement.setInt(10, data.getPowerUpsCollected());
                 preparedStatement.setString(10, data.getSelectedKit());
                 preparedStatement.executeUpdate();
             } catch (SQLException ignored) {}

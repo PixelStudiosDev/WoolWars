@@ -21,17 +21,14 @@ public class ArenaStartingTask extends ArenaTask {
     @Override
     public void onTimerEnd() {
         arena.assignTeams();
-        for (Team team : arena.getTeams()) {
-            team.setNameTags();
-            team.teleportToSpawn();
-        }
+        arena.getTeams().forEach(Team::setNameTags);
         arena.sendTitle(40, "&e&lPRE ROUND", "&7Select your kit!");
-        arena.setGameState(GameState.PRE_ROUND);
-        arena.sendMessage("&8&m&l---------------------------------------------------------");
-        arena.sendMessage("&c               &lWOOL WARS");
+        arena.sendMessage("&8&m--------------------------------------------------            ");
+        arena.sendMessage("&c               &lWOOL WARS                                      ");
         arena.sendMessage("&7Matches are best of &e" + arena.getMaxRounds());
         arena.sendMessage("&7Place your team's color wool in the &acenter &7to win the round!");
-        arena.sendMessage("&8&m---------------------------------------------------------");
+        arena.sendMessage("&8&m--------------------------------------------------            ");
+        arena.setGameState(GameState.PRE_ROUND);
     }
 
     @Override

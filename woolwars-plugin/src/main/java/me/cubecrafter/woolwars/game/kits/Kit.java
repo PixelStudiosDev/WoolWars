@@ -25,6 +25,7 @@ public class Kit {
     private final boolean defaultKit;
     private final Map<ItemStack, Integer> contents = new HashMap<>();
     private final ItemStack menuItem;
+    private final Ability ability;
     private final double cost;
 
     public Kit(String id, YamlConfiguration kitConfig) {
@@ -36,6 +37,7 @@ public class Kit {
         this.bootsEnabled = kitConfig.getBoolean("armor.boots");
         this.defaultKit = kitConfig.getBoolean("default-kit");
         this.cost = kitConfig.getDouble("cost");
+        this.ability = new Ability(kitConfig);
         String menuItemMaterial = kitConfig.getString("menu-item.material");
         String menuItemDisplayName = kitConfig.getString("menu-item.displayname");
         List<String> menuItemLore = kitConfig.getStringList("menu-item.lore");
@@ -61,6 +63,9 @@ public class Kit {
 
     public void addToPlayer(Player player, Team team) {
         if (team == null) return;
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+        player.sendMessage(TextUtil.color("&7Kit &b" + displayName + " &7selected!"));
         if (helmetEnabled) player.getInventory().setHelmet(new ItemBuilder("LEATHER_HELMET").setColor(team.getTeamColor().getColor()).build());
         if (chestplateEnabled) player.getInventory().setChestplate(new ItemBuilder("LEATHER_CHESTPLATE").setColor(team.getTeamColor().getColor()).build());
         if (leggingsEnabled) player.getInventory().setLeggings(new ItemBuilder("LEATHER_LEGGINGS").setColor(team.getTeamColor().getColor()).build());
@@ -80,6 +85,7 @@ public class Kit {
                 player.getInventory().setItem(entry.getValue(), entry.getKey());
             }
         }
+        player.getInventory().setItem(8, ability.getItem());
     }
 
 }

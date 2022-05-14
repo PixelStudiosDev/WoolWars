@@ -4,10 +4,12 @@ import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
+import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.menu.menus.TeleportMenu;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -22,14 +24,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.player.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ArenaListener implements Listener {
 
@@ -70,6 +81,9 @@ public class ArenaListener implements Listener {
         }
         if (((player.getHealth() - e.getFinalDamage()) <= 0)) {
             e.setCancelled(true);
+            arena.addDeaths(player, 1);
+            PlayerData data = ArenaUtil.getPlayerData(player);
+            data.setDeaths(data.getDeaths() + 1);
             Team playerTeam = arena.getTeamByPlayer(player);
             if (e instanceof EntityDamageByEntityEvent) {
                 if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Player)) return;
@@ -77,6 +91,7 @@ public class ArenaListener implements Listener {
                 Team damagerTeam = arena.getTeamByPlayer(damager);
                 arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName());
                 XSound.play(damager, "ENTITY_EXPERIENCE_ORB_PICKUP");
+                arena.getPlayingTask().addKill(damager);
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
                 arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7burned to death ");
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
@@ -98,6 +113,7 @@ public class ArenaListener implements Listener {
             if (arena.getAlivePlayers().size() == 0) {
                 arena.getPlayingTask().cancelTask();
                 arena.sendMessage("&cAll players died!");
+                arena.getPlayingTask().getRotatePowerUpsTask().cancel();
                 arena.setGameState(GameState.ROUND_OVER);
             }
         }
@@ -134,8 +150,8 @@ public class ArenaListener implements Listener {
             arena.removePlayer(player, false);
             ArenaUtil.joinRandom(player);
         }
-        if (ItemBuilder.hasTag(e.getItem(), "kit-item")) {
-            new KitsMenu(player).openMenu();
+        if (ItemBuilder.hasTag(e.getItem(), "ability-item")) {
+            ArenaUtil.getKitByPlayer(player).getAbility().use(player);
         }
     }
 
@@ -156,10 +172,12 @@ public class ArenaListener implements Listener {
                 player.setVelocity(player.getLocation().getDirection().setY(1));
                 XSound.play(player, "ENTITY_BAT_TAKEOFF");
             }
-            for (PowerUp powerUp : arena.getPowerUps()) {
+            for (PowerUp powerUp : arena.getPowerUps().stream().filter(PowerUp::isActive).collect(Collectors.toList())) {
                 double distance = player.getLocation().distance(powerUp.getLocation());
-                if (distance <= 1 && powerUp.isActive()) {
+                if (distance <= 1) {
                     powerUp.use(player);
+                    PlayerData data = ArenaUtil.getPlayerData(player);
+                    data.setPowerUpsCollected(data.getPowerUpsCollected() + 1);
                 }
             }
         }
@@ -183,6 +201,20 @@ public class ArenaListener implements Listener {
         }
     }
 
+    /*
+    @EventHandler
+    public void onProjectileShoot(ProjectileLaunchEvent e) {
+        if (!(e.getEntity().getShooter() instanceof Player)) return;
+        Player player = (Player) e.getEntity().getShooter();
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        if (!arena.getGameState().equals(GameState.PLAYING)) {
+            e.setCancelled(true);
+        }
+    }
+
+     */
+
     @EventHandler
     public void onSpectate(PlayerInteractEntityEvent e) {
         Player player = e.getPlayer();
@@ -202,6 +234,9 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
+        if (arena.getGameState().equals(GameState.PRE_ROUND)) {
+            new KitsMenu(player).openMenu();
+        }
         if (!arena.getDeadPlayers().contains(player)) return;
         if (player.getSpectatorTarget() == null) return;
         player.setGameMode(GameMode.ADVENTURE);

@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.game.listeners;
 
+import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.List;
 
@@ -41,6 +43,16 @@ public class ChatListener implements Listener {
             e.setFormat(TextUtil.color("&7{player_name}: {message}"
                     .replace("{player_name}", player.getDisplayName())
                     .replace("{message}", TextUtil.color(e.getMessage()))));
+        }
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent e) {
+        Player player = e.getPlayer();
+        if (player.hasPermission("woolwars.admin")) return;
+        if (ConfigPath.BLOCKED_COMMANDS.getAsStringList().stream().anyMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
+            e.setCancelled(true);
+            player.sendMessage(TextUtil.color("You can't use this command!"));
         }
     }
 

@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.menu.menus;
 
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
@@ -37,10 +38,9 @@ public class KitsMenu extends Menu {
         for (Kit kit : ArenaUtil.getKits()) {
             items.add(new MenuItem(index.next(), kit.getMenuItem()).addAction( e -> {
                 kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
-                player.sendMessage(TextUtil.color("&7Kit &b" + kit.getDisplayName() + " &7equipped!"));
-                ArenaUtil.getArenaByPlayer(player).getPreRoundTask().getKitSelected().add(player);
+                WoolWars.getInstance().getPlayerDataManager().getPlayerData(player).setSelectedKit(kit.getId());
                 closeMenu();
-            }, ClickType.LEFT, ClickType.RIGHT).setClickSound("UI_BUTTON_CLICK"));
+            }).setClickSound("UI_BUTTON_CLICK"));
         }
         addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,40,41,42,43,44));
         return items;

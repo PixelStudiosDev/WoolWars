@@ -5,6 +5,10 @@ disabled-interaction-blocks:
   - HOPPER
   - FURNACE
 
+blocked-commands:
+  - spawn
+  - msg
+
 mysql:
   enabled: false
   host: localhost

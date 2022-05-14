@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.game.tasks;
 
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
@@ -32,6 +33,8 @@ public class ArenaGameEndedTask extends ArenaTask {
         for (Player player : arena.getPlayers()) {
             player.getInventory().setItem(7, playAgainItem);
             player.getInventory().setItem(8, leaveItem);
+            PlayerData data = ArenaUtil.getPlayerData(player);
+            data.setGamesPlayed(data.getGamesPlayed() + 1);
         }
     }
 

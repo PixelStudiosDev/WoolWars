@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.utils;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.kits.Kit;
@@ -79,6 +80,14 @@ public class ArenaUtil {
 
     public Kit getKit(String id) {
         return WoolWars.getInstance().getKitManager().getKit(id);
+    }
+
+    public Kit getKitByPlayer(Player player) {
+        return WoolWars.getInstance().getKitManager().getKit(getPlayerData(player).getSelectedKit());
+    }
+
+    public PlayerData getPlayerData(Player player) {
+        return WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
     }
 
     public boolean isSpectating(Player player) {

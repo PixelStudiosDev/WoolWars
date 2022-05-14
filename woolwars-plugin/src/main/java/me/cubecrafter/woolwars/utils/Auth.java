@@ -25,7 +25,7 @@ import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Scanner;
 
-public class LicenseVerifier {
+public class Auth {
 
     private final Plugin plugin;
     private final String productKey;
@@ -34,7 +34,7 @@ public class LicenseVerifier {
     private static final String UNKNOWN = "unknown";
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
-    public LicenseVerifier(Plugin plugin, String licenseKey, String validationServer, String authorization) {
+    public Auth(Plugin plugin, String licenseKey, String validationServer, String authorization) {
         this.plugin = plugin;
         this.productKey = licenseKey;
         this.server = validationServer;

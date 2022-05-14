@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.tasks.*;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -137,7 +138,6 @@ public class Arena {
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
             GameScoreboard scoreboard = GameScoreboard.getScoreboard(player);
-            TextUtil.info("REMOVED TEAM PREFIX FOR PLAYER: " + player.getName());
             scoreboard.removeGamePrefix(playerTeam);
             playerTeam.removeMember(player);
         }
@@ -189,8 +189,6 @@ public class Arena {
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
         switch (gameState) {
-            case WAITING:
-                break;
             case STARTING:
                 startingTask = new ArenaStartingTask(this);
                 break;
@@ -222,6 +220,10 @@ public class Arena {
         setTimer(0);
         killEntities();
         deadPlayers.clear();
+        kills.clear();
+        deaths.clear();
+        placedBlocks.clear();
+        brokenBlocks.clear();
         setGameState(GameState.WAITING);
     }
 
@@ -303,10 +305,6 @@ public class Arena {
         return round == maxRounds;
     }
 
-    public boolean isExtraRound() {
-        return round > maxRounds;
-    }
-
     public void sendMessage(String msg) {
         getPlayers().forEach(player -> player.sendMessage(TextUtil.color(msg)));
     }
@@ -329,6 +327,22 @@ public class Arena {
             builder.append(team.getTeamColor().getChatColor()).append(team.getPoints());
         }
         return TextUtil.color(builder.toString());
+    }
+
+    public void addKills(Player player, int n) {
+        kills.merge(player, n, Integer::sum);
+    }
+
+    public void addDeaths(Player player, int n) {
+        deaths.merge(player, n, Integer::sum);
+    }
+
+    public void addPlacedBlocks(Player player, int n) {
+        placedBlocks.merge(player, n, Integer::sum);
+    }
+
+    public void addBrokenBlocks(Player player, int n) {
+        brokenBlocks.merge(player, n, Integer::sum);
     }
 
 }

@@ -2,14 +2,18 @@ package me.cubecrafter.woolwars.game.tasks;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -18,11 +22,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Getter
 public class ArenaPlayingTask extends ArenaTask {
 
-    @Getter private final BukkitTask rotatePowerUpsTask;
-    @Getter private final Map<Team, Integer> placedBlocks = new HashMap<>();
+    private final BukkitTask rotatePowerUpsTask;
+    private final Map<Team, Integer> placedBlocks = new HashMap<>();
     private final List<Block> jumpPads;
+
+    private final Map<Player, Integer> roundKills = new HashMap<>();
+    private final Map<Player, Integer> roundPlacedWool = new HashMap<>();
+    private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
 
     public ArenaPlayingTask(Arena arena) {
         super(arena);
@@ -32,7 +41,7 @@ public class ArenaPlayingTask extends ArenaTask {
 
     @Override
     public void execute() {
-        if (arena.getTimer() == 10 || arena.getTimer() <= 5) {
+        if ((arena.getTimer() <= 30 && arena.getTimer() % 10 == 0) || arena.getTimer() <= 5) {
             arena.sendMessage("&c{seconds} &7seconds left!".replace("{seconds}", String.valueOf(arena.getTimer())));
         }
         for (Block block : jumpPads) {
@@ -45,6 +54,12 @@ public class ArenaPlayingTask extends ArenaTask {
         checkWinners();
         placedBlocks.clear();
         rotatePowerUpsTask.cancel();
+        roundKills.forEach(arena::addKills);
+        roundBrokenBlocks.forEach(arena::addBrokenBlocks);
+        roundPlacedWool.forEach(arena::addPlacedBlocks);
+        roundKills.clear();
+        roundPlacedWool.clear();
+        roundBrokenBlocks.clear();
     }
 
     @Override
@@ -74,6 +89,7 @@ public class ArenaPlayingTask extends ArenaTask {
                 if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
                     cancelTask();
                     rotatePowerUpsTask.cancel();
+                    addWinsLossesStats(team);
                     arena.setGameState(GameState.GAME_ENDED);
                     return;
                 }
@@ -85,10 +101,12 @@ public class ArenaPlayingTask extends ArenaTask {
             Map.Entry<Team, Integer> bestTeam = placedBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
             // NO PLACED BLOCKS
             if (bestTeam == null) {
+                rotatePowerUpsTask.cancel();
                 arena.setGameState(GameState.ROUND_OVER);
                 // DRAW
             } else if (placedBlocks.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
                 sendRoundEndedMessages(null, true);
+                rotatePowerUpsTask.cancel();
                 arena.setGameState(GameState.ROUND_OVER);
                 // WINNER TEAM FOUND
             } else {
@@ -96,11 +114,16 @@ public class ArenaPlayingTask extends ArenaTask {
                 winner.addPoint();
                 sendRoundEndedMessages(winner, false);
                 if (winner.getPoints() == arena.getRequiredPoints()) {
+                    addWinsLossesStats(winner);
+                    rotatePowerUpsTask.cancel();
                     arena.setGameState(GameState.GAME_ENDED);
                 } else {
                     if (arena.isLastRound()) {
+                        addWinsLossesStats(winner);
+                        rotatePowerUpsTask.cancel();
                         arena.setGameState(GameState.GAME_ENDED);
                     } else {
+                        rotatePowerUpsTask.cancel();
                         arena.setGameState(GameState.ROUND_OVER);
                     }
                 }
@@ -109,20 +132,91 @@ public class ArenaPlayingTask extends ArenaTask {
     }
 
     private void sendRoundEndedMessages(Team winner, boolean draw) {
+        if (arena.isLastRound()) {
+            for (Team team : arena.getTeams()) {
+                if (team.equals(winner)) {
+
+                } else {
+
+                }
+            }
+        } else {
+            for (Player player : arena.getPlayers()) {
+                player.sendMessage(TextUtil.color("&8&m--------------------------------------------------"));
+                player.sendMessage(TextUtil.color("&e               Round #" + arena.getRound() + " stats"));
+                if (roundKills.get(player) != null) {
+                    player.sendMessage(TextUtil.color("&7Kills: " + roundKills.get(player)));
+                }
+                if (roundPlacedWool.get(player) != null) {
+                    player.sendMessage(TextUtil.color("&7Placed wool: " + roundPlacedWool.get(player)));
+                }
+                if (roundBrokenBlocks.get(player) != null) {
+                    player.sendMessage(TextUtil.color("&7Broken blocks: " + roundBrokenBlocks.get(player)));
+
+                }
+                player.sendMessage(TextUtil.color("&8&m--------------------------------------------------"));
+            }
+        }
+
+
         if (draw) {
-            arena.sendTitle(40, "&c&lDRAW", arena.getTeamPointsFormatted());
+            arena.sendTitle(40, arena.getTeamPointsFormatted(), "&e&lDRAW");
             arena.playSound("GHAST_MOAN");
             return;
         }
         for (Team team : arena.getTeams()) {
+            if (arena.isLastRound()) {
+                if (team.equals(winner)) {
+                    team.sendTitle(40, "&a&lVICTORY", "&6Your team was victorious!");
+                    team.playSound("ENTITY_PLAYER_LEVELUP");
+                } else {
+                    team.sendTitle(40, "&a&lDEFEAT", "&6Your team was defeated!");
+                    team.playSound("GHAST_MOAN");
+                }
+                continue;
+            }
             if (team.equals(winner)) {
-                team.sendTitle(40, "&a&lWINNER", arena.getTeamPointsFormatted());
+                team.sendTitle(40, arena.getTeamPointsFormatted(), "&e&lROUND WON");
                 team.playSound("ENTITY_PLAYER_LEVELUP");
             } else {
-                team.sendTitle(40, "&c&lLOSER", arena.getTeamPointsFormatted());
+                team.sendTitle(40, arena.getTeamPointsFormatted(), "&e&lROUND OVER");
                 team.playSound("GHAST_MOAN");
             }
         }
+    }
+
+    private void addWinsLossesStats(Team winner) {
+        for (Team team : arena.getTeams()) {
+            if (team.equals(winner)) {
+                for (Player player : team.getMembers()) {
+                    PlayerData data = ArenaUtil.getPlayerData(player);
+                    data.setWins(data.getWins() + 1);
+                }
+            } else {
+                for (Player player : team.getMembers()) {
+                    PlayerData data = ArenaUtil.getPlayerData(player);
+                    data.setLosses(data.getLosses() + 1);
+                }
+            }
+        }
+    }
+
+    public void addKill(Player player) {
+        roundKills.merge(player, 1, Integer::sum);
+        PlayerData data = ArenaUtil.getPlayerData(player);
+        data.setKills(data.getKills() + 1);
+    }
+
+    public void addPlacedWool(Player player) {
+        roundPlacedWool.merge(player, 1, Integer::sum);
+        PlayerData data = ArenaUtil.getPlayerData(player);
+        data.setPlacedWool(data.getPlacedWool() + 1);
+    }
+
+    public void addBrokenBlock(Player player) {
+        roundBrokenBlocks.merge(player, 1, Integer::sum);
+        PlayerData data = ArenaUtil.getPlayerData(player);
+        data.setBrokenBlocks(data.getBrokenBlocks() + 1);
     }
 
 }

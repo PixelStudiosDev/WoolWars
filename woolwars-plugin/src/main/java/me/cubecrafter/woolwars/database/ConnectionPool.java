@@ -40,7 +40,7 @@ public class ConnectionPool {
             if (!database.exists()) {
                 try {
                     database.createNewFile();
-                } catch(IOException ex) {
+                } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }

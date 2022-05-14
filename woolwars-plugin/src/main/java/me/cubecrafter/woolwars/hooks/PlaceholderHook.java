@@ -23,6 +23,11 @@ public class PlaceholderHook extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean persist() {
+        return true;
+    }
+
+    @Override
     public String onPlaceholderRequest(Player player, String params) {
         if (player == null || params == null) return null;
         PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
@@ -37,10 +42,12 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return String.valueOf(data.getKills());
             case "deaths":
                 return String.valueOf(data.getDeaths());
-            case "placed_blocks":
-                return String.valueOf(data.getPlacedBlocks());
+            case "placed_wool":
+                return String.valueOf(data.getPlacedWool());
             case "broken_blocks":
                 return String.valueOf(data.getBrokenBlocks());
+            case "powerups_collected":
+                return String.valueOf(data.getPowerUpsCollected());
             case "selected_kit":
                 return data.getSelectedKit();
         }

@@ -1,7 +1,8 @@
 package me.cubecrafter.woolwars.game.tasks;
 
-import lombok.Getter;
+import com.cryptomorin.xseries.messages.ActionBar;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.kits.Kit;
@@ -9,17 +10,11 @@ import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.ItemBuilder;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ArenaPreRoundTask extends ArenaTask {
-
-    @Getter private final Set<Player> kitSelected = new HashSet<>();
 
     public ArenaPreRoundTask(Arena arena) {
         super(arena);
@@ -28,11 +23,20 @@ public class ArenaPreRoundTask extends ArenaTask {
         arena.resetBlocks();
         arena.getTeams().forEach(Team::spawnBarrier);
         arena.respawnPlayers();
-        ItemStack kitItem = new ItemBuilder("CHEST").setDisplayName("&eSelect Kit").setTag("kit-item").build();
         for (Player player : arena.getPlayers()) {
             player.getInventory().setArmorContents(null);
             player.getInventory().clear();
-            player.getInventory().setItem(0, kitItem);
+            PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
+            String selected = data.getSelectedKit();
+            Kit kit;
+            if (selected == null) {
+                kit = ArenaUtil.getKits().stream().filter(Kit::isDefaultKit).findAny().orElse(null);
+                data.setSelectedKit(kit.getId());
+            } else {
+                kit = ArenaUtil.getKit(selected);
+            }
+            kit.addToPlayer(player, arena.getTeamByPlayer(player));
+            ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, TextUtil.color("&eShift to select a kit!"), () -> arena.getGameState().equals(GameState.PRE_ROUND));
         }
     }
 
@@ -52,16 +56,7 @@ public class ArenaPreRoundTask extends ArenaTask {
                 player.closeInventory();
             }
         });
-        if (arena.isLastRound()) {
-            arena.sendTitle(40, "&a&lROUND START", "&bLast Round!");
-        } else if (arena.isExtraRound()) {
-            arena.sendTitle(40, "&a&lROUND START", "&bExtra Round!");
-        } else {
-            arena.sendTitle(40, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
-        }
-        Kit defaultKit = ArenaUtil.getKits().stream().filter(Kit::isDefaultKit).findAny().orElse(null);
-        arena.getPlayers().stream().filter(player -> !kitSelected.contains(player)).forEach(player -> defaultKit.addToPlayer(player, arena.getTeamByPlayer(player)));
-        kitSelected.clear();
+        arena.sendTitle(40, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
         arena.playSound("BLOCK_ANVIL_LAND");
         arena.getTeams().forEach(Team::removeBarrier);
         arena.getPowerUps().forEach(PowerUp::spawn);

@@ -27,6 +27,7 @@ public class BlockPlaceListener implements Listener {
             if (e.getBlock().getType().toString().contains("WOOL")) {
                 e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
                 arena.getPlayingTask().addPlacedWool(team);
+                arena.getPlayingTask().addPlacedWool(player);
                 arena.getPlayingTask().checkWinners();
             }
         } else if (arena.getArenaRegion().isInside(e.getBlock().getLocation()) && !ArenaUtil.isBlockInTeamBase(e.getBlock(), arena) && e.getBlock().getType().toString().contains("GLASS")) {

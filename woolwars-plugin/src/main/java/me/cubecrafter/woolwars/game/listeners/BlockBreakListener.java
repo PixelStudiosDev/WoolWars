@@ -32,6 +32,7 @@ public class BlockBreakListener implements Listener {
                 }
             }
             e.getBlock().setType(Material.AIR);
+            arena.getPlayingTask().addBrokenBlock(player);
         } else if (!arena.getArenaPlacedBlocks().contains(e.getBlock())) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));

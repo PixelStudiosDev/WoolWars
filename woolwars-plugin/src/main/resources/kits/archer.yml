@@ -45,11 +45,12 @@ items:
     slot: 5
 ability:
   type: STEP_BACK
-  slot: 9
-  material: BLAZE_POWDER
-  amount: 1
-  displayname: "&eKeystone Ability: {ability}"
-  lore: []
+  item:
+    slot: 9
+    material: BLAZE_POWDER
+    amount: 1
+    displayname: "&eKeystone Ability: {ability}"
+    lore: []
 menu-item:
   material: WHITE_WOOL
   displayname: "Archer Kit"
