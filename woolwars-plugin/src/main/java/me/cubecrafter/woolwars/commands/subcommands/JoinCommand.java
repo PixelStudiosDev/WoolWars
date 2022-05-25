@@ -1,8 +1,8 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.game.arena.GameState;
 import me.cubecrafter.woolwars.game.arena.Arena;
+import me.cubecrafter.woolwars.game.arena.ArenaState;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class JoinCommand implements SubCommand {
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
         if (args.length != 2) return null;
-        return ArenaUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).map(Arena::getId).collect(Collectors.toList());
+        return ArenaUtil.getArenas().stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).map(Arena::getId).collect(Collectors.toList());
     }
 
     @Override

@@ -2,11 +2,7 @@ package me.cubecrafter.woolwars.commands;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.commands.subcommands.ForceStartCommand;
-import me.cubecrafter.woolwars.commands.subcommands.HelpCommand;
-import me.cubecrafter.woolwars.commands.subcommands.JoinCommand;
-import me.cubecrafter.woolwars.commands.subcommands.LeaveCommand;
-import me.cubecrafter.woolwars.commands.subcommands.MenuCommand;
+import me.cubecrafter.woolwars.commands.subcommands.*;
 import me.cubecrafter.woolwars.menu.menus.GameMenu;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
@@ -28,7 +24,7 @@ public class CommandManager implements TabExecutor {
     private final Set<SubCommand> subCommands = new HashSet<>();
 
     public CommandManager() {
-        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new MenuCommand(), new ForceStartCommand()));
+        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new MenuCommand(), new ForceStartCommand(), new ReloadCommand()));
         PluginCommand command = WoolWars.getInstance().getCommand("woolwars");
         command.setExecutor(this);
         command.setTabCompleter(this);

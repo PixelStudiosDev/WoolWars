@@ -1,7 +1,8 @@
 package me.cubecrafter.woolwars.game.tasks;
 
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.ArenaState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.team.Team;
 
 public class ArenaStartingTask extends ArenaTask {
@@ -28,7 +29,8 @@ public class ArenaStartingTask extends ArenaTask {
         arena.sendMessage("&7Matches are best of &e" + arena.getMaxRounds());
         arena.sendMessage("&7Place your team's color wool in the &acenter &7to win the round!");
         arena.sendMessage("&8&m--------------------------------------------------            ");
-        arena.setGameState(GameState.PRE_ROUND);
+        arena.setArenaState(ArenaState.PLAYING);
+        arena.setGamePhase(GamePhase.PRE_ROUND);
     }
 
     @Override

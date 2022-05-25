@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.Color;
-import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +32,7 @@ public class ItemBuilder {
 
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(TextUtil.format(lore));
+        meta.setLore(TextUtil.color(TextUtil.format(lore)));
         item.setItemMeta(meta);
         return this;
     }
@@ -80,15 +80,31 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        ItemMeta meta = item.getItemMeta();
+        meta.spigot().setUnbreakable(unbreakable);
+        item.setItemMeta(meta);
+        return this;
+    }
+
     public ItemStack build(){
+        ItemMeta meta = item.getItemMeta();
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        item.setItemMeta(meta);
         return item;
     }
 
-    public static boolean hasTag(ItemStack item, String key) {
+    public static boolean hasTag(ItemStack item, String tag) {
         if (item == null) return false;
         String tagValue = WoolWars.getInstance().getNms().getTag(item, "woolwars");
         if (tagValue == null) return false;
-        return tagValue.equals(key);
+        return tagValue.equals(tag);
+    }
+
+    public static ItemStack build(ConfigurationSection section) {
+        ItemBuilder builder = new ItemBuilder(section.getString("material"));
+        builder.setDisplayName(section.getString("displayname"));
+        return builder.build();
     }
 
 }

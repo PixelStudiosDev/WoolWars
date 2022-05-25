@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum ArenaState {
+public enum GamePhase {
 
-    WAITING("Waiting"),
-    STARTING("Starting"),
-    PLAYING("Playing"),
-    RESTARTING("Restarting");
+    NONE("None"),
+    PRE_ROUND("Pre Round"),
+    ACTIVE_ROUND("Active Round"),
+    ROUND_OVER("Round Over"),
+    GAME_ENDED("Game Ended");
 
     @Getter private final String name;
 

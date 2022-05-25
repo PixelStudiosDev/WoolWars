@@ -1,6 +1,6 @@
 scoreboard:
   title: '&c&lWOOL WARS'
-  lobby-board:
+  lobby:
     - ''
     - 'lobby scoreboard1'
     - 'lobby scoreboard2'
@@ -8,7 +8,7 @@ scoreboard:
     - 'lobby scoreboard4'
     - ''
     - 'www.cubecrafter.com'
-  waiting-board:
+  waiting:
     - ''
     - 'waiting scoreboard1'
     - 'waiting scoreboard2'
@@ -16,7 +16,7 @@ scoreboard:
     - 'waiting scoreboard4'
     - ''
     - 'www.cubecrafter.com'
-  starting-board:
+  starting:
     - ''
     - 'starting scoreboard1'
     - 'starting scoreboard2'
@@ -24,7 +24,7 @@ scoreboard:
     - 'starting scoreboard4'
     - ''
     - 'www.cubecrafter.com'
-  ingame-board:
+  playing:
     - ''
     - 'ingame scoreboard1'
     - 'ingame scoreboard2'

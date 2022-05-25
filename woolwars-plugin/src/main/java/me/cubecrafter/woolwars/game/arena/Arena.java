@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
-import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.tasks.*;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -43,20 +42,19 @@ public class Arena {
     private final List<Block> arenaPlacedBlocks = new ArrayList<>();
     private final List<Team> teams = new ArrayList<>();
     private final List<PowerUp> powerUps = new ArrayList<>();
-
     private final Map<Player, Integer> kills = new HashMap<>();
     private final Map<Player, Integer> deaths = new HashMap<>();
     private final Map<Player, Integer> placedBlocks = new HashMap<>();
     private final Map<Player, Integer> brokenBlocks = new HashMap<>();
-
-    private final Cuboid blocksRegion;
+    private final Cuboid woolRegion;
     private final Cuboid arenaRegion;
     private ArenaStartingTask startingTask;
     private ArenaPlayingTask playingTask;
     private ArenaPreRoundTask preRoundTask;
     private ArenaRoundOverTask roundOverTask;
     private ArenaGameEndedTask gameEndedTask;
-    private GameState gameState = GameState.WAITING;
+    private GamePhase gamePhase = GamePhase.NONE;
+    private ArenaState arenaState = ArenaState.WAITING;
     @Setter private int round = 0;
     @Setter private int timer = 0;
 
@@ -81,7 +79,7 @@ public class Arena {
         }
         Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point1"));
         Location point2 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point2"));
-        blocksRegion = new Cuboid(point1, point2);
+        woolRegion = new Cuboid(point1, point2);
         Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
         Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
         arenaRegion = new Cuboid(point3, point4);
@@ -94,11 +92,11 @@ public class Arena {
     }
 
     public void addPlayer(Player player) {
-        if (getPlayers().contains(player)) {
+        if (players.contains(player)) {
             player.sendMessage(TextUtil.color("&cYou are already in this game!"));
             return;
         }
-        if (!getGameState().equals(GameState.WAITING) && !getGameState().equals(GameState.STARTING)) {
+        if (!arenaState.equals(ArenaState.WAITING) && !arenaState.equals(ArenaState.STARTING)) {
             player.sendMessage(TextUtil.color("&cThe game is already started!"));
             return;
         }
@@ -107,7 +105,6 @@ public class Arena {
             return;
         }
         players.add(player);
-        XSound.play(player, "ENTITY_CHICKEN_EGG");
         player.teleport(lobbyLocation);
         player.setGameMode(GameMode.SURVIVAL);
         player.setFoodLevel(20);
@@ -124,13 +121,13 @@ public class Arena {
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
                 .replace("{maxplayers}", String.valueOf(getTeams().size() * getMaxPlayersPerTeam()))));
-        if (getGameState().equals(GameState.WAITING) && getPlayers().size() >= getMinPlayers()) {
-            setGameState(GameState.STARTING);
+        if (arenaState.equals(ArenaState.WAITING) && getPlayers().size() >= getMinPlayers()) {
+            setArenaState(ArenaState.STARTING);
         }
     }
 
     public void forceStart() {
-        if (gameState.equals(GameState.WAITING)) setGameState(GameState.STARTING);
+        if (arenaState.equals(ArenaState.WAITING)) setArenaState(ArenaState.STARTING);
     }
 
     public void removePlayer(Player player, boolean teleportToLobby) {
@@ -151,7 +148,7 @@ public class Arena {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         if (teleportToLobby) player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
         ArenaUtil.showLobbyPlayers(player);
-        if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
+        if (arenaState.equals(ArenaState.WAITING) || arenaState.equals(ArenaState.STARTING)) {
             sendMessage("&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
                     .replace("{player}", player.getName())
                     .replace("{currentplayers}", String.valueOf(players.size()))
@@ -159,14 +156,14 @@ public class Arena {
         } else {
             sendMessage("&c{player} &7has left!".replace("{player}", player.getDisplayName()));
         }
-        if (getGameState().equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
+        if (arenaState.equals(ArenaState.STARTING) && getPlayers().size() < getMinPlayers()) {
             sendMessage(TextUtil.color("&cNot enough players! Countdown stopped!"));
             startingTask.cancelTask();
-            setGameState(GameState.WAITING);
+            setArenaState(ArenaState.WAITING);
         }
-        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && !gameState.equals(GameState.GAME_ENDED) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
+        if (!arenaState.equals(ArenaState.WAITING) && !arenaState.equals(ArenaState.STARTING) && !arenaState.equals(ArenaState.RESTARTING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
             TextUtil.info("Not enough players in game " + id + ". Restarting...");
-            setGameState(GameState.RESTARTING);
+            setArenaState(ArenaState.RESTARTING);
         }
     }
 
@@ -186,16 +183,13 @@ public class Arena {
         players.clear();
     }
 
-    public void setGameState(GameState gameState) {
-        this.gameState = gameState;
-        switch (gameState) {
-            case STARTING:
-                startingTask = new ArenaStartingTask(this);
-                break;
+    public void setGamePhase(GamePhase gamePhase) {
+        this.gamePhase = gamePhase;
+        switch (gamePhase) {
             case PRE_ROUND:
                 preRoundTask = new ArenaPreRoundTask(this);
                 break;
-            case PLAYING:
+            case ACTIVE_ROUND:
                 playingTask = new ArenaPlayingTask(this);
                 break;
             case ROUND_OVER:
@@ -203,6 +197,15 @@ public class Arena {
                 break;
             case GAME_ENDED:
                 gameEndedTask = new ArenaGameEndedTask(this);
+                break;
+        }
+    }
+
+    public void setArenaState(ArenaState arenaState) {
+        this.arenaState = arenaState;
+        switch (arenaState) {
+            case STARTING:
+                startingTask = new ArenaStartingTask(this);
                 break;
             case RESTARTING:
                 restart();
@@ -224,7 +227,8 @@ public class Arena {
         deaths.clear();
         placedBlocks.clear();
         brokenBlocks.clear();
-        setGameState(GameState.WAITING);
+        setGamePhase(GamePhase.NONE);
+        setArenaState(ArenaState.WAITING);
     }
 
     public void assignTeams() {
@@ -278,7 +282,7 @@ public class Arena {
         arenaPlacedBlocks.forEach(block -> block.setType(Material.AIR));
         arenaPlacedBlocks.clear();
         Random random = new Random();
-        blocksRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
+        woolRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
     }
 
     public void respawnPlayers() {
@@ -286,6 +290,7 @@ public class Arena {
             player.setGameMode(GameMode.SURVIVAL);
             player.setFlying(false);
             player.setAllowFlight(false);
+            player.setHealth(20);
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         }
         deadPlayers.clear();

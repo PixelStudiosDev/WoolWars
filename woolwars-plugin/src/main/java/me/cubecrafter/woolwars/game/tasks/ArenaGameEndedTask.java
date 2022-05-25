@@ -1,8 +1,10 @@
 package me.cubecrafter.woolwars.game.tasks;
 
 import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.ArenaState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -34,7 +36,7 @@ public class ArenaGameEndedTask extends ArenaTask {
             player.getInventory().setItem(7, playAgainItem);
             player.getInventory().setItem(8, leaveItem);
             PlayerData data = ArenaUtil.getPlayerData(player);
-            data.setGamesPlayed(data.getGamesPlayed() + 1);
+            data.setStatistic(StatisticType.GAMES_PLAYED, data.getStatistic(StatisticType.GAMES_PLAYED) + 1);
         }
     }
 
@@ -45,7 +47,7 @@ public class ArenaGameEndedTask extends ArenaTask {
 
     @Override
     public void onTimerEnd() {
-        arena.setGameState(GameState.RESTARTING);
+        arena.setArenaState(ArenaState.RESTARTING);
     }
 
     @Override

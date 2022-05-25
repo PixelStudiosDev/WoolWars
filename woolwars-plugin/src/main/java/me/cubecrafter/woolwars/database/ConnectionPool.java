@@ -14,11 +14,7 @@ public class ConnectionPool {
 
     private final YamlConfiguration config = WoolWars.getInstance().getFileManager().getConfig();
     private HikariDataSource dataSource;
-    private final String host;
-    private final String port;
-    private final String database;
-    private final String username;
-    private final String password;
+    private final String host, port, database, username, password;
     private final boolean useSSL;
 
     public ConnectionPool() {

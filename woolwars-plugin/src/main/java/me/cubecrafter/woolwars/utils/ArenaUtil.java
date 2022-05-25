@@ -5,7 +5,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.ArenaState;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -107,7 +107,7 @@ public class ArenaUtil {
     }
 
     public void joinRandom(Player player) {
-        List<Arena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
+        List<Arena> available = getArenas().stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
             return;

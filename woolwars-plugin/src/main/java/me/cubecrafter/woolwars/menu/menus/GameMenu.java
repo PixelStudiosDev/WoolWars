@@ -44,7 +44,7 @@ public class GameMenu extends Menu {
             closeMenu();
         }).setClickSound("UI_BUTTON_CLICK"));
 
-        items.add(new MenuItem(41, new ItemBuilder("PAPER").setDisplayName("&aStatistics").setLore(Arrays.asList("")).build()).addAction(e -> {
+        items.add(new MenuItem(41, new ItemBuilder("PAPER").setDisplayName("&aStatistics").setLore(Arrays.asList("&eClick to view your stats!")).build()).addAction(e -> {
             new StatsMenu(player).openMenu();
         }).setClickSound("UI_BUTTON_CLICK"));
 

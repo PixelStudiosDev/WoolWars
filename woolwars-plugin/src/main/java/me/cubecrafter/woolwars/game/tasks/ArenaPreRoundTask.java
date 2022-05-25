@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.messages.ActionBar;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -36,7 +36,7 @@ public class ArenaPreRoundTask extends ArenaTask {
                 kit = ArenaUtil.getKit(selected);
             }
             kit.addToPlayer(player, arena.getTeamByPlayer(player));
-            ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, TextUtil.color("&eShift to select a kit!"), () -> arena.getGameState().equals(GameState.PRE_ROUND));
+            ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, TextUtil.color("&eShift to select a kit!"), () -> arena.getGamePhase().equals(GamePhase.PRE_ROUND));
         }
     }
 
@@ -60,12 +60,12 @@ public class ArenaPreRoundTask extends ArenaTask {
         arena.playSound("BLOCK_ANVIL_LAND");
         arena.getTeams().forEach(Team::removeBarrier);
         arena.getPowerUps().forEach(PowerUp::spawn);
-        for (Block block : arena.getBlocksRegion().getBlocks()) {
+        for (Block block : arena.getWoolRegion().getBlocks()) {
             if (block.hasMetadata("woolwars")) {
                 block.removeMetadata("woolwars", WoolWars.getInstance());
             }
         }
-        arena.setGameState(GameState.PLAYING);
+        arena.setGamePhase(GamePhase.ACTIVE_ROUND);
     }
 
     @Override

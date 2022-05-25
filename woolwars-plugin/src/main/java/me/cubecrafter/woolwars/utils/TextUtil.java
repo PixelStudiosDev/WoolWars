@@ -1,9 +1,11 @@
 package me.cubecrafter.woolwars.utils;
 
+import com.cryptomorin.xseries.XPotion;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.team.Team;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,6 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,14 +73,14 @@ public class TextUtil {
 
     public String format(String s, Arena arena, Player player) {
         PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
-        s = s.replace("{wins}", String.valueOf(data.getWins()));
+        s = s.replace("{wins}", String.valueOf(data.getStatistic(StatisticType.WINS)));
         String parsed = format(s)
                         .replace("{time}", arena.getTimerFormatted())
                         .replace("{id}", arena.getId())
                         .replace("{displayname}", arena.getDisplayName())
                         .replace("{round}", String.valueOf(arena.getRound()))
                         .replace("{group}", arena.getGroup())
-                        .replace("{state}", arena.getGameState().getName())
+                        .replace("{state}", arena.getGamePhase().getName())
                         .replace("{required_points}", String.valueOf(arena.getRequiredPoints()))
                         .replace("{players}", String.valueOf(arena.getPlayers().size()))
                         .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
@@ -115,6 +119,15 @@ public class TextUtil {
         if (WoolWars.getInstance().isPAPIEnabled()) {
             s = PlaceholderAPI.setPlaceholders(player, s);
         }
+        PlayerData data = ArenaUtil.getPlayerData(player);
+        s = s.replace("{wins}", String.valueOf(data.getStatistic(StatisticType.WINS)))
+                .replace("{losses}", String.valueOf(data.getStatistic(StatisticType.LOSSES)))
+                .replace("{games_played}", String.valueOf(data.getStatistic(StatisticType.GAMES_PLAYED)))
+                .replace("{kills}", String.valueOf(data.getStatistic(StatisticType.KILLS)))
+                .replace("{deaths}", String.valueOf(data.getStatistic(StatisticType.DEATHS)))
+                .replace("{placed_wool}", String.valueOf(data.getStatistic(StatisticType.PLACED_WOOL)))
+                .replace("{broken_blocks}", String.valueOf(data.getStatistic(StatisticType.BROKEN_BLOCKS)))
+                .replace("{powerups_collected}", String.valueOf(data.getStatistic(StatisticType.POWERUPS_COLLECTED)));
         return format(s);
     }
 
@@ -142,6 +155,14 @@ public class TextUtil {
     public String getCurrentDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
         return dateFormat.format(new Date());
+    }
+
+    public PotionEffect getEffect(String serialized) {
+        String[] effect = serialized.split(",");
+        PotionEffectType type = XPotion.matchXPotion(effect[0]).get().getPotionEffectType();
+        int duration = Integer.parseInt(effect[1]);
+        int amplifier = Integer.parseInt(effect[2]);
+        return new PotionEffect(type, duration, amplifier, false, false);
     }
 
 }

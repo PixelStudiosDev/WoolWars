@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.game.tasks;
 
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 
 public class ArenaRoundOverTask extends ArenaTask {
@@ -18,7 +18,7 @@ public class ArenaRoundOverTask extends ArenaTask {
 
     @Override
     public void onTimerEnd() {
-        arena.setGameState(GameState.PRE_ROUND);
+        arena.setGamePhase(GamePhase.PRE_ROUND);
     }
 
     @Override

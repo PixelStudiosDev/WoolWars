@@ -42,28 +42,16 @@ public class Auth {
     }
 
     public boolean verify() {
-        System.out.println("--------------------> Login <--------------------");
-        System.out.println(" |- Verifying your license...");
-        System.out.println(" ");
+        TextUtil.info("Validating license...");
         String[] respo = isValid();
         if (respo[0].equals("2") && Boolean.parseBoolean(respo[3])) {
-            System.out.println(" |- Your license is valid.");
-            System.out.println(" |- Code: " + respo[2]);
-            System.out.println("-------------------------------------------------");
+            TextUtil.info("Your license is valid.");
             return Boolean.parseBoolean(respo[3]);
         } else if (respo[0].equals("3") && Boolean.parseBoolean(respo[3]) && Boolean.parseBoolean(respo[3])) {
-            System.out.println(" |- Your license is valid, but nms is outdated.");
-            System.out.println(" ");
-            System.out.println(" |- Your nms: " + plugin.getDescription().getVersion());
-            System.out.println(" |- Latest nms: " + respo[1].split("#")[1]);
-            System.out.println(" |- Code: " + respo[2]);
-            System.out.println("-------------------------------------------------");
+            TextUtil.info("Your license is valid. New version found: " + respo[1].split("#")[1] + " Your version: " + plugin.getDescription().getVersion());
             return Boolean.parseBoolean(respo[3]);
         } else {
-            System.out.println(" |- Your license is invalid.");
-            System.out.println(" ");
-            System.out.println(" |- Reason: " + respo[1]);
-            System.out.println("-------------------------------------------------");
+            TextUtil.info("Your license is invalid. Disabling...");
             return Boolean.parseBoolean(respo[3]);
         }
     }

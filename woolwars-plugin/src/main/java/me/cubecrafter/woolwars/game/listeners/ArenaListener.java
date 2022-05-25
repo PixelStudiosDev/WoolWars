@@ -5,11 +5,12 @@ import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.ArenaState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
-import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.menu.menus.TeleportMenu;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -24,16 +25,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -65,7 +58,7 @@ public class ArenaListener implements Listener {
             return;
         }
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (!arena.getGameState().equals(GameState.PLAYING) || arena.getDeadPlayers().contains(player)) {
+        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             player.setFireTicks(0);
             player.setHealth(20);
             e.setCancelled(true);
@@ -83,7 +76,7 @@ public class ArenaListener implements Listener {
             e.setCancelled(true);
             arena.addDeaths(player, 1);
             PlayerData data = ArenaUtil.getPlayerData(player);
-            data.setDeaths(data.getDeaths() + 1);
+            data.setStatistic(StatisticType.DEATHS, data.getStatistic(StatisticType.DEATHS) + 1);
             Team playerTeam = arena.getTeamByPlayer(player);
             if (e instanceof EntityDamageByEntityEvent) {
                 if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Player)) return;
@@ -114,7 +107,7 @@ public class ArenaListener implements Listener {
                 arena.getPlayingTask().cancelTask();
                 arena.sendMessage("&cAll players died!");
                 arena.getPlayingTask().getRotatePowerUpsTask().cancel();
-                arena.setGameState(GameState.ROUND_OVER);
+                arena.setGamePhase(GamePhase.ROUND_OVER);
             }
         }
     }
@@ -133,7 +126,7 @@ public class ArenaListener implements Listener {
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            for (String material : ConfigPath.DISABLED_INTERACTION_BLOCKS.getAsStringList()) {
+            for (String material : ConfigPath.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
                 if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     e.setCancelled(true);
                 }
@@ -160,12 +153,12 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
+        if (arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)) {
             if (player.getLocation().getBlock().getType().equals(Material.LAVA) || player.getLocation().getBlock().getType().equals(Material.STATIONARY_LAVA)) {
                 player.teleport(arena.getLobbyLocation());
                 XSound.play(player, "ENTITY_ENDERMAN_TELEPORT");
             }
-        } else if (arena.getGameState().equals(GameState.PLAYING) && !arena.getDeadPlayers().contains(player)) {
+        } else if (arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) && !arena.getDeadPlayers().contains(player)) {
             Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
             if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial())) {
                 jumping.add(player);
@@ -177,7 +170,7 @@ public class ArenaListener implements Listener {
                 if (distance <= 1) {
                     powerUp.use(player);
                     PlayerData data = ArenaUtil.getPlayerData(player);
-                    data.setPowerUpsCollected(data.getPowerUpsCollected() + 1);
+                    data.setStatistic(StatisticType.POWERUPS_COLLECTED, data.getStatistic(StatisticType.POWERUPS_COLLECTED) + 1);
                 }
             }
         }
@@ -191,29 +184,22 @@ public class ArenaListener implements Listener {
     }
 
     @EventHandler
+    public void onExplosion(EntityExplodeEvent e) {
+        if (ArenaUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInside(e.getLocation()))) {
+            e.blockList().clear();
+        }
+    }
+
+    @EventHandler
     public void onShoot(EntityShootBowEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         Player player = (Player) e.getEntity();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (!arena.getGameState().equals(GameState.PLAYING)) {
+        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) {
             e.setCancelled(true);
         }
     }
-
-    /*
-    @EventHandler
-    public void onProjectileShoot(ProjectileLaunchEvent e) {
-        if (!(e.getEntity().getShooter() instanceof Player)) return;
-        Player player = (Player) e.getEntity().getShooter();
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (arena == null) return;
-        if (!arena.getGameState().equals(GameState.PLAYING)) {
-            e.setCancelled(true);
-        }
-    }
-
-     */
 
     @EventHandler
     public void onSpectate(PlayerInteractEntityEvent e) {
@@ -234,7 +220,7 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (arena.getGameState().equals(GameState.PRE_ROUND)) {
+        if (arena.getGamePhase().equals(GamePhase.PRE_ROUND)) {
             new KitsMenu(player).openMenu();
         }
         if (!arena.getDeadPlayers().contains(player)) return;

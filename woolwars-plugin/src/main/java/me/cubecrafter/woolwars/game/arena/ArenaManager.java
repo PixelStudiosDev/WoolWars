@@ -43,7 +43,7 @@ public class ArenaManager {
     }
 
     public void disableArenas() {
-        ArenaUtil.getArenas().forEach(arena -> arena.setGameState(GameState.RESTARTING));
+        ArenaUtil.getArenas().forEach(arena -> arena.setArenaState(ArenaState.RESTARTING));
     }
 
 }

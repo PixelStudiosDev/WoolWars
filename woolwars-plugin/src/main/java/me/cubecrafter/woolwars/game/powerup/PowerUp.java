@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.game.powerup;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
 import me.cubecrafter.woolwars.game.arena.Arena;
@@ -10,7 +11,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Skull;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.EulerAngle;
 
@@ -41,14 +41,14 @@ public class PowerUp {
             player.getInventory().addItem(item);
         }
         for (PotionEffect effect : data.getEffects()) {
-            player.addPotionEffect(effect);
+            player.addPotionEffect(effect, true);
         }
     }
 
     public void spawn() {
         data = PowerUpData.getRandom();
         armorStand = spawnArmorStand(null, location);
-        if (data.getDisplayedItem().getType().toString().equals("PLAYER_HEAD") || data.getDisplayedItem().getType().toString().equals("SKULL_ITEM")) {
+        if (XMaterial.PLAYER_HEAD.parseMaterial().equals(data.getDisplayedItem().getType())) {
             armorStand.getEquipment().setHelmet(data.getDisplayedItem());
         } else {
             armorStand.getEquipment().setItemInHand(data.getDisplayedItem());

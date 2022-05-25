@@ -11,17 +11,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.List;
-
 public class ScoreboardHandler implements Listener, Runnable {
 
-    private final YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
-    private final List<String> lobbyLines = TextUtil.color(messages.getStringList("scoreboard.lobby-board"));
-    private final List<String> waitingLines =  TextUtil.color(messages.getStringList("scoreboard.waiting-board"));
-    private final List<String> startingLines = TextUtil.color(messages.getStringList("scoreboard.starting-board"));
-    private final List<String> preRoundLines = TextUtil.color(messages.getStringList("scoreboard.preround-board"));
-    private final List<String> playingLines = TextUtil.color(messages.getStringList("scoreboard.ingame-board"));
-    private final String title = TextUtil.color(messages.getString("scoreboard.title"));
+    private YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
     private final BukkitTask updateTask;
 
     public ScoreboardHandler() {
@@ -47,29 +39,23 @@ public class ScoreboardHandler implements Listener, Runnable {
             scoreboard = GameScoreboard.getScoreboard(player);
         } else {
             scoreboard = GameScoreboard.createScoreboard(player);
-            scoreboard.setTitle(title);
+            scoreboard.setTitle(TextUtil.color(messages.getString("scoreboard.title")));
         }
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
-            switch (arena.getGameState()) {
+            switch (arena.getArenaState()) {
                 case WAITING:
-                    scoreboard.setLines(TextUtil.format(waitingLines, arena, player));
-                    break;
-                case PRE_ROUND:
-                    scoreboard.setLines(TextUtil.format(preRoundLines, arena, player));
+                    scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.waiting")), arena, player));
                     break;
                 case STARTING:
-                    scoreboard.setLines(TextUtil.format(startingLines, arena, player));
+                    scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.starting")), arena, player));
                     break;
-                case ROUND_OVER:
-                case RESTARTING:
-                case GAME_ENDED:
                 case PLAYING:
-                    scoreboard.setLines(TextUtil.format(playingLines, arena, player));
+                    scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.playing")), arena, player));
                     break;
             }
         } else {
-            scoreboard.setLines(TextUtil.format(lobbyLines));
+            scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.lobby")), player));
         }
     }
 
@@ -85,6 +71,10 @@ public class ScoreboardHandler implements Listener, Runnable {
         for (Player player : Bukkit.getOnlinePlayers()) {
             GameScoreboard.removeScoreboard(player);
         }
+    }
+
+    public void reload() {
+        messages = WoolWars.getInstance().getFileManager().getMessages();
     }
 
 }

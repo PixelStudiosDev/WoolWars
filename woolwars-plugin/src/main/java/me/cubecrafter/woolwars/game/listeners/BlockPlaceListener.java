@@ -2,7 +2,7 @@ package me.cubecrafter.woolwars.game.listeners;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -19,10 +19,10 @@ public class BlockPlaceListener implements Listener {
         Player player = e.getPlayer();
         if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (!arena.getGameState().equals(GameState.PLAYING)) {
+        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
-        } else if (arena.getBlocksRegion().isInside(e.getBlock().getLocation())) {
+        } else if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
             Team team = arena.getTeamByPlayer(player);
             if (e.getBlock().getType().toString().contains("WOOL")) {
                 e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));

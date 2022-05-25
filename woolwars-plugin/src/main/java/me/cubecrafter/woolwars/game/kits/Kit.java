@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class Kit {
     private final Map<ItemStack, Integer> contents = new HashMap<>();
     private final ItemStack menuItem;
     private final Ability ability;
+    private final List<PotionEffect> persistentEffects = new ArrayList<>();
     private final double cost;
 
     public Kit(String id, YamlConfiguration kitConfig) {
@@ -50,11 +52,7 @@ public class Kit {
             int slot = kitConfig.getInt("items." + item + ".slot");
             PotionEffect potionEffect = null;
             if (kitConfig.isSet("items." + item + ".effect") && material.contains("POTION")) {
-                String[] effect = kitConfig.getString("items." + item + ".effect").split(":");
-                PotionEffectType type = XPotion.matchXPotion(effect[0]).get().getPotionEffectType();
-                int amplifier = Integer.parseInt(effect[1]);
-                int duration = Integer.parseInt(effect[2]);
-                potionEffect = new PotionEffect(type, duration, amplifier, false, false);
+                potionEffect = TextUtil.getEffect(kitConfig.getString("items." + item + ".effect"));
             }
             ItemStack created = new ItemBuilder(material).setAmount(amount).setDisplayName(displayName).setLore(lore).setPotionEffect(potionEffect).build();
             contents.put(created, slot);

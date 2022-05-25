@@ -28,7 +28,7 @@ public abstract class Menu implements InventoryHolder {
         player.openInventory(getInventory());
         if (update()) {
             updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> {
-                if (player.getOpenInventory() == null) updateTask.cancel();
+                if (player.getOpenInventory() == null || !player.isOnline()) updateTask.cancel();
                 updateMenu();
             }, 0L, 20L);
         }

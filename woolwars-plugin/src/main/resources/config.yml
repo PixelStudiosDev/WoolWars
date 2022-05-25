@@ -1,14 +1,27 @@
+# Wool Wars configuration file
+
+# Your license key. Verify in the Discord server to get it. (https://discord.gg/WzQhrNJkYu)
 license-key: ""
 
-disabled-interaction-blocks:
+# If a player right clicks on one of these blocks, the event will be cancelled.
+disable-interaction-blocks:
   - CRAFTING_TABLE
   - HOPPER
   - FURNACE
 
+# Commands blocked in game.
 blocked-commands:
   - spawn
   - msg
 
+chat-format:
+  enabled: true
+  lobby-format: ""
+  waiting-lobby-format: ""
+  game-format: ""
+  spectator-format: ""
+
+# If MySQL is set to false, SQLite will be used by default.
 mysql:
   enabled: false
   host: localhost

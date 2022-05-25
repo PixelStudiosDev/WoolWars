@@ -3,8 +3,9 @@ package me.cubecrafter.woolwars.game.tasks;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GameState;
+import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -16,10 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -81,64 +79,72 @@ public class ArenaPlayingTask extends ArenaTask {
     public void checkWinners() {
         if (arena.getTimer() > 0) {
             for (Map.Entry<Team, Integer> entry : placedBlocks.entrySet()) {
-                if (entry.getValue() != arena.getBlocksRegion().getTotalBlocks()) continue;
+                if (entry.getValue() != arena.getWoolRegion().getTotalBlocks()) continue;
                 Team team = entry.getKey();
                 team.addPoint();
                 placedBlocks.clear();
-                sendRoundEndedMessages(team, false);
                 if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
                     cancelTask();
                     rotatePowerUpsTask.cancel();
                     addWinsLossesStats(team);
-                    arena.setGameState(GameState.GAME_ENDED);
+                    sendRoundEndedMessages(team, false, true);
+                    arena.setGamePhase(GamePhase.GAME_ENDED);
                     return;
                 }
+                sendRoundEndedMessages(team, false, false);
                 cancelTask();
                 rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.ROUND_OVER);
+                arena.setGamePhase(GamePhase.ROUND_OVER);
             }
         } else if (arena.getTimer() == 0) {
             Map.Entry<Team, Integer> bestTeam = placedBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
             // NO PLACED BLOCKS
             if (bestTeam == null) {
                 rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.ROUND_OVER);
+                arena.setGamePhase(GamePhase.ROUND_OVER);
                 // DRAW
             } else if (placedBlocks.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
-                sendRoundEndedMessages(null, true);
+                sendRoundEndedMessages(null, true, false);
                 rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.ROUND_OVER);
+                arena.setGamePhase(GamePhase.ROUND_OVER);
                 // WINNER TEAM FOUND
             } else {
                 Team winner = bestTeam.getKey();
                 winner.addPoint();
-                sendRoundEndedMessages(winner, false);
                 if (winner.getPoints() == arena.getRequiredPoints()) {
                     addWinsLossesStats(winner);
                     rotatePowerUpsTask.cancel();
-                    arena.setGameState(GameState.GAME_ENDED);
+                    sendRoundEndedMessages(winner, false, true);
+                    arena.setGamePhase(GamePhase.GAME_ENDED);
                 } else {
                     if (arena.isLastRound()) {
                         addWinsLossesStats(winner);
                         rotatePowerUpsTask.cancel();
-                        arena.setGameState(GameState.GAME_ENDED);
+                        sendRoundEndedMessages(winner, false, true);
+                        arena.setGamePhase(GamePhase.GAME_ENDED);
                     } else {
                         rotatePowerUpsTask.cancel();
-                        arena.setGameState(GameState.ROUND_OVER);
+                        sendRoundEndedMessages(winner, false, false);
+                        arena.setGamePhase(GamePhase.ROUND_OVER);
                     }
                 }
             }
         }
     }
 
-    private void sendRoundEndedMessages(Team winner, boolean draw) {
-        if (arena.isLastRound()) {
+    private void sendRoundEndedMessages(Team winner, boolean draw, boolean lastRound) {
+        if (lastRound) {
             for (Team team : arena.getTeams()) {
-                if (team.equals(winner)) {
-
-                } else {
-
-                }
+                team.sendMessage("&8&m--------------------------------------------------");
+                team.sendMessage("&f&l                 WOOL WARS");
+                team.sendMessage("");
+                team.sendMessage(team.equals(winner) ? "&a          Your team won!" : "&c          Your team lost!");
+                team.sendMessage("");
+                team.sendMessage("&e&lMost Kills &7- " + roundKills.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
+                team.sendMessage("&6&lMost Wool Placed &7- " + roundPlacedWool.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
+                team.sendMessage("&c&lMost Blocks Broken &7- " + roundBrokenBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
+                team.sendMessage("");
+                team.sendMessage("&8&m--------------------------------------------------");
             }
         } else {
             for (Player player : arena.getPlayers()) {
@@ -165,7 +171,7 @@ public class ArenaPlayingTask extends ArenaTask {
             return;
         }
         for (Team team : arena.getTeams()) {
-            if (arena.isLastRound()) {
+            if (lastRound) {
                 if (team.equals(winner)) {
                     team.sendTitle(40, "&a&lVICTORY", "&6Your team was victorious!");
                     team.playSound("ENTITY_PLAYER_LEVELUP");
@@ -190,12 +196,12 @@ public class ArenaPlayingTask extends ArenaTask {
             if (team.equals(winner)) {
                 for (Player player : team.getMembers()) {
                     PlayerData data = ArenaUtil.getPlayerData(player);
-                    data.setWins(data.getWins() + 1);
+                    data.setStatistic(StatisticType.WINS, data.getStatistic(StatisticType.WINS) + 1);
                 }
             } else {
                 for (Player player : team.getMembers()) {
                     PlayerData data = ArenaUtil.getPlayerData(player);
-                    data.setLosses(data.getLosses() + 1);
+                    data.setStatistic(StatisticType.LOSSES, data.getStatistic(StatisticType.LOSSES) + 1);
                 }
             }
         }
@@ -204,19 +210,19 @@ public class ArenaPlayingTask extends ArenaTask {
     public void addKill(Player player) {
         roundKills.merge(player, 1, Integer::sum);
         PlayerData data = ArenaUtil.getPlayerData(player);
-        data.setKills(data.getKills() + 1);
+        data.setStatistic(StatisticType.KILLS, data.getStatistic(StatisticType.KILLS) + 1);
     }
 
     public void addPlacedWool(Player player) {
         roundPlacedWool.merge(player, 1, Integer::sum);
         PlayerData data = ArenaUtil.getPlayerData(player);
-        data.setPlacedWool(data.getPlacedWool() + 1);
+        data.setStatistic(StatisticType.PLACED_WOOL, data.getStatistic(StatisticType.PLACED_WOOL) + 1);
     }
 
     public void addBrokenBlock(Player player) {
         roundBrokenBlocks.merge(player, 1, Integer::sum);
         PlayerData data = ArenaUtil.getPlayerData(player);
-        data.setBrokenBlocks(data.getBrokenBlocks() + 1);
+        data.setStatistic(StatisticType.BROKEN_BLOCKS, data.getStatistic(StatisticType.BROKEN_BLOCKS) + 1);
     }
 
 }

@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.api.API;
 import me.cubecrafter.woolwars.api.NMS;
 import me.cubecrafter.woolwars.api.WoolWarsAPI;
 import me.cubecrafter.woolwars.commands.CommandManager;
@@ -13,7 +14,7 @@ import me.cubecrafter.woolwars.game.listeners.ArenaListener;
 import me.cubecrafter.woolwars.game.listeners.BlockBreakListener;
 import me.cubecrafter.woolwars.game.listeners.BlockPlaceListener;
 import me.cubecrafter.woolwars.game.listeners.ChatListener;
-import me.cubecrafter.woolwars.game.listeners.MenuListener;
+import me.cubecrafter.woolwars.game.listeners.InventoryListener;
 import me.cubecrafter.woolwars.game.listeners.PlayerJoinListener;
 import me.cubecrafter.woolwars.game.listeners.PlayerQuitListener;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
@@ -46,6 +47,15 @@ public final class WoolWars extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        TextUtil.info(" __      __        _  __      __           ");
+        TextUtil.info(" \\ \\    / /__  ___| | \\ \\    / /_ _ _ _ ___");
+        TextUtil.info("  \\ \\/\\/ / _ \\/ _ \\ |  \\ \\/\\/ / _` | '_(_-<");
+        TextUtil.info("   \\_/\\_/\\___/\\___/_|   \\_/\\_/\\__,_|_| /__/");
+        TextUtil.info("");
+        TextUtil.info("Author: CubeCrafter");
+        TextUtil.info("Version: " + getDescription().getVersion());
+        TextUtil.info("Running on: " + getServer().getVersion());
+        TextUtil.info("Java Version: " + System.getProperty("java.version"));
         fileManager = new FileManager();
         if (!new Auth(this, fileManager.getConfig().getString("license-key"), "http://142.132.151.133:1452/api/client", "565a2feab733667b66246aab765d03623fab8f1d").verify()) {
             getServer().getScheduler().cancelTasks(this);
@@ -63,6 +73,7 @@ public final class WoolWars extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        TextUtil.info("");
         new Metrics(this, 14788);
         registerHooks();
         SQLDatabase = new Database();
@@ -71,7 +82,7 @@ public final class WoolWars extends JavaPlugin {
         playerDataManager = new PlayerDataManager();
         scoreboardHandler = new ScoreboardHandler();
         kitManager = new KitManager();
-        Arrays.asList(new MenuListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(),
+        Arrays.asList(new InventoryListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(),
                         new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
         playerDataManager.forceLoad();
