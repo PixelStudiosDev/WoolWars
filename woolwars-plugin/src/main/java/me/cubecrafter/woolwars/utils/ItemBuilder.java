@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import com.cryptomorin.xseries.SkullUtils;
+import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.Color;
@@ -20,30 +21,37 @@ public class ItemBuilder {
     private ItemStack item;
 
     public ItemBuilder(String material) {
-        item = XMaterial.matchXMaterial(material).orElse(XMaterial.STONE).parseItem();
+        item = XMaterial.matchXMaterial(material).get().parseItem();
+    }
+
+    public ItemBuilder(ItemStack item) {
+        this.item = item;
     }
 
     public ItemBuilder setDisplayName(String name) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(TextUtil.color(TextUtil.format(name)));
+        meta.setDisplayName(TextUtil.color(name));
         item.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(TextUtil.color(TextUtil.format(lore)));
+        meta.setLore(TextUtil.color(lore));
         item.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder setGlowing(boolean glow) {
+    public ItemBuilder setGlow(boolean glow) {
+        ItemMeta meta = item.getItemMeta();
         if (glow) {
-            ItemMeta meta = item.getItemMeta();
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            item.setItemMeta(meta);
+        } else {
+            meta.removeEnchant(Enchantment.DURABILITY);
+            meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
+        item.setItemMeta(meta);
         return this;
     }
 
@@ -74,7 +82,7 @@ public class ItemBuilder {
     public ItemBuilder setPotionEffect(PotionEffect effect) {
         if (effect == null) return this;
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        meta.addCustomEffect(effect, true);
+        meta.addCustomEffect(effect, false);
         meta.setMainEffect(effect.getType());
         item.setItemMeta(meta);
         return this;
@@ -82,12 +90,25 @@ public class ItemBuilder {
 
     public ItemBuilder setUnbreakable(boolean unbreakable) {
         ItemMeta meta = item.getItemMeta();
-        meta.spigot().setUnbreakable(unbreakable);
+        if (unbreakable) {
+            meta.spigot().setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        } else {
+            meta.spigot().setUnbreakable(false);
+            meta.removeItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        }
         item.setItemMeta(meta);
         return this;
     }
 
-    public ItemStack build(){
+    public ItemBuilder addEnchantment(String enchantment, int level) {
+        ItemMeta meta = item.getItemMeta();
+        meta.addEnchant(XEnchantment.matchXEnchantment(enchantment).get().getEnchant(), level, true);
+        item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemStack build() {
         ItemMeta meta = item.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
@@ -101,10 +122,21 @@ public class ItemBuilder {
         return tagValue.equals(tag);
     }
 
-    public static ItemStack build(ConfigurationSection section) {
+    public static ItemBuilder fromConfig(ConfigurationSection section) {
         ItemBuilder builder = new ItemBuilder(section.getString("material"));
-        builder.setDisplayName(section.getString("displayname"));
-        return builder.build();
+        if (section.contains("displayname")) builder.setDisplayName(section.getString("displayname"));
+        if (section.contains("lore")) builder.setLore(section.getStringList("lore"));
+        if (section.contains("glow")) builder.setGlow(section.getBoolean("glow"));
+        if (section.contains("texture")) builder.setTexture(section.getString("texture"));
+        if (section.contains("amount")) builder.setAmount(section.getInt("amount"));
+        if (section.contains("effect")) builder.setPotionEffect(TextUtil.getEffect(section.getString("effect")));
+        if (section.contains("enchantments")) {
+            for (String enchantment : section.getStringList("enchantments")) {
+                String[] split = enchantment.split(",");
+                builder.addEnchantment(split[0], Integer.parseInt(split[1]));
+            }
+        }
+        return builder;
     }
 
 }

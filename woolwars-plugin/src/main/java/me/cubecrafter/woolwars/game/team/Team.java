@@ -5,7 +5,7 @@ import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.utils.Cuboid;
-import me.cubecrafter.woolwars.utils.GameScoreboard;
+import me.cubecrafter.woolwars.utils.PlayerScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -50,7 +50,7 @@ public class Team {
 
     public void setNameTags() {
         for (Player player : getMembers()) {
-            GameScoreboard scoreboard = GameScoreboard.getScoreboard(player);
+            PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
             scoreboard.setGamePrefix(this);
         }
     }
@@ -76,7 +76,7 @@ public class Team {
 
     public void reset() {
         for (Player player : members) {
-            GameScoreboard scoreboard = GameScoreboard.getScoreboard(player);
+            PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
             scoreboard.removeGamePrefix(this);
         }
         points = 0;

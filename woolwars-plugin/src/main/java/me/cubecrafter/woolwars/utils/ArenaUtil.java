@@ -110,6 +110,18 @@ public class ArenaUtil {
         List<Arena> available = getArenas().stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
+            TextUtil.sendMessage(player, "&cThere are no available arenas!");
+            return;
+        }
+        Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
+        random.addPlayer(player);
+    }
+
+    public void joinRandomFromGroup(Player player, String group) {
+        List<Arena> available = getArenasByGroup(group).stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
+        if (available.isEmpty()) {
+            player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
+            TextUtil.sendMessage(player, "&cThere are no available " + group + " arenas!");
             return;
         }
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));

@@ -1,6 +1,5 @@
 package me.cubecrafter.woolwars.game.kits;
 
-import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -13,18 +12,24 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 public class Ability {
 
+    private final static List<UUID> cooldown = new ArrayList<>();
+
     private final AbilityType abilityType;
     private final ItemStack item;
+    private final int slot;
     private final List<PotionEffect> effects = new ArrayList<>();
 
     public Ability(YamlConfiguration kitConfig) {
         abilityType = AbilityType.valueOf(kitConfig.getString("ability.type"));
-        item = new ItemBuilder("BLAZE_POWDER").setDisplayName("&eKeystone Ability").setTag("ability-item").build();
+        item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("ability.item")).setTag("ability-item").build();
+        slot = kitConfig.getInt("ability.item.slot");
         if (abilityType.equals(AbilityType.EFFECT)) {
             for (String effect : kitConfig.getStringList("ability.effects")) {
                 effects.add(TextUtil.getEffect(effect));
@@ -37,6 +42,11 @@ public class Ability {
             player.sendMessage(TextUtil.color("&cYou can't use your ability yet!"));
             return;
         }
+        if (cooldown.contains(player.getUniqueId())) {
+            player.sendMessage(TextUtil.color("&cYou have already used your ability!"));
+            return;
+        }
+        cooldown.add(player.getUniqueId());
         for (PotionEffect effect : effects) {
             player.addPotionEffect(effect);
         }
@@ -48,6 +58,8 @@ public class Ability {
         player.sendMessage(TextUtil.color("&aAbility activated!"));
     }
 
-
+    public static void removeCooldown(UUID uuid) {
+        cooldown.remove(uuid);
+    }
 
 }

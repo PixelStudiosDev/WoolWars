@@ -5,7 +5,6 @@ import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.tasks.*;
@@ -106,7 +105,7 @@ public class Arena {
         }
         players.add(player);
         player.teleport(lobbyLocation);
-        player.setGameMode(GameMode.SURVIVAL);
+        player.setGameMode(GameMode.ADVENTURE);
         player.setFoodLevel(20);
         player.setHealth(20);
         player.getInventory().setArmorContents(null);
@@ -120,7 +119,7 @@ public class Arena {
         sendMessage(TextUtil.color("&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
-                .replace("{maxplayers}", String.valueOf(getTeams().size() * getMaxPlayersPerTeam()))));
+                .replace("{maxplayers}", String.valueOf(getTeams().size() * maxPlayersPerTeam))));
         if (arenaState.equals(ArenaState.WAITING) && getPlayers().size() >= getMinPlayers()) {
             setArenaState(ArenaState.STARTING);
         }
@@ -134,7 +133,7 @@ public class Arena {
         players.remove(player);
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
-            GameScoreboard scoreboard = GameScoreboard.getScoreboard(player);
+            PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
             scoreboard.removeGamePrefix(playerTeam);
             playerTeam.removeMember(player);
         }
@@ -178,7 +177,7 @@ public class Arena {
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             ArenaUtil.showLobbyPlayers(player);
-            player.teleport(TextUtil.deserializeLocation(WoolWars.getInstance().getFileManager().getConfig().getString("lobby-location")));
+            player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
         }
         players.clear();
     }

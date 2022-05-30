@@ -2,7 +2,9 @@ package me.cubecrafter.woolwars.game.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.database.StatisticType;
@@ -17,7 +19,6 @@ import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
@@ -100,6 +101,7 @@ public class ArenaListener implements Listener {
             player.setFireTicks(0);
             player.setHealth(20);
             Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
+            ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, TextUtil.color("&eYou will respawn next round!"), () -> arena.isDead(player));
             ArenaUtil.hideDeadPlayer(player, arena);
             ItemStack teleporter = new ItemBuilder("COMPASS").setDisplayName("&cTeleporter").setTag("teleport-item").build();
             player.getInventory().setItem(0, teleporter);
@@ -129,6 +131,7 @@ public class ArenaListener implements Listener {
             for (String material : ConfigPath.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
                 if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     e.setCancelled(true);
+                    return;
                 }
             }
         }
@@ -154,7 +157,7 @@ public class ArenaListener implements Listener {
         if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)) {
-            if (player.getLocation().getBlock().getType().equals(Material.LAVA) || player.getLocation().getBlock().getType().equals(Material.STATIONARY_LAVA)) {
+            if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
                 player.teleport(arena.getLobbyLocation());
                 XSound.play(player, "ENTITY_ENDERMAN_TELEPORT");
             }

@@ -30,15 +30,15 @@ public class ScoreboardHandler implements Listener, Runnable {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        GameScoreboard.removeScoreboard(player);
+        PlayerScoreboard.removeScoreboard(player);
     }
 
     public void updateScoreboard(Player player) {
-        GameScoreboard scoreboard;
-        if (GameScoreboard.hasScoreboard(player)) {
-            scoreboard = GameScoreboard.getScoreboard(player);
+        PlayerScoreboard scoreboard;
+        if (PlayerScoreboard.hasScoreboard(player)) {
+            scoreboard = PlayerScoreboard.getScoreboard(player);
         } else {
-            scoreboard = GameScoreboard.createScoreboard(player);
+            scoreboard = PlayerScoreboard.createScoreboard(player);
             scoreboard.setTitle(TextUtil.color(messages.getString("scoreboard.title")));
         }
         Arena arena = ArenaUtil.getArenaByPlayer(player);
@@ -69,7 +69,7 @@ public class ScoreboardHandler implements Listener, Runnable {
     public void disable() {
         updateTask.cancel();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            GameScoreboard.removeScoreboard(player);
+            PlayerScoreboard.removeScoreboard(player);
         }
     }
 

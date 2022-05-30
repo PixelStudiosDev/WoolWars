@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 
 public class Database {
@@ -16,7 +17,7 @@ public class Database {
     public Database() {
         String sql = "CREATE TABLE IF NOT EXISTS player_data (" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
-                "name VARCHAR(100)," +
+                "name VARCHAR," +
                 "wins BIGINT," +
                 "losses BIGINT," +
                 "games_played BIGINT," +
@@ -25,10 +26,13 @@ public class Database {
                 "placed_wool BIGINT," +
                 "broken_blocks BIGINT," +
                 "powerups_collected BIGINT," +
-                "selected_kit VARCHAR(100))";
-        try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException ignored) {}
+                "selected_kit VARCHAR" +
+                ")";
+        try (Connection connection = pool.getConnection(); Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private boolean hasPlayerData(UUID uuid) {
@@ -36,10 +40,10 @@ public class Database {
         try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return true;
-            }
-        } catch (SQLException ignored) {}
+            return resultSet.next();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return false;
     }
 
@@ -59,7 +63,9 @@ public class Database {
                 data.setStatistic(StatisticType.BROKEN_BLOCKS, resultSet.getInt("broken_blocks"));
                 data.setStatistic(StatisticType.POWERUPS_COLLECTED, resultSet.getInt("powerups_collected"));
                 data.setSelectedKit(resultSet.getString("selected_kit"));
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         return data;
     }
@@ -70,7 +76,7 @@ public class Database {
 
     public void savePlayerData(PlayerData data) {
         if (hasPlayerData(data.getUuid())) {
-            String sql = "UPDATE player_data SET name = ?, wins = ?, losses = ?, games_played = ?, kills = ?, deaths = ?, placed_blocks = ?, broken_blocks = ?, powerups_collected = ?, selected_kit = ? WHERE uuid = ?";
+            String sql = "UPDATE player_data SET name = ?, wins = ?, losses = ?, games_played = ?, kills = ?, deaths = ?, placed_wool = ?, broken_blocks = ?, powerups_collected = ?, selected_kit = ? WHERE uuid = ?";
             try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, Bukkit.getOfflinePlayer(data.getUuid()).getName());
                 preparedStatement.setInt(2, data.getStatistic(StatisticType.WINS));
@@ -84,9 +90,11 @@ public class Database {
                 preparedStatement.setString(10, data.getSelectedKit());
                 preparedStatement.setString(11, data.getUuid().toString());
                 preparedStatement.executeUpdate();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         } else {
-            String sql = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, placed_blocks, broken_blocks, powerups_collected, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, placed_wool, broken_blocks, powerups_collected, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
             try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, data.getUuid().toString());
                 preparedStatement.setString(2, Bukkit.getOfflinePlayer(data.getUuid()).getName());
@@ -100,7 +108,9 @@ public class Database {
                 preparedStatement.setInt(10, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
                 preparedStatement.setString(11, data.getSelectedKit());
                 preparedStatement.executeUpdate();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

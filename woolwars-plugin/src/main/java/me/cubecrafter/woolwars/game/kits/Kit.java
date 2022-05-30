@@ -1,6 +1,5 @@
 package me.cubecrafter.woolwars.game.kits;
 
-import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -10,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +24,9 @@ public class Kit {
     private final boolean defaultKit;
     private final Map<ItemStack, Integer> contents = new HashMap<>();
     private final ItemStack menuItem;
+    private final int menuSlot;
     private final Ability ability;
     private final List<PotionEffect> persistentEffects = new ArrayList<>();
-    private final double cost;
 
     public Kit(String id, YamlConfiguration kitConfig) {
         this.id = id;
@@ -38,24 +36,12 @@ public class Kit {
         this.leggingsEnabled = kitConfig.getBoolean("armor.leggings");
         this.bootsEnabled = kitConfig.getBoolean("armor.boots");
         this.defaultKit = kitConfig.getBoolean("default-kit");
-        this.cost = kitConfig.getDouble("cost");
         this.ability = new Ability(kitConfig);
-        String menuItemMaterial = kitConfig.getString("menu-item.material");
-        String menuItemDisplayName = kitConfig.getString("menu-item.displayname");
-        List<String> menuItemLore = kitConfig.getStringList("menu-item.lore");
-        menuItem = new ItemBuilder(menuItemMaterial).setDisplayName(menuItemDisplayName).setLore(menuItemLore).build();
-        for (String item : kitConfig.getConfigurationSection("items").getKeys(false)) {
-            String material = kitConfig.getString("items." + item + ".material");
-            int amount = kitConfig.getInt("items." + item + ".amount");
-            String displayName = kitConfig.getString("items." + item + ".displayname");
-            List<String> lore = kitConfig.getStringList("items." + item + ".lore");
-            int slot = kitConfig.getInt("items." + item + ".slot");
-            PotionEffect potionEffect = null;
-            if (kitConfig.isSet("items." + item + ".effect") && material.contains("POTION")) {
-                potionEffect = TextUtil.getEffect(kitConfig.getString("items." + item + ".effect"));
-            }
-            ItemStack created = new ItemBuilder(material).setAmount(amount).setDisplayName(displayName).setLore(lore).setPotionEffect(potionEffect).build();
-            contents.put(created, slot);
+        this.menuSlot = kitConfig.getInt("menu-item.slot");
+        menuItem = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("menu-item")).build();
+        for (String section : kitConfig.getConfigurationSection("items").getKeys(false)) {
+            ItemStack item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("items." + section)).build();
+            contents.put(item, kitConfig.getInt("items." + section + ".slot"));
         }
     }
 
@@ -83,7 +69,7 @@ public class Kit {
                 player.getInventory().setItem(entry.getValue(), entry.getKey());
             }
         }
-        player.getInventory().setItem(8, ability.getItem());
+        player.getInventory().setItem(ability.getSlot(), ability.getItem());
     }
 
 }

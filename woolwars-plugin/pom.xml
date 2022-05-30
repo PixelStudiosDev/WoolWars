@@ -61,7 +61,6 @@
                                         <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
                                         <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
                                         <exclude>com/cryptomorin/xseries/XBlock*</exclude>
-                                        <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
                                         <exclude>com/cryptomorin/xseries/XEntity*</exclude>
                                         <exclude>com/cryptomorin/xseries/XItemStack*</exclude>
                                         <exclude>com/cryptomorin/xseries/XTag*</exclude>

@@ -28,7 +28,7 @@ import java.util.List;
 @UtilityClass
 public class TextUtil {
 
-    public String color(String s){
+    public String color(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
 
@@ -150,6 +150,14 @@ public class TextUtil {
         List<String> parsed = new ArrayList<>();
         lines.forEach(s -> parsed.add(format(s, arena, player)));
         return parsed;
+    }
+
+    public void sendMessage(Player player, String message) {
+        player.sendMessage(format(message, player));
+    }
+
+    public void sendMessage(List<Player> players, String message) {
+        players.forEach(player -> player.sendMessage(format(message, player)));
     }
 
     public String getCurrentDate() {

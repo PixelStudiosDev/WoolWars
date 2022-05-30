@@ -14,6 +14,14 @@ public class KitManager {
     @Getter private final Map<String, Kit> kits = new HashMap<>();
 
     public KitManager() {
+        loadKits();
+    }
+
+    public Kit getKit(String id) {
+        return kits.get(id);
+    }
+
+    private void loadKits() {
         int loaded = 0;
         for (File kitFile : WoolWars.getInstance().getFileManager().getKits()) {
             String id = kitFile.getName().replace(".yml", "");
@@ -25,8 +33,9 @@ public class KitManager {
         TextUtil.info(loaded + " kits loaded!");
     }
 
-    public Kit getKit(String id) {
-        return kits.get(id);
+    public void reload() {
+        kits.clear();
+        loadKits();
     }
 
 }

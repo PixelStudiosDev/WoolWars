@@ -1,29 +1,31 @@
 package me.cubecrafter.woolwars.menu.menus;
 
-import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class KitsMenu extends Menu {
 
+    private final PlayerData data;
+
     public KitsMenu(Player player) {
         super(player);
+        data = ArenaUtil.getPlayerData(player);
     }
 
     @Override
     public String getTitle() {
-        return "● Select Kit";
+        return "● Kit Selector";
     }
 
     @Override
@@ -34,16 +36,20 @@ public class KitsMenu extends Menu {
     @Override
     public List<MenuItem> getItems() {
         List<MenuItem> items = new ArrayList<>();
-        Iterator<Integer> index = Arrays.asList(10,11,12,13,14,15,16).iterator();
         for (Kit kit : ArenaUtil.getKits()) {
-            items.add(new MenuItem(index.next(), kit.getMenuItem()).addAction( e -> {
+            items.add(new MenuItem(kit.getMenuSlot(), generateItem(kit)).addAction(e -> {
                 kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
-                WoolWars.getInstance().getPlayerDataManager().getPlayerData(player).setSelectedKit(kit.getId());
-                closeMenu();
+                data.setSelectedKit(kit.getId());
             }).setClickSound("UI_BUTTON_CLICK"));
         }
-        addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,40,41,42,43,44));
         return items;
+    }
+
+    private ItemStack generateItem(Kit kit) {
+        ItemMeta meta = kit.getMenuItem().getItemMeta();
+        if (!meta.hasLore()) return new ItemBuilder(kit.getMenuItem().clone()).setGlow(data.getSelectedKit().equals(kit.getId())).build();
+        List<String> newLore = meta.getLore().stream().map(s -> s.replace("{kit_status}", data.getSelectedKit().equals(kit.getId()) ? "&aAlready Selected!" : "&eClick to Select!")).collect(Collectors.toList());
+        return new ItemBuilder(kit.getMenuItem().clone()).setLore(newLore).setGlow(data.getSelectedKit().equals(kit.getId())).build();
     }
 
     @Override

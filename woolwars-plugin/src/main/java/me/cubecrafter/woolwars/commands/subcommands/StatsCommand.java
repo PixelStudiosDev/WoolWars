@@ -1,20 +1,17 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.menu.menus.StatsMenu;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ReloadCommand implements SubCommand {
+public class StatsCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        WoolWars.getInstance().getFileManager().reload();
-        WoolWars.getInstance().getScoreboardHandler().reload();
-        WoolWars.getInstance().getKitManager().reload();
-        sender.sendMessage(TextUtil.color("&aConfig files reloaded!"));
+        new StatsMenu((Player) sender).openMenu();
     }
 
     @Override
@@ -24,7 +21,7 @@ public class ReloadCommand implements SubCommand {
 
     @Override
     public String getLabel() {
-        return "reload";
+        return "stats";
     }
 
     @Override
@@ -34,7 +31,7 @@ public class ReloadCommand implements SubCommand {
 
     @Override
     public boolean isPlayerOnly() {
-        return false;
+        return true;
     }
 
 }

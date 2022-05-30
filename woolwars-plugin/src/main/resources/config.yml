@@ -9,11 +9,16 @@ disable-interaction-blocks:
   - HOPPER
   - FURNACE
 
+# Types of blocks that are placeable by players.
+placeable-blocks:
+  - GLASS
+
 # Commands blocked in game.
 blocked-commands:
   - spawn
   - msg
 
+# Chat formatting options.
 chat-format:
   enabled: true
   lobby-format: ""
@@ -21,7 +26,7 @@ chat-format:
   game-format: ""
   spectator-format: ""
 
-# If MySQL is set to false, SQLite will be used by default.
+# Storage method. SQLite will be used by default.
 mysql:
   enabled: false
   host: localhost

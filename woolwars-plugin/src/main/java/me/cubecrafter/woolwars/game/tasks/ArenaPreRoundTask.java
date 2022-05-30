@@ -5,6 +5,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.GamePhase;
+import me.cubecrafter.woolwars.game.kits.Ability;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -22,6 +23,7 @@ public class ArenaPreRoundTask extends ArenaTask {
         arena.killEntities();
         arena.resetBlocks();
         arena.getTeams().forEach(Team::spawnBarrier);
+        arena.getPlayers().forEach(player -> Ability.removeCooldown(player.getUniqueId()));
         arena.respawnPlayers();
         for (Player player : arena.getPlayers()) {
             player.getInventory().setArmorContents(null);

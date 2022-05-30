@@ -11,3 +11,5 @@ commands:
     description: Main plugin command
     aliases:
       - ww
+  leave:
+    description: Leave an arena

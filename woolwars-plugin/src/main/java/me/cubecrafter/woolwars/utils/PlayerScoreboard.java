@@ -13,19 +13,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class GameScoreboard {
+public class PlayerScoreboard {
 
-    private static final Map<UUID, GameScoreboard> scoreboards = new HashMap<>();
+    private static final Map<UUID, PlayerScoreboard> scoreboards = new HashMap<>();
 
     public static boolean hasScoreboard(Player player) {
         return scoreboards.containsKey(player.getUniqueId());
     }
 
-    public static GameScoreboard createScoreboard(Player player) {
-        return new GameScoreboard(player);
+    public static PlayerScoreboard createScoreboard(Player player) {
+        return new PlayerScoreboard(player);
     }
 
-    public static GameScoreboard getScoreboard(Player player) {
+    public static PlayerScoreboard getScoreboard(Player player) {
         return scoreboards.get(player.getUniqueId());
     }
 
@@ -38,7 +38,7 @@ public class GameScoreboard {
     private final Objective sidebar;
     private final Player player;
 
-    private GameScoreboard(Player player) {
+    private PlayerScoreboard(Player player) {
         this.player = player;
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         sidebar = scoreboard.registerNewObjective("woolwars", "dummy");
@@ -80,7 +80,7 @@ public class GameScoreboard {
 
     public void setGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            GameScoreboard sidebar = getScoreboard(player);
+            PlayerScoreboard sidebar = getScoreboard(player);
             sidebar.setGamePrefixInternal(this.player, team);
         }
     }
@@ -98,7 +98,7 @@ public class GameScoreboard {
 
     public void removeGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            GameScoreboard sidebar = getScoreboard(player);
+            PlayerScoreboard sidebar = getScoreboard(player);
             sidebar.removeGamePrefixInternal(this.player, team);
         }
     }

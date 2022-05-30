@@ -52,8 +52,13 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return String.valueOf(data.getStatistic(StatisticType.POWERUPS_COLLECTED));
             case "selected_kit":
                 return data.getSelectedKit();
-            case "playing_total":
+        }
+        String[] args = params.split("_");
+        if (args[0].equals("count")) {
+            if (args[1].equals("total")) {
                 return String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum());
+            }
+            return String.valueOf(ArenaUtil.getArenasByGroup(args[1]).stream().mapToInt(arena -> arena.getPlayers().size()).sum());
         }
         return null;
     }
