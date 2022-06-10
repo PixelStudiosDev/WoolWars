@@ -17,8 +17,8 @@ import org.bukkit.entity.Player;
 
 public class ArenaPreRoundTask extends ArenaTask {
 
-    public ArenaPreRoundTask(Arena arena) {
-        super(arena);
+    public ArenaPreRoundTask(Arena arena, int duration) {
+        super(arena, duration);
         arena.setRound(arena.getRound() + 1);
         arena.killEntities();
         arena.resetBlocks();
@@ -46,8 +46,8 @@ public class ArenaPreRoundTask extends ArenaTask {
     @Override
     public void execute() {
         if (arena.getTimer() <= 3) {
-            arena.sendTitle(20, "&c{seconds}".replace("{seconds}", String.valueOf(arena.getTimer())), "&7Get Ready");
-            arena.playSound("ENTITY_CHICKEN_EGG");
+            TextUtil.sendTitle(arena.getPlayers(), 1, "&c{seconds}".replace("{seconds}", String.valueOf(arena.getTimer())), "&7Get Ready");
+            ArenaUtil.playSound(arena.getPlayers(), "ENTITY_CHICKEN_EGG");
         }
     }
 
@@ -58,8 +58,8 @@ public class ArenaPreRoundTask extends ArenaTask {
                 player.closeInventory();
             }
         });
-        arena.sendTitle(40, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
-        arena.playSound("BLOCK_ANVIL_LAND");
+        TextUtil.sendTitle(arena.getPlayers(), 1, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
+        ArenaUtil.playSound(arena.getPlayers(), "BLOCK_ANVIL_LAND");
         arena.getTeams().forEach(Team::removeBarrier);
         arena.getPowerUps().forEach(PowerUp::spawn);
         for (Block block : arena.getWoolRegion().getBlocks()) {
@@ -68,11 +68,6 @@ public class ArenaPreRoundTask extends ArenaTask {
             }
         }
         arena.setGamePhase(GamePhase.ACTIVE_ROUND);
-    }
-
-    @Override
-    public int getTaskDuration() {
-        return 10;
     }
 
 }

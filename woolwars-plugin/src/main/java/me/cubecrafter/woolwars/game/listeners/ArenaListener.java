@@ -23,6 +23,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -52,13 +53,13 @@ public class ArenaListener implements Listener {
     public void onDamage(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         Player player = (Player) e.getEntity();
-        if (!ArenaUtil.isPlaying(player)) return;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
         if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && jumping.contains(player)) {
             e.setCancelled(true);
             jumping.remove(player);
             return;
         }
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             player.setFireTicks(0);
             player.setHealth(20);
@@ -66,11 +67,21 @@ public class ArenaListener implements Listener {
             return;
         }
         if (e instanceof EntityDamageByEntityEvent) {
-            if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Player)) return;
-            Player damager = (Player) ((EntityDamageByEntityEvent) e).getDamager();
-            if (arena.getDeadPlayers().contains(damager) || arena.isTeammate(player, damager)) {
-                e.setCancelled(true);
-                return;
+            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+            if (event.getDamager().getType().equals(EntityType.PRIMED_TNT)) {
+                TNTPrimed tnt = (TNTPrimed) event.getDamager();
+                if (tnt.hasMetadata("woolwars")) {
+                    e.setCancelled(true);
+                    player.setVelocity(player.getLocation().toVector().subtract(tnt.getLocation().toVector()).normalize().multiply(1.5));
+                    return;
+                }
+            }
+            if (event.getDamager() instanceof Player) {
+                Player damager = (Player) event.getDamager();
+                if (arena.getDeadPlayers().contains(damager) || arena.isTeammate(player, damager)) {
+                    e.setCancelled(true);
+                    return;
+                }
             }
         }
         if (((player.getHealth() - e.getFinalDamage()) <= 0)) {
@@ -80,16 +91,17 @@ public class ArenaListener implements Listener {
             data.setStatistic(StatisticType.DEATHS, data.getStatistic(StatisticType.DEATHS) + 1);
             Team playerTeam = arena.getTeamByPlayer(player);
             if (e instanceof EntityDamageByEntityEvent) {
-                if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Player)) return;
-                Player damager = (Player) ((EntityDamageByEntityEvent) e).getDamager();
+                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+                if (!(event.getDamager() instanceof Player)) return;
+                Player damager = (Player) event.getDamager();
                 Team damagerTeam = arena.getTeamByPlayer(damager);
-                arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName());
+                TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName());
                 XSound.play(damager, "ENTITY_EXPERIENCE_ORB_PICKUP");
                 arena.getPlayingTask().addKill(damager);
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
-                arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7burned to death ");
+                TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7burned to death ");
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-                arena.sendMessage(playerTeam.getTeamColor().getChatColor() + player.getName() + " &7fell from a high place ");
+                TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7fell from a high place ");
             }
             arena.getDeadPlayers().add(player);
             player.setGameMode(GameMode.ADVENTURE);
@@ -107,7 +119,7 @@ public class ArenaListener implements Listener {
             player.getInventory().setItem(0, teleporter);
             if (arena.getAlivePlayers().size() == 0) {
                 arena.getPlayingTask().cancelTask();
-                arena.sendMessage("&cAll players died!");
+                TextUtil.sendMessage(arena.getPlayers(), "&cAll players died!");
                 arena.getPlayingTask().getRotatePowerUpsTask().cancel();
                 arena.setGamePhase(GamePhase.ROUND_OVER);
             }
@@ -136,15 +148,26 @@ public class ArenaListener implements Listener {
             }
         }
         if (e.getItem() == null) return;
+        if (e.getItem().getType().toString().contains("POTION")) {
+            if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) {
+                e.setCancelled(true);
+                return;
+            }
+        }
+        if (!e.getAction().equals(Action.RIGHT_CLICK_AIR) && !e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if (ItemBuilder.hasTag(e.getItem(), "leave-item")) {
             arena.removePlayer(player, true);
+            return;
         }
         if (ItemBuilder.hasTag(e.getItem(), "teleport-item")) {
             new TeleportMenu(player).openMenu();
+            return;
         }
         if (ItemBuilder.hasTag(e.getItem(), "playagain-item")) {
-            arena.removePlayer(player, false);
-            ArenaUtil.joinRandom(player);
+            if (ArenaUtil.joinRandom(player)) {
+                arena.removePlayer(player, false);
+            }
+            return;
         }
         if (ItemBuilder.hasTag(e.getItem(), "ability-item")) {
             ArenaUtil.getKitByPlayer(player).getAbility().use(player);
@@ -188,7 +211,7 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onExplosion(EntityExplodeEvent e) {
-        if (ArenaUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInside(e.getLocation()))) {
+        if (ArenaUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInsideWithMarge(e.getLocation(), 10))) {
             e.blockList().clear();
         }
     }
@@ -231,6 +254,16 @@ public class ArenaListener implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.setAllowFlight(true);
         player.setFlying(true);
+    }
+
+    @EventHandler
+    public void onPotionDrink(PlayerItemConsumeEvent e) {
+        Player player = e.getPlayer();
+        if (!e.getItem().getType().toString().contains("POTION")) return;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        if (arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) return;
+        e.setCancelled(true);
     }
 
 }

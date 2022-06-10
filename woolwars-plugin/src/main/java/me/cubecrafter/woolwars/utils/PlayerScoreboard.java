@@ -56,28 +56,6 @@ public class PlayerScoreboard {
         sidebar.setDisplayName(color.length() > 32 ? color.substring(0, 32) : color);
     }
 
-    /*
-    public void setTeamPrefix(Player player, me.cubecrafter.woolwars.game.team.Team team) {
-        Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
-        if (scoreboardTeam == null) {
-            scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
-            scoreboardTeam.setCanSeeFriendlyInvisibles(false);
-        }
-        String color = TextUtil.color(team.getTeamColor().getChatColor() + "&l" + team.getTeamLetter() + " " + team.getTeamColor().getChatColor());
-        scoreboardTeam.setPrefix(getFirstSplit(color));
-        scoreboardTeam.addEntry(player.getName());
-    }
-
-    public void removeTeamPrefix(Player player, me.cubecrafter.woolwars.game.team.Team team) {
-        Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
-        if (scoreboardTeam == null) return;
-        scoreboardTeam.removeEntry(player.getName());
-        if (scoreboardTeam.getSize() == 0) {
-            scoreboardTeam.unregister();
-        }
-    }
-     */
-
     public void setGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerScoreboard sidebar = getScoreboard(player);

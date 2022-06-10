@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.utils;
 
+import com.cryptomorin.xseries.XSound;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.ConfigPath;
@@ -19,42 +20,28 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ArenaUtil {
 
-    public void hideLobbyPlayers(Player player, Arena arena) {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            if (arena.getPlayers().contains(online)) continue;
-            online.hidePlayer(player);
-            player.hidePlayer(online);
-        }
-        for (Player arenaPlayer : arena.getPlayers()) {
-            arenaPlayer.showPlayer(player);
-            player.showPlayer(arenaPlayer);
-        }
+    public void teleportToLobby(Player player) {
+        player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
     }
 
-    public void showLobbyPlayers(Player player) {
+    public void showLobbyPlayers(Player player, Arena arena) {
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (getArenaByPlayer(online) != null) continue;
-            online.showPlayer(player);
-            player.showPlayer(online);
-        }
-    }
-
-    public void showDeadPlayers(Arena arena) {
-        for (Player player : arena.getPlayers()) {
-            arena.getPlayers().forEach(player::showPlayer);
+            if (arena.getPlayers().contains(online)) {
+                player.hidePlayer(online);
+                online.hidePlayer(player);
+            } else {
+                player.showPlayer(online);
+                online.showPlayer(player);
+            }
         }
     }
 
     public void hideDeadPlayer(Player player, Arena arena) {
-        arena.getAlivePlayers().forEach(alive -> alive.hidePlayer(player));
-        arena.getDeadPlayers().forEach(player::showPlayer);
-    }
-
-    public void hidePlayersInGame(Player player) {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            if (getArenaByPlayer(online) == null) continue;
-            online.hidePlayer(player);
-            player.hidePlayer(online);
+        for (Player alive : arena.getAlivePlayers()) {
+            alive.hidePlayer(player);
+        }
+        for (Player dead : arena.getDeadPlayers()) {
+            player.showPlayer(dead);
         }
     }
 
@@ -106,26 +93,34 @@ public class ArenaUtil {
         return new ArrayList<>(WoolWars.getInstance().getKitManager().getKits().values());
     }
 
-    public void joinRandom(Player player) {
+    public boolean joinRandom(Player player) {
         List<Arena> available = getArenas().stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
-            player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
             TextUtil.sendMessage(player, "&cThere are no available arenas!");
-            return;
+            return false;
         }
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
         random.addPlayer(player);
+        return true;
     }
 
-    public void joinRandomFromGroup(Player player, String group) {
+    public boolean joinRandomFromGroup(Player player, String group) {
         List<Arena> available = getArenasByGroup(group).stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
-            player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
             TextUtil.sendMessage(player, "&cThere are no available " + group + " arenas!");
-            return;
+            return false;
         }
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
         random.addPlayer(player);
+        return true;
+    }
+
+    public void playSound(Player player, String sound) {
+        XSound.play(player, sound);
+    }
+
+    public void playSound(List<Player> players, String sound) {
+        players.forEach(player -> playSound(player, sound));
     }
 
 }

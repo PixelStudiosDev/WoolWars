@@ -31,8 +31,8 @@ public class ArenaPlayingTask extends ArenaTask {
     private final Map<Player, Integer> roundPlacedWool = new HashMap<>();
     private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
 
-    public ArenaPlayingTask(Arena arena) {
-        super(arena);
+    public ArenaPlayingTask(Arena arena, int duration) {
+        super(arena, duration);
         jumpPads = arena.getArenaRegion().getBlocks().stream().filter(block -> block.getType().equals(Material.SLIME_BLOCK)).collect(Collectors.toList());
         rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
     }
@@ -40,7 +40,7 @@ public class ArenaPlayingTask extends ArenaTask {
     @Override
     public void execute() {
         if ((arena.getTimer() <= 30 && arena.getTimer() % 10 == 0) || arena.getTimer() <= 5) {
-            arena.sendMessage("&c{seconds} &7seconds left!".replace("{seconds}", String.valueOf(arena.getTimer())));
+            TextUtil.sendMessage(arena.getPlayers(), "&c{seconds} &7seconds left!".replace("{seconds}", String.valueOf(arena.getTimer())));
         }
         for (Block block : jumpPads) {
             block.getWorld().playEffect(block.getLocation().add(0, 1.3, 0.5).subtract(-0.5, 0, 0), Effect.HAPPY_VILLAGER, 0);
@@ -58,11 +58,6 @@ public class ArenaPlayingTask extends ArenaTask {
         roundKills.clear();
         roundPlacedWool.clear();
         roundBrokenBlocks.clear();
-    }
-
-    @Override
-    public int getTaskDuration() {
-        return 60;
     }
 
     public void addPlacedWool(Team team) {
@@ -100,6 +95,7 @@ public class ArenaPlayingTask extends ArenaTask {
             Map.Entry<Team, Integer> bestTeam = placedBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
             // NO PLACED BLOCKS
             if (bestTeam == null) {
+                sendRoundEndedMessages(null, false, false);
                 rotatePowerUpsTask.cancel();
                 arena.setGamePhase(GamePhase.ROUND_OVER);
                 // DRAW
@@ -150,15 +146,19 @@ public class ArenaPlayingTask extends ArenaTask {
             for (Player player : arena.getPlayers()) {
                 player.sendMessage(TextUtil.color("&8&m--------------------------------------------------"));
                 player.sendMessage(TextUtil.color("&e               Round #" + arena.getRound() + " stats"));
-                if (roundKills.get(player) != null) {
-                    player.sendMessage(TextUtil.color("&7Kills: " + roundKills.get(player)));
-                }
-                if (roundPlacedWool.get(player) != null) {
-                    player.sendMessage(TextUtil.color("&7Placed wool: " + roundPlacedWool.get(player)));
-                }
-                if (roundBrokenBlocks.get(player) != null) {
-                    player.sendMessage(TextUtil.color("&7Broken blocks: " + roundBrokenBlocks.get(player)));
+                if (roundBrokenBlocks.get(player) == null && roundPlacedWool.get(player) == null && roundKills.get(player) == null) {
+                    TextUtil.sendMessage(player, "&cNo stats achieved for this round!");
+                } else {
+                    if (roundKills.get(player) != null) {
+                        player.sendMessage(TextUtil.color("&7Kills: " + roundKills.get(player)));
+                    }
+                    if (roundPlacedWool.get(player) != null) {
+                        player.sendMessage(TextUtil.color("&7Placed wool: " + roundPlacedWool.get(player)));
+                    }
+                    if (roundBrokenBlocks.get(player) != null) {
+                        player.sendMessage(TextUtil.color("&7Broken blocks: " + roundBrokenBlocks.get(player)));
 
+                    }
                 }
                 player.sendMessage(TextUtil.color("&8&m--------------------------------------------------"));
             }
@@ -166,8 +166,8 @@ public class ArenaPlayingTask extends ArenaTask {
 
 
         if (draw) {
-            arena.sendTitle(40, arena.getTeamPointsFormatted(), "&e&lDRAW");
-            arena.playSound("GHAST_MOAN");
+            TextUtil.sendTitle(arena.getPlayers(), 2, arena.getTeamPointsFormatted(), "&e&lDRAW");
+            ArenaUtil.playSound(arena.getPlayers(), "GHAST_MOAN");
             return;
         }
         for (Team team : arena.getTeams()) {

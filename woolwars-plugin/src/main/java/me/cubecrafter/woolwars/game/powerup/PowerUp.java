@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.game.powerup;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
@@ -46,7 +47,7 @@ public class PowerUp {
     }
 
     public void spawn() {
-        data = PowerUpData.getRandom();
+        data = WoolWars.getInstance().getPowerupManager().getRandom();
         armorStand = spawnArmorStand(null, location);
         if (XMaterial.PLAYER_HEAD.parseMaterial().equals(data.getDisplayedItem().getType())) {
             armorStand.getEquipment().setHelmet(data.getDisplayedItem());

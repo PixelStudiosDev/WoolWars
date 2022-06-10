@@ -52,7 +52,7 @@ public class ArenaListMenu extends Menu {
         }
 
         items.add(new MenuItem(40, new ItemBuilder("ARROW").setDisplayName("&cGo Back").setLore(Arrays.asList("&7To Main Menu")).build()).addAction(e -> {
-            new GameMenu(player).openMenu();
+            new MainMenu(player).openMenu();
         }).setClickSound("UI_BUTTON_CLICK"));
 
         // ARENA GROUP SORTING

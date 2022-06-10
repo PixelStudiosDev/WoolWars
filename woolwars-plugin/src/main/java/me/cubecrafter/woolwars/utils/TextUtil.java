@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import com.cryptomorin.xseries.XPotion;
+import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
@@ -29,6 +30,7 @@ import java.util.List;
 public class TextUtil {
 
     public String color(String s) {
+        if (s == null || s.isEmpty()) return "";
         return ChatColor.translateAlternateColorCodes('&', s);
     }
 
@@ -72,15 +74,14 @@ public class TextUtil {
     }
 
     public String format(String s, Arena arena, Player player) {
-        PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
-        s = s.replace("{wins}", String.valueOf(data.getStatistic(StatisticType.WINS)));
-        String parsed = format(s)
+        s = format(s)
                         .replace("{time}", arena.getTimerFormatted())
                         .replace("{id}", arena.getId())
                         .replace("{displayname}", arena.getDisplayName())
                         .replace("{round}", String.valueOf(arena.getRound()))
                         .replace("{group}", arena.getGroup())
-                        .replace("{state}", arena.getGamePhase().getName())
+                        .replace("{phase}", arena.getGamePhase().getName())
+                        .replace("{state}", arena.getArenaState().getName())
                         .replace("{required_points}", String.valueOf(arena.getRequiredPoints()))
                         .replace("{players}", String.valueOf(arena.getPlayers().size()))
                         .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
@@ -93,26 +94,23 @@ public class TextUtil {
                     builder.append(TextUtil.color(team.getTeamColor().getChatColor() + "⬤"));
                 }
             }
-            if (arena.getTeamByPlayer(player) != null && arena.getTeamByPlayer(player).equals(team)) {
-                builder.append(TextUtil.color(" &7You"));
-            }
-            parsed = parsed.replace("{" + team.getName() + "_points_formatted}", builder.toString())
+            s = s.replace("{" + team.getName() + "_points_formatted}", builder.toString())
                     .replace("{" + team.getName() + "_points}", String.valueOf(team.getPoints()))
-                    .replace("{" + team.getName() + "_players}", String.valueOf(team.getMembers().stream().filter(member ->  !arena.getDeadPlayers().contains(member)).count()));
+                    .replace("{" + team.getName() + "_alive}", String.valueOf(team.getMembers().stream().filter(arena::isAlive).count()));
         }
-        return parsed;
+        return s;
     }
 
     public String format(String s) {
         if (WoolWars.getInstance().isPAPIEnabled()) {
             s = PlaceholderAPI.setPlaceholders(null, s);
         }
-        String parsed = s.replace("{date}", TextUtil.getCurrentDate());
+        s = s.replace("{date}", TextUtil.getCurrentDate());
         for (String group : ArenaUtil.getGroups()) {
-            parsed = parsed.replace("{" + group + "_players}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
-                    .replace("{total_players}", String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
+            s = s.replace("{count_" + group + "}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
+                    .replace("{count_total}", String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
         }
-        return color(parsed);
+        return color(s);
     }
 
     public String format(String s, Player player) {
@@ -157,7 +155,15 @@ public class TextUtil {
     }
 
     public void sendMessage(List<Player> players, String message) {
-        players.forEach(player -> player.sendMessage(format(message, player)));
+        players.forEach(player -> sendMessage(player, message));
+    }
+
+    public void sendTitle(Player player, int seconds, String title, String subtitle) {
+        Titles.sendTitle(player, 0, seconds * 20, 0, format(title, player), format(subtitle, player));
+    }
+
+    public void sendTitle(List<Player> players, int seconds, String title, String subtitle) {
+        players.forEach(player -> sendTitle(player, seconds, title, subtitle));
     }
 
     public String getCurrentDate() {
@@ -168,7 +174,7 @@ public class TextUtil {
     public PotionEffect getEffect(String serialized) {
         String[] effect = serialized.split(",");
         PotionEffectType type = XPotion.matchXPotion(effect[0]).get().getPotionEffectType();
-        int duration = Integer.parseInt(effect[1]);
+        int duration = Integer.parseInt(effect[1]) * 20;
         int amplifier = Integer.parseInt(effect[2]);
         return new PotionEffect(type, duration, amplifier, false, false);
     }

@@ -28,9 +28,10 @@ public class KitManager {
             YamlConfiguration kitConfig = YamlConfiguration.loadConfiguration(kitFile);
             Kit kit = new Kit(id, kitConfig);
             kits.put(id, kit);
+            TextUtil.info("Kit '" + id + "' loaded!");
             loaded++;
         }
-        TextUtil.info(loaded + " kits loaded!");
+        TextUtil.info("Loaded " + loaded + " kits!");
     }
 
     public void reload() {

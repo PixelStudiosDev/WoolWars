@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.utils;
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XPotion;
 import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
@@ -19,8 +21,15 @@ import java.util.List;
 public class ItemBuilder {
 
     private ItemStack item;
+    private boolean legacySplashPotion;
 
     public ItemBuilder(String material) {
+        if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()){
+            legacySplashPotion = true;
+            item = XMaterial.POTION.parseItem();
+            return;
+        }
+        legacySplashPotion = false;
         item = XMaterial.matchXMaterial(material).get().parseItem();
     }
 
@@ -30,14 +39,14 @@ public class ItemBuilder {
 
     public ItemBuilder setDisplayName(String name) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(TextUtil.color(name));
+        meta.setDisplayName(TextUtil.format(name));
         item.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(TextUtil.color(lore));
+        meta.setLore(TextUtil.format(lore));
         item.setItemMeta(meta);
         return this;
     }
@@ -79,12 +88,17 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setPotionEffect(PotionEffect effect) {
-        if (effect == null) return this;
-        PotionMeta meta = (PotionMeta) item.getItemMeta();
-        meta.addCustomEffect(effect, false);
-        meta.setMainEffect(effect.getType());
-        item.setItemMeta(meta);
+    public ItemBuilder addPotionEffect(String type, int duration, int amplifier) {
+        if (legacySplashPotion) {
+            Potion potion = new Potion(XPotion.matchXPotion(type).get().getPotionType(), amplifier);
+            potion.setSplash(true);
+            potion.apply(item);
+        } else {
+            PotionMeta meta = (PotionMeta) item.getItemMeta();
+            meta.addCustomEffect(new PotionEffect(XPotion.matchXPotion(type).get().getPotionEffectType(), duration, amplifier, false, false), true);
+            meta.setMainEffect(XPotion.matchXPotion(type).get().getPotionEffectType());
+            item.setItemMeta(meta);
+        }
         return this;
     }
 
@@ -129,7 +143,10 @@ public class ItemBuilder {
         if (section.contains("glow")) builder.setGlow(section.getBoolean("glow"));
         if (section.contains("texture")) builder.setTexture(section.getString("texture"));
         if (section.contains("amount")) builder.setAmount(section.getInt("amount"));
-        if (section.contains("effect")) builder.setPotionEffect(TextUtil.getEffect(section.getString("effect")));
+        if (section.contains("effect")) {
+            String[] split = section.getString("effect").split(",");
+            builder.addPotionEffect(split[0], Integer.parseInt(split.length < 2 ? "10" : split[1]), Integer.parseInt(split.length < 3 ? "1" : split[2]));
+        }
         if (section.contains("enchantments")) {
             for (String enchantment : section.getStringList("enchantments")) {
                 String[] split = enchantment.split(",");

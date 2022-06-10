@@ -6,6 +6,7 @@ import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,8 +39,12 @@ public class KitsMenu extends Menu {
         List<MenuItem> items = new ArrayList<>();
         for (Kit kit : ArenaUtil.getKits()) {
             items.add(new MenuItem(kit.getMenuSlot(), generateItem(kit)).addAction(e -> {
-                kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
-                data.setSelectedKit(kit.getId());
+                if (data.getSelectedKit().equals(kit.getId())) {
+                    TextUtil.sendMessage(player, "&cYou already have this kit selected!");
+                } else {
+                    kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
+                    data.setSelectedKit(kit.getId());
+                }
             }).setClickSound("UI_BUTTON_CLICK"));
         }
         return items;
@@ -48,7 +53,7 @@ public class KitsMenu extends Menu {
     private ItemStack generateItem(Kit kit) {
         ItemMeta meta = kit.getMenuItem().getItemMeta();
         if (!meta.hasLore()) return new ItemBuilder(kit.getMenuItem().clone()).setGlow(data.getSelectedKit().equals(kit.getId())).build();
-        List<String> newLore = meta.getLore().stream().map(s -> s.replace("{kit_status}", data.getSelectedKit().equals(kit.getId()) ? "&aAlready Selected!" : "&eClick to Select!")).collect(Collectors.toList());
+        List<String> newLore = meta.getLore().stream().map(s -> s.replace("{kit_status}", data.getSelectedKit().equals(kit.getId()) ? "&cAlready Selected!" : "&eClick to Select!")).collect(Collectors.toList());
         return new ItemBuilder(kit.getMenuItem().clone()).setLore(newLore).setGlow(data.getSelectedKit().equals(kit.getId())).build();
     }
 

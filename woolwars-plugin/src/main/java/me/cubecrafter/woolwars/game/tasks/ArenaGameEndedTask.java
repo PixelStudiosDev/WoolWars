@@ -4,7 +4,6 @@ import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.arena.ArenaState;
-import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -17,8 +16,8 @@ import java.util.Arrays;
 
 public class ArenaGameEndedTask extends ArenaTask {
 
-    public ArenaGameEndedTask(Arena arena) {
-        super(arena);
+    public ArenaGameEndedTask(Arena arena, int duration) {
+        super(arena, duration);
         arena.getPowerUps().forEach(PowerUp::remove);
         for (Player player : arena.getAlivePlayers()) {
             player.setAllowFlight(true);
@@ -41,18 +40,8 @@ public class ArenaGameEndedTask extends ArenaTask {
     }
 
     @Override
-    public void execute() {
-
-    }
-
-    @Override
     public void onTimerEnd() {
         arena.setArenaState(ArenaState.RESTARTING);
-    }
-
-    @Override
-    public int getTaskDuration() {
-        return 10;
     }
 
 }

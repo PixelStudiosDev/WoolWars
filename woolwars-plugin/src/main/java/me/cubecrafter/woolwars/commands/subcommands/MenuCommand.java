@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.menu.menus.GameMenu;
+import me.cubecrafter.woolwars.menu.menus.MainMenu;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,7 @@ public class MenuCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        new GameMenu((Player) sender).openMenu();
+        new MainMenu((Player) sender).openMenu();
     }
 
     @Override

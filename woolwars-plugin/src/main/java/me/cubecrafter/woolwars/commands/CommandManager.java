@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.commands;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.subcommands.*;
-import me.cubecrafter.woolwars.menu.menus.GameMenu;
+import me.cubecrafter.woolwars.menu.menus.MainMenu;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,7 +49,7 @@ public class CommandManager implements TabExecutor {
             }
             cmd.execute(sender, args);
         } else if (sender instanceof Player) {
-            new GameMenu((Player) sender).openMenu();
+            new MainMenu((Player) sender).openMenu();
         }
         return true;
     }

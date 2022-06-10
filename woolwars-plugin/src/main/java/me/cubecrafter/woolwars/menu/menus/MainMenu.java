@@ -5,15 +5,14 @@ import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GameMenu extends Menu {
+public class MainMenu extends Menu {
 
-    public GameMenu(Player player) {
+    public MainMenu(Player player) {
         super(player);
     }
 
@@ -30,8 +29,9 @@ public class GameMenu extends Menu {
     @Override
     public List<MenuItem> getItems() {
         List<MenuItem> items = new ArrayList<>();
+        addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,42,43,44));
 
-        items.add(new MenuItem(22, new ItemBuilder("WOODEN_SWORD").setDisplayName("&dWool Wars").setLore(Arrays.asList("&eClick to play!", "&7{total_players} currently playing!")).build()).addAction(e -> {
+        items.add(new MenuItem(22, new ItemBuilder("WOODEN_SWORD").setDisplayName("&dWool Wars").setLore(Arrays.asList("&eClick to play!", "&7{count_total} currently playing!")).build()).addAction(e -> {
             closeMenu();
             ArenaUtil.joinRandom(player);
         }).setClickSound("UI_BUTTON_CLICK"));
@@ -53,7 +53,7 @@ public class GameMenu extends Menu {
 
     @Override
     public boolean update() {
-        return false;
+        return true;
     }
 
 }

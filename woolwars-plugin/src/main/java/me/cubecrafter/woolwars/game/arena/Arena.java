@@ -1,8 +1,6 @@
 package me.cubecrafter.woolwars.game.arena;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.XSound;
-import com.cryptomorin.xseries.messages.Titles;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.config.ConfigPath;
@@ -11,6 +9,7 @@ import me.cubecrafter.woolwars.game.tasks.*;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.game.team.TeamColor;
 import me.cubecrafter.woolwars.utils.*;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +20,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Getter
@@ -113,13 +118,21 @@ public class Arena {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        ArenaUtil.hideLobbyPlayers(player, this);
-        ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby").setLore(Arrays.asList("&7Click to return to the lobby!")).setTag("leave-item").build();
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (players.contains(online)) {
+                online.showPlayer(player);
+                player.showPlayer(online);
+            } else {
+                online.hidePlayer(player);
+                player.hidePlayer(online);
+            }
+        }
+        ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby &7(Right-Click)").setLore(Arrays.asList("&7Click to return to the lobby!")).setTag("leave-item").build();
         player.getInventory().setItem(8, leaveItem);
-        sendMessage(TextUtil.color("&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
+        TextUtil.sendMessage(players, "&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
-                .replace("{maxplayers}", String.valueOf(getTeams().size() * maxPlayersPerTeam))));
+                .replace("{maxplayers}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
         if (arenaState.equals(ArenaState.WAITING) && getPlayers().size() >= getMinPlayers()) {
             setArenaState(ArenaState.STARTING);
         }
@@ -146,21 +159,21 @@ public class Arena {
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         if (teleportToLobby) player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
-        ArenaUtil.showLobbyPlayers(player);
+        ArenaUtil.showLobbyPlayers(player, this);
         if (arenaState.equals(ArenaState.WAITING) || arenaState.equals(ArenaState.STARTING)) {
-            sendMessage("&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
+            TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
                     .replace("{player}", player.getName())
                     .replace("{currentplayers}", String.valueOf(players.size()))
                     .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam())));
         } else {
-            sendMessage("&c{player} &7has left!".replace("{player}", player.getDisplayName()));
+            TextUtil.sendMessage(players, "&c{player} &7has left!".replace("{player}", player.getDisplayName()));
         }
         if (arenaState.equals(ArenaState.STARTING) && getPlayers().size() < getMinPlayers()) {
-            sendMessage(TextUtil.color("&cNot enough players! Countdown stopped!"));
             startingTask.cancelTask();
+            TextUtil.sendMessage(players, "&cWe don't have enough players! Start cancelled!");
             setArenaState(ArenaState.WAITING);
         }
-        if (!arenaState.equals(ArenaState.WAITING) && !arenaState.equals(ArenaState.STARTING) && !arenaState.equals(ArenaState.RESTARTING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
+        if (arenaState.equals(ArenaState.PLAYING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
             TextUtil.info("Not enough players in game " + id + ". Restarting...");
             setArenaState(ArenaState.RESTARTING);
         }
@@ -176,7 +189,7 @@ public class Arena {
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-            ArenaUtil.showLobbyPlayers(player);
+            ArenaUtil.showLobbyPlayers(player, this);
             player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
         }
         players.clear();
@@ -186,16 +199,16 @@ public class Arena {
         this.gamePhase = gamePhase;
         switch (gamePhase) {
             case PRE_ROUND:
-                preRoundTask = new ArenaPreRoundTask(this);
+                preRoundTask = new ArenaPreRoundTask(this, 10);
                 break;
             case ACTIVE_ROUND:
-                playingTask = new ArenaPlayingTask(this);
+                playingTask = new ArenaPlayingTask(this, 60);
                 break;
             case ROUND_OVER:
-                roundOverTask = new ArenaRoundOverTask(this);
+                roundOverTask = new ArenaRoundOverTask(this, 5);
                 break;
             case GAME_ENDED:
-                gameEndedTask = new ArenaGameEndedTask(this);
+                gameEndedTask = new ArenaGameEndedTask(this, 10);
                 break;
         }
     }
@@ -204,7 +217,10 @@ public class Arena {
         this.arenaState = arenaState;
         switch (arenaState) {
             case STARTING:
-                startingTask = new ArenaStartingTask(this);
+                startingTask = new ArenaStartingTask(this, 10);
+                break;
+            case PLAYING:
+                setGamePhase(GamePhase.PRE_ROUND);
                 break;
             case RESTARTING:
                 restart();
@@ -294,7 +310,9 @@ public class Arena {
         }
         deadPlayers.clear();
         teams.forEach(Team::teleportToSpawn);
-        ArenaUtil.showDeadPlayers(this);
+        for (Player player : players) {
+            players.forEach(player::showPlayer);
+        }
     }
 
     public void cancelTasks() {
@@ -307,18 +325,6 @@ public class Arena {
 
     public boolean isLastRound() {
         return round == maxRounds;
-    }
-
-    public void sendMessage(String msg) {
-        getPlayers().forEach(player -> player.sendMessage(TextUtil.color(msg)));
-    }
-
-    public void sendTitle(int stay, String title, String subtitle) {
-        getPlayers().forEach(player -> Titles.sendTitle(player, 0, stay, 0, TextUtil.color(title), TextUtil.color(subtitle)));
-    }
-
-    public void playSound(String sound) {
-        getPlayers().forEach(player -> XSound.play(player, sound));
     }
 
     public String getTeamPointsFormatted() {

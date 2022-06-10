@@ -17,6 +17,12 @@ public class Cuboid {
     private final int yMax;
     private final int zMin;
     private final int zMax;
+    private final double xMinCentered;
+    private final double xMaxCentered;
+    private final double yMinCentered;
+    private final double yMaxCentered;
+    private final double zMinCentered;
+    private final double zMaxCentered;
     @Getter private final World world;
 
     public Cuboid(Location point1, Location point2) {
@@ -26,6 +32,12 @@ public class Cuboid {
         this.yMax = Math.max(point1.getBlockY(), point2.getBlockY());
         this.zMin = Math.min(point1.getBlockZ(), point2.getBlockZ());
         this.zMax = Math.max(point1.getBlockZ(), point2.getBlockZ());
+        this.xMinCentered = this.xMin + 0.5;
+        this.xMaxCentered = this.xMax + 0.5;
+        this.yMinCentered = this.yMin + 0.5;
+        this.yMaxCentered = this.yMax + 0.5;
+        this.zMinCentered = this.zMin + 0.5;
+        this.zMaxCentered = this.zMax + 0.5;
         this.world = point1.getWorld();
     }
 
@@ -56,6 +68,16 @@ public class Cuboid {
                 && location.getBlockY() <= this.yMax
                 && location.getBlockZ() >= this.zMin
                 && location.getBlockZ() <= this.zMax;
+    }
+
+    public boolean isInsideWithMarge(Location location, double marge) {
+        return location.getWorld().equals(this.world)
+                && location.getX() >= this.xMinCentered - marge
+                && location.getX() <= this.xMaxCentered + marge
+                && location.getY() >= this.yMinCentered - marge
+                && location.getY() <= this.yMaxCentered + marge
+                && location.getZ() >= this.zMinCentered - marge
+                && location.getZ() <= this.zMaxCentered + marge;
     }
 
     public int getHeight() {

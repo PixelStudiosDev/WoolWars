@@ -24,6 +24,7 @@ public class BlockPlaceListener implements Listener {
         if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
+            return;
         }
         if (!ArenaUtil.isBlockInTeamBase(e.getBlock(), arena)) {
             if (e.getBlockAgainst().getType().toString().contains("LAVA") || e.getBlockAgainst().getType().toString().contains("WATER")) {

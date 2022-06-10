@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.game.arena;
 
+import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -25,9 +26,10 @@ public class ArenaManager {
             String id = file.getName().replace(".yml", "");
             Arena arena = new Arena(id, arenaConfig);
             registerArena(arena);
+            TextUtil.info("Arena '" + id + "' loaded!");
             loaded++;
         }
-        TextUtil.info(loaded + " arenas loaded!");
+        TextUtil.info("Loaded " + loaded + " arenas!");
     }
 
     public void registerArena(Arena arena) {

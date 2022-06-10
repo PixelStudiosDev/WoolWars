@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.config;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -53,8 +54,11 @@ public class FileManager {
 
     public void reload() {
         config = YamlConfiguration.loadConfiguration(configFile);
+        TextUtil.info("config.yml loaded!");
         messages = YamlConfiguration.loadConfiguration(messagesFile);
+        TextUtil.info("messages.yml loaded!");
         powerUps = YamlConfiguration.loadConfiguration(powerUpsFile);
+        TextUtil.info("powerups.yml loaded!");
     }
 
     public File[] getArenas() {

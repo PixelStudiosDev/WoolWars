@@ -17,6 +17,7 @@ import me.cubecrafter.woolwars.game.listeners.ChatListener;
 import me.cubecrafter.woolwars.game.listeners.InventoryListener;
 import me.cubecrafter.woolwars.game.listeners.PlayerJoinListener;
 import me.cubecrafter.woolwars.game.listeners.PlayerQuitListener;
+import me.cubecrafter.woolwars.game.powerup.PowerupManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.utils.Auth;
@@ -40,6 +41,7 @@ public final class WoolWars extends JavaPlugin {
     private KitManager kitManager;
     private ScoreboardHandler scoreboardHandler;
     private PlayerDataManager playerDataManager;
+    private PowerupManager powerupManager;
     private VaultHook vaultHook;
     private NMS nms;
     private WoolWarsAPI api;
@@ -81,6 +83,7 @@ public final class WoolWars extends JavaPlugin {
         commandManager = new CommandManager();
         playerDataManager = new PlayerDataManager();
         scoreboardHandler = new ScoreboardHandler();
+        powerupManager = new PowerupManager();
         kitManager = new KitManager();
         Arrays.asList(new InventoryListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(),
                         new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())

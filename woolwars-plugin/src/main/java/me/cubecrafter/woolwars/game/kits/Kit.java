@@ -40,8 +40,11 @@ public class Kit {
         this.menuSlot = kitConfig.getInt("menu-item.slot");
         menuItem = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("menu-item")).build();
         for (String section : kitConfig.getConfigurationSection("items").getKeys(false)) {
-            ItemStack item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("items." + section)).build();
+            ItemStack item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("items." + section)).setUnbreakable(true).build();
             contents.put(item, kitConfig.getInt("items." + section + ".slot"));
+        }
+        for (String effect : kitConfig.getStringList("persistent-effects")) {
+            persistentEffects.add(TextUtil.getEffect(effect));
         }
     }
 
@@ -49,6 +52,7 @@ public class Kit {
         if (team == null) return;
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.sendMessage(TextUtil.color("&7Kit &b" + displayName + " &7selected!"));
         if (helmetEnabled) player.getInventory().setHelmet(new ItemBuilder("LEATHER_HELMET").setColor(team.getTeamColor().getColor()).build());
         if (chestplateEnabled) player.getInventory().setChestplate(new ItemBuilder("LEATHER_CHESTPLATE").setColor(team.getTeamColor().getColor()).build());
@@ -70,6 +74,7 @@ public class Kit {
             }
         }
         player.getInventory().setItem(ability.getSlot(), ability.getItem());
+        persistentEffects.forEach(player::addPotionEffect);
     }
 
 }
