@@ -77,6 +77,7 @@ public class PlayerScoreboard {
     public void removeGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerScoreboard sidebar = getScoreboard(player);
+            if (sidebar == null) continue;
             sidebar.removeGamePrefixInternal(this.player, team);
         }
     }

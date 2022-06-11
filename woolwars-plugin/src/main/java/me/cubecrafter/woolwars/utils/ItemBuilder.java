@@ -39,14 +39,14 @@ public class ItemBuilder {
 
     public ItemBuilder setDisplayName(String name) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(TextUtil.format(name));
+        meta.setDisplayName(TextUtil.color(name));
         item.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(TextUtil.format(lore));
+        meta.setLore(TextUtil.color(lore));
         item.setItemMeta(meta);
         return this;
     }

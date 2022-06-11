@@ -4,9 +4,15 @@ import me.cubecrafter.woolwars.api.NMS;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
-public class v1_8_R3 implements NMS {
+public class v1_8_R3 extends NMS {
+
+    public v1_8_R3(Plugin plugin) {
+        super(plugin);
+    }
 
     @Override
     public ItemStack setTag(ItemStack item, String key, String value) {
@@ -27,6 +33,16 @@ public class v1_8_R3 implements NMS {
             }
         }
         return null;
+    }
+
+    @Override
+    public void showPlayer(Player player, Player target) {
+        player.showPlayer(target);
+    }
+
+    @Override
+    public void hidePlayer(Player player, Player target) {
+        player.hidePlayer(target);
     }
 
 }

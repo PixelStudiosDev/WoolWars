@@ -42,12 +42,11 @@ public class ArenaListMenu extends Menu {
                         .setLore(Arrays.asList(TextUtil.format("&7Players: &e{players}&7/&e{max_players}", arena, player),
                                 TextUtil.format("&7Group: &b{group}", arena, player),
                                 "",
-                                "&cLeft Click &8➽ &7Join",
-                                "&dRight Click &8➽ &7Spectate"
+                                "&cLeft Click to join"
                                 )).build()).addAction(e -> {
                     closeMenu();
                     arena.addPlayer(player);
-                }, ClickType.LEFT, ClickType.SHIFT_LEFT, ClickType.RIGHT, ClickType.SHIFT_RIGHT));
+                }));
             }
         }
 
@@ -55,7 +54,7 @@ public class ArenaListMenu extends Menu {
             new MainMenu(player).openMenu();
         }).setClickSound("UI_BUTTON_CLICK"));
 
-        // ARENA GROUP SORTING
+        // todo ARENA GROUP SORTING
 
         addFiller(new ItemBuilder("GRAY_STAINED_GLASS_PANE").setDisplayName("&f").build(), Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,41,42,43,44));
 

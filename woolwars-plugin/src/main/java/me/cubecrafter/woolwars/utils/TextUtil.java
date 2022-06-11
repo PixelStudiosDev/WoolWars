@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import com.cryptomorin.xseries.XPotion;
+import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -164,6 +165,14 @@ public class TextUtil {
 
     public void sendTitle(List<Player> players, int seconds, String title, String subtitle) {
         players.forEach(player -> sendTitle(player, seconds, title, subtitle));
+    }
+
+    public void sendActionBar(Player player, String message) {
+        ActionBar.sendActionBar(player, format(message, player));
+    }
+
+    public void sendActionBar(List<Player> players, String message) {
+        players.forEach(player -> sendActionBar(player, message));
     }
 
     public String getCurrentDate() {

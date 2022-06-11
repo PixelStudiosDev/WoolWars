@@ -23,6 +23,11 @@ public class BlockBreakListener implements Listener {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));
         } else if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
+            if (arena.isCenterLocked()) {
+                TextUtil.sendMessage(player, "&cCenter is locked!");
+                e.setCancelled(true);
+                return;
+            }
             if (e.getBlock().hasMetadata("woolwars")) {
                 if (!e.getBlock().getMetadata("woolwars").isEmpty()) {
                     String teamName = e.getBlock().getMetadata("woolwars").get(0).asString();

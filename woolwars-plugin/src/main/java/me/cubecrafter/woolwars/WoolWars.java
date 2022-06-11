@@ -24,6 +24,7 @@ import me.cubecrafter.woolwars.utils.Auth;
 import me.cubecrafter.woolwars.utils.ScoreboardHandler;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -67,7 +68,7 @@ public final class WoolWars extends JavaPlugin {
         String version = getServer().getClass().getName().split("\\.")[3];
         try {
             Class<?> clazz = Class.forName("me.cubecrafter.woolwars.nms." + version);
-            nms = (NMS) clazz.getConstructor().newInstance();
+            nms = (NMS) clazz.getConstructor(Plugin.class).newInstance(this);
             TextUtil.info("Support for version " + version + " loaded!");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             TextUtil.severe("Your server version (" + version + ") is not supported! Disabling...");
@@ -75,7 +76,6 @@ public final class WoolWars extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        TextUtil.info("");
         new Metrics(this, 14788);
         registerHooks();
         SQLDatabase = new Database();

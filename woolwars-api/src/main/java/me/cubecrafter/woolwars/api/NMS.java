@@ -1,10 +1,21 @@
 package me.cubecrafter.woolwars.api;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
-public interface NMS {
+public abstract class NMS {
 
-    ItemStack setTag(ItemStack item, String key, String value);
-    String getTag(ItemStack item, String key);
+    protected final Plugin plugin;
+    public NMS(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    public abstract ItemStack setTag(ItemStack item, String key, String value);
+    public abstract String getTag(ItemStack item, String key);
+
+    public abstract void showPlayer(Player player, Player target);
+
+    public abstract void hidePlayer(Player player, Player target);
 
 }

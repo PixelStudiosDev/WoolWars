@@ -50,7 +50,7 @@ public class ArenaUtil {
     }
 
     public Arena getArenaByPlayer(Player player) {
-        return getArenas().stream().filter(arena -> arena.getPlayers().contains(player) || arena.getSpectators().contains(player)).findAny().orElse(null);
+        return getArenas().stream().filter(arena -> arena.getPlayers().contains(player)).findAny().orElse(null);
     }
 
     public Arena getArenaById(String name) {
@@ -75,10 +75,6 @@ public class ArenaUtil {
 
     public PlayerData getPlayerData(Player player) {
         return WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
-    }
-
-    public boolean isSpectating(Player player) {
-        return getArenas().stream().anyMatch(arena -> arena.getSpectators().contains(player));
     }
 
     public boolean isPlaying(Player player) {

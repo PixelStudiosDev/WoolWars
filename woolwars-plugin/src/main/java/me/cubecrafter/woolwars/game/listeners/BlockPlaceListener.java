@@ -15,7 +15,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class BlockPlaceListener implements Listener {
-    // TODO: 28/05/2022 da fixare
+
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
@@ -33,8 +33,13 @@ public class BlockPlaceListener implements Listener {
                 return;
             }
             if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
-                Team team = arena.getTeamByPlayer(player);
+                if (arena.isCenterLocked()) {
+                    TextUtil.sendMessage(player, "&cCenter is locked!");
+                    e.setCancelled(true);
+                    return;
+                }
                 if (e.getBlock().getType().toString().endsWith("WOOL")) {
+                    Team team = arena.getTeamByPlayer(player);
                     e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
                     arena.getPlayingTask().addPlacedWool(team);
                     arena.getPlayingTask().addPlacedWool(player);

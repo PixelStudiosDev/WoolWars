@@ -41,7 +41,6 @@ public class Arena {
     private final int requiredPoints;
     private final int maxRounds;
     private final List<Player> players = new ArrayList<>();
-    private final List<Player> spectators = new ArrayList<>();
     private final List<Player> deadPlayers = new ArrayList<>();
     private final List<Block> arenaPlacedBlocks = new ArrayList<>();
     private final List<Team> teams = new ArrayList<>();
@@ -61,7 +60,13 @@ public class Arena {
     private ArenaState arenaState = ArenaState.WAITING;
     @Setter private int round = 0;
     @Setter private int timer = 0;
+    @Setter private boolean centerLocked = false;
 
+    /**
+     * Creates a new arena.
+     * @param id
+     * @param arenaConfig
+     */
     public Arena(String id, YamlConfiguration arenaConfig) {
         this.id = id;
         group = arenaConfig.getString("group");
@@ -95,6 +100,10 @@ public class Arena {
         killEntities();
     }
 
+    /**
+     * Adds a player to the arena.
+     * @param player
+     */
     public void addPlayer(Player player) {
         if (players.contains(player)) {
             player.sendMessage(TextUtil.color("&cYou are already in this game!"));
@@ -138,6 +147,9 @@ public class Arena {
         }
     }
 
+    /**
+     * Force starts the game.
+     */
     public void forceStart() {
         if (arenaState.equals(ArenaState.WAITING)) setArenaState(ArenaState.STARTING);
     }
@@ -147,7 +159,9 @@ public class Arena {
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
             PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
-            scoreboard.removeGamePrefix(playerTeam);
+            if (scoreboard != null) {
+                scoreboard.removeGamePrefix(playerTeam);
+            }
             playerTeam.removeMember(player);
         }
         player.getInventory().setArmorContents(null);
