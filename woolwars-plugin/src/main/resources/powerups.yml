@@ -7,8 +7,67 @@
 jump-boost:
   displayed-item:
     material: PLAYER_HEAD
+    texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYyZWQ0ZWYzNThiZjkyNTJlYTczYTZiMGY0ZTg2OGIyN2ZlZWJjYWU2MDNlZTVlNWQwOTgyYjZkOWU2NjkwIn19fQ
   hologram-lines:
-    - "FRAN GAY"
-    - "CLICK TO GAY"
-  effects: []
+    - "&eJump-Boost"
+  effects:
+    - JUMP,3,1
   items: []
+chainmail:
+  displayed-item:
+    material: CHAINMAIL_CHESTPLATE
+  hologram-lines:
+      - "&eChainmail"
+  effects: []
+  items:
+    - CHAINMAIL_CHESTPLATE
+bow:
+  displayed-item:
+    material: BOW
+  hologram-lines:
+      - "&eBow"
+  effects: []
+  items:
+    - BOW
+stone-pickaxe:
+  displayed-item:
+    material: STONE_PICKAXE
+  hologram-line:
+      - "eStone Pickaxe"
+  effects: []
+  items:
+    - STONE_PICKAXE
+instant-health:
+  displayed-item:
+    material: PLAYER_HEAD
+    texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTZhMTA2YmQ3YzViZDNmZDA2ZDkwOGRmZjFjNzczMjVjNTIxZGM4NzM1YzAxYWFkZTc3N2YwNTY0MjFhZDkyOSJ9fX0=
+  hologram-line:
+    - "&eInstant Health"
+  effects:
+    - INSTANT_HEALTH,2,3
+  items: []
+speed-boost:
+  displayed-item:
+    material: PLAYER_HEAD
+    texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZlMGEzY2M2NjU3ZDQyMDU4MThmZmVmNWNjN2I3ZTM2YzM4MWQ0MjY5YjY5MDEwYzcyOTdhNmZhNjhkODNkNyJ9fX0=
+  hologram-line:
+    - "eSpeed Boost"
+  effects:
+    - SPEED,3,3
+  items: []
+iron-boots:
+  displayed-item:
+    material: IRON_BOOTS
+  hologram-line:
+    - "eIron Boots"
+  effects: []
+  items:
+    - IRON_BOOTS
+stone-sword:
+  displayed-item:
+    material: STONE_SWORD
+  hologram-line:
+    - "eStone Sword"
+  effects: []
+  items:
+    - STONE_SWORD
