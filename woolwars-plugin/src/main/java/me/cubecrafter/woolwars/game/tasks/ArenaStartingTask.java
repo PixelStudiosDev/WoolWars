@@ -21,7 +21,7 @@ public class ArenaStartingTask extends ArenaTask {
     }
 
     @Override
-    public void onTimerEnd() {
+    public void onEnd() {
         arena.assignTeams();
         arena.getTeams().forEach(Team::setNameTags);
         TextUtil.sendTitle(arena.getPlayers(), 2, "&e&lPRE ROUND", "&7Select your kit!");
