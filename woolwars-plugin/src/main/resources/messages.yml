@@ -1,3 +1,9 @@
+# WoolWars Messages File
+# Version: ${project.version}
+# Author: CubeCrafter
+# Issues:
+# Wiki:
+# Discord:
 scoreboard:
   title: '&c&lWOOL WARS'
   lobby:

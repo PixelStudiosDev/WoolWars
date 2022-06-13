@@ -11,6 +11,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        e.setJoinMessage("");
         Player player = e.getPlayer();
         ArenaUtil.teleportToLobby(player);
         for (Player online : Bukkit.getOnlinePlayers()) {

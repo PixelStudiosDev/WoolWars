@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.game.kits;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GamePhase;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -46,7 +46,7 @@ public class Ability {
 
     public void use(Player player) {
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) {
+        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND)) {
             player.sendMessage(TextUtil.color("&cYou can't use your ability yet!"));
             return;
         }
@@ -78,9 +78,7 @@ public class Ability {
                 player.getInventory().setChestplate(new ItemBuilder("GOLDEN_CHESTPLATE").build());
                 player.getInventory().setLeggings(new ItemBuilder("GOLDEN_LEGGINGS").build());
                 player.getInventory().setBoots(new ItemBuilder("GOLDEN_BOOTS").build());
-                Bukkit.getScheduler().runTaskLater(WoolWars.getInstance(), () -> {
-                    player.getInventory().setArmorContents(null);
-                }, 100L);
+                Bukkit.getScheduler().runTaskLater(WoolWars.getInstance(), () -> player.getInventory().setArmorContents(null), 100L);
                 cooldown.add(player.getUniqueId());
                 break;
             case HACK:
@@ -118,7 +116,7 @@ public class Ability {
         KNOCKBACK_TNT,
         STEP_BACK,
         GOLDEN_SHELL,
-        HACK;
+        HACK
     }
 
 }

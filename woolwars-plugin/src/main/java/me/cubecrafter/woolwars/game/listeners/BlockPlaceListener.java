@@ -2,9 +2,9 @@ package me.cubecrafter.woolwars.game.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GamePhase;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -21,7 +21,7 @@ public class BlockPlaceListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
+        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
             return;
@@ -47,7 +47,7 @@ public class BlockPlaceListener implements Listener {
                 }
                 return;
             }
-            for (String material : ConfigPath.PLACEABLE_BLOCKS.getAsStringList()) {
+            for (String material : Configuration.PLACEABLE_BLOCKS.getAsStringList()) {
                 if (e.getBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     arena.getArenaPlacedBlocks().add(e.getBlock());
                     return;

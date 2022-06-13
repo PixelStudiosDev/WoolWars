@@ -1,0 +1,44 @@
+displayname: "Golem"
+default-kit: false
+persistent-effects: []
+armor:
+  helmet: true
+  chestplate: true
+  leggings: true
+  boots: true
+items:
+  item-1:
+    material: STONE_SWORD
+    slot: 0
+  item-2:
+    material: WOOL
+    amount: 32
+    slot: 1
+ability:
+  displayname: "&6&lGOLDEN SHELL"
+  type: GOLDEN_SHELL
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lGOLDEN SHELL"
+    lore:
+    - "&7Encase yourself in Golden Armor"
+    - "&7for 5 seconds."
+    - ""
+    - "&6Press &e&lRight Click &6to activate"
+    - ""
+    - "&7You can only use your keystone"
+    - "&7ability &c&lONCE &7per round."        
+    slot: 8    
+menu-item:
+  material: GOLDEN_CHESTPLATE
+  displayname: "&aGolem"
+  lore:
+   - "&7Powered down, the golem lacks"
+   - "&7all but a hard hitting offense,"
+   - "&7but for a few seconds, the golem"    
+   - "&7can become the toughest entity"
+   - "&7around!"
+   - ""
+   - "{kit_status}"  
+  slot: 31

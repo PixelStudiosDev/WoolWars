@@ -3,7 +3,8 @@ package me.cubecrafter.woolwars.game.arena;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
-import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.tasks.*;
 import me.cubecrafter.woolwars.game.team.Team;
@@ -20,17 +21,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
-public class Arena {
+public class Arena implements Runnable {
 
     private final String id;
     private final String displayName;
@@ -56,8 +51,7 @@ public class Arena {
     private ArenaPreRoundTask preRoundTask;
     private ArenaRoundOverTask roundOverTask;
     private ArenaGameEndedTask gameEndedTask;
-    private GamePhase gamePhase = GamePhase.NONE;
-    private ArenaState arenaState = ArenaState.WAITING;
+    private GameState gameState = GameState.WAITING;
     @Setter private int round = 0;
     @Setter private int timer = 0;
     @Setter private boolean centerLocked = false;
@@ -109,7 +103,7 @@ public class Arena {
             player.sendMessage(TextUtil.color("&cYou are already in this game!"));
             return;
         }
-        if (!arenaState.equals(ArenaState.WAITING) && !arenaState.equals(ArenaState.STARTING)) {
+        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING)) {
             player.sendMessage(TextUtil.color("&cThe game is already started!"));
             return;
         }
@@ -142,8 +136,8 @@ public class Arena {
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
                 .replace("{maxplayers}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
-        if (arenaState.equals(ArenaState.WAITING) && getPlayers().size() >= getMinPlayers()) {
-            setArenaState(ArenaState.STARTING);
+        if (gameState.equals(GameState.WAITING) && getPlayers().size() >= getMinPlayers()) {
+            setGameState(GameState.STARTING);
         }
     }
 
@@ -151,7 +145,7 @@ public class Arena {
      * Force starts the game.
      */
     public void forceStart() {
-        if (arenaState.equals(ArenaState.WAITING)) setArenaState(ArenaState.STARTING);
+        if (gameState.equals(GameState.WAITING)) setGameState(GameState.STARTING);
     }
 
     public void removePlayer(Player player, boolean teleportToLobby) {
@@ -172,9 +166,9 @@ public class Arena {
         player.setHealth(20);
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        if (teleportToLobby) player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
+        if (teleportToLobby) player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
         ArenaUtil.showLobbyPlayers(player, this);
-        if (arenaState.equals(ArenaState.WAITING) || arenaState.equals(ArenaState.STARTING)) {
+        if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
             TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
                     .replace("{player}", player.getName())
                     .replace("{currentplayers}", String.valueOf(players.size()))
@@ -182,14 +176,14 @@ public class Arena {
         } else {
             TextUtil.sendMessage(players, "&c{player} &7has left!".replace("{player}", player.getDisplayName()));
         }
-        if (arenaState.equals(ArenaState.STARTING) && getPlayers().size() < getMinPlayers()) {
+        if (gameState.equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             startingTask.cancelTask();
             TextUtil.sendMessage(players, "&cWe don't have enough players! Start cancelled!");
-            setArenaState(ArenaState.WAITING);
+            setGameState(GameState.WAITING);
         }
-        if (arenaState.equals(ArenaState.PLAYING) && getTeams().stream().filter(team -> team.getMembers().size() == 0).count() > getTeams().size() - 2) {
+        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {
             TextUtil.info("Not enough players in game " + id + ". Restarting...");
-            setArenaState(ArenaState.RESTARTING);
+            restart();
         }
     }
 
@@ -204,14 +198,17 @@ public class Arena {
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             ArenaUtil.showLobbyPlayers(player, this);
-            player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
+            player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
         }
         players.clear();
     }
 
-    public void setGamePhase(GamePhase gamePhase) {
-        this.gamePhase = gamePhase;
-        switch (gamePhase) {
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+        switch (gameState) {
+            case STARTING:
+                startingTask = new ArenaStartingTask(this, 10);
+                break;
             case PRE_ROUND:
                 preRoundTask = new ArenaPreRoundTask(this, 10);
                 break;
@@ -223,21 +220,6 @@ public class Arena {
                 break;
             case GAME_ENDED:
                 gameEndedTask = new ArenaGameEndedTask(this, 10);
-                break;
-        }
-    }
-
-    public void setArenaState(ArenaState arenaState) {
-        this.arenaState = arenaState;
-        switch (arenaState) {
-            case STARTING:
-                startingTask = new ArenaStartingTask(this, 10);
-                break;
-            case PLAYING:
-                setGamePhase(GamePhase.PRE_ROUND);
-                break;
-            case RESTARTING:
-                restart();
                 break;
         }
     }
@@ -256,12 +238,11 @@ public class Arena {
         deaths.clear();
         placedBlocks.clear();
         brokenBlocks.clear();
-        setGamePhase(GamePhase.NONE);
-        setArenaState(ArenaState.WAITING);
+        setGameState(GameState.WAITING);
     }
 
     public void assignTeams() {
-        for (Player player : getPlayers()) {
+        for (Player player : players) {
             Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size())));
             minPlayers.addMember(player);
         }
@@ -367,6 +348,11 @@ public class Arena {
 
     public void addBrokenBlocks(Player player, int n) {
         brokenBlocks.merge(player, n, Integer::sum);
+    }
+
+    @Override
+    public void run() {
+
     }
 
 }

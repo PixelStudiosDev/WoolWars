@@ -1,6 +1,5 @@
 package me.cubecrafter.woolwars.game.arena;
 
-import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -21,7 +20,7 @@ public class ArenaManager {
 
     private void loadArenas() {
         int loaded = 0;
-        for (File file : WoolWars.getInstance().getFileManager().getArenas()) {
+        for (File file : WoolWars.getInstance().getFileManager().getArenaFiles()) {
             YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
             String id = file.getName().replace(".yml", "");
             Arena arena = new Arena(id, arenaConfig);
@@ -45,7 +44,7 @@ public class ArenaManager {
     }
 
     public void disableArenas() {
-        ArenaUtil.getArenas().forEach(arena -> arena.setArenaState(ArenaState.RESTARTING));
+        ArenaUtil.getArenas().forEach(Arena::restart);
     }
 
 }

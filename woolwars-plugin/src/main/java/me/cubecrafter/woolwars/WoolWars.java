@@ -5,6 +5,7 @@ import me.cubecrafter.woolwars.api.API;
 import me.cubecrafter.woolwars.api.NMS;
 import me.cubecrafter.woolwars.api.WoolWarsAPI;
 import me.cubecrafter.woolwars.commands.CommandManager;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.PlayerDataManager;
@@ -17,7 +18,7 @@ import me.cubecrafter.woolwars.game.listeners.ChatListener;
 import me.cubecrafter.woolwars.game.listeners.InventoryListener;
 import me.cubecrafter.woolwars.game.listeners.PlayerJoinListener;
 import me.cubecrafter.woolwars.game.listeners.PlayerQuitListener;
-import me.cubecrafter.woolwars.game.powerup.PowerupManager;
+import me.cubecrafter.woolwars.game.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.utils.Auth;
@@ -42,7 +43,7 @@ public final class WoolWars extends JavaPlugin {
     private KitManager kitManager;
     private ScoreboardHandler scoreboardHandler;
     private PlayerDataManager playerDataManager;
-    private PowerupManager powerupManager;
+    private PowerUpManager powerupManager;
     private VaultHook vaultHook;
     private NMS nms;
     private WoolWarsAPI api;
@@ -59,8 +60,8 @@ public final class WoolWars extends JavaPlugin {
         TextUtil.info("Version: " + getDescription().getVersion());
         TextUtil.info("Running on: " + getServer().getVersion());
         TextUtil.info("Java Version: " + System.getProperty("java.version"));
-        fileManager = new FileManager();
-        if (!new Auth(this, fileManager.getConfig().getString("license-key"), "http://142.132.151.133:1452/api/client", "565a2feab733667b66246aab765d03623fab8f1d").verify()) {
+        fileManager = new FileManager(this);
+        if (!new Auth(this, Configuration.LICENSE_KEY.getAsString(), "http://142.132.151.133:1452/api/client", "565a2feab733667b66246aab765d03623fab8f1d").verify()) {
             getServer().getScheduler().cancelTasks(this);
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -83,7 +84,7 @@ public final class WoolWars extends JavaPlugin {
         commandManager = new CommandManager();
         playerDataManager = new PlayerDataManager();
         scoreboardHandler = new ScoreboardHandler();
-        powerupManager = new PowerupManager();
+        powerupManager = new PowerUpManager();
         kitManager = new KitManager();
         Arrays.asList(new InventoryListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(),
                         new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())

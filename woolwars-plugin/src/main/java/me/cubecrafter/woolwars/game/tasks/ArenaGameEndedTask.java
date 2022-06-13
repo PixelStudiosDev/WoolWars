@@ -3,7 +3,6 @@ package me.cubecrafter.woolwars.game.tasks;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.ArenaState;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -40,8 +39,8 @@ public class ArenaGameEndedTask extends ArenaTask {
     }
 
     @Override
-    public void onTimerEnd() {
-        arena.setArenaState(ArenaState.RESTARTING);
+    public void onEnd() {
+        arena.restart();
     }
 
 }

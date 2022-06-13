@@ -5,7 +5,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.GamePhase;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -48,7 +48,7 @@ public class ArenaPlayingTask extends ArenaTask {
     }
 
     @Override
-    public void onTimerEnd() {
+    public void onEnd() {
         checkWinners();
         placedBlocks.clear();
         rotatePowerUpsTask.cancel();
@@ -83,13 +83,13 @@ public class ArenaPlayingTask extends ArenaTask {
                     rotatePowerUpsTask.cancel();
                     addWinsLossesStats(team);
                     sendRoundEndedMessages(team, false, true);
-                    arena.setGamePhase(GamePhase.GAME_ENDED);
+                    arena.setGameState(GameState.GAME_ENDED);
                     return;
                 }
                 sendRoundEndedMessages(team, false, false);
                 cancelTask();
                 rotatePowerUpsTask.cancel();
-                arena.setGamePhase(GamePhase.ROUND_OVER);
+                arena.setGameState(GameState.ROUND_OVER);
             }
         } else if (arena.getTimer() == 0) {
             Map.Entry<Team, Integer> bestTeam = placedBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
@@ -97,12 +97,12 @@ public class ArenaPlayingTask extends ArenaTask {
             if (bestTeam == null) {
                 sendRoundEndedMessages(null, false, false);
                 rotatePowerUpsTask.cancel();
-                arena.setGamePhase(GamePhase.ROUND_OVER);
+                arena.setGameState(GameState.ROUND_OVER);
                 // DRAW
             } else if (placedBlocks.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
                 sendRoundEndedMessages(null, true, false);
                 rotatePowerUpsTask.cancel();
-                arena.setGamePhase(GamePhase.ROUND_OVER);
+                arena.setGameState(GameState.ROUND_OVER);
                 // WINNER TEAM FOUND
             } else {
                 Team winner = bestTeam.getKey();
@@ -111,17 +111,17 @@ public class ArenaPlayingTask extends ArenaTask {
                     addWinsLossesStats(winner);
                     rotatePowerUpsTask.cancel();
                     sendRoundEndedMessages(winner, false, true);
-                    arena.setGamePhase(GamePhase.GAME_ENDED);
+                    arena.setGameState(GameState.GAME_ENDED);
                 } else {
                     if (arena.isLastRound()) {
                         addWinsLossesStats(winner);
                         rotatePowerUpsTask.cancel();
                         sendRoundEndedMessages(winner, false, true);
-                        arena.setGamePhase(GamePhase.GAME_ENDED);
+                        arena.setGameState(GameState.GAME_ENDED);
                     } else {
                         rotatePowerUpsTask.cancel();
                         sendRoundEndedMessages(winner, false, false);
-                        arena.setGamePhase(GamePhase.ROUND_OVER);
+                        arena.setGameState(GameState.ROUND_OVER);
                     }
                 }
             }

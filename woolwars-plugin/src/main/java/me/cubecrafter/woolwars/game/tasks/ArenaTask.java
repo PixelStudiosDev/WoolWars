@@ -5,7 +5,7 @@ import me.cubecrafter.woolwars.game.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-public class ArenaTask {
+public abstract class ArenaTask {
 
     protected final Arena arena;
     private final BukkitTask task;
@@ -15,7 +15,7 @@ public class ArenaTask {
         arena.setTimer(duration);
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> {
             if (arena.getTimer() == 0) {
-                onTimerEnd();
+                onEnd();
                 cancelTask();
             } else if (arena.getTimer() > 0) {
                 execute();
@@ -30,6 +30,6 @@ public class ArenaTask {
 
     public void execute() {}
 
-    public void onTimerEnd() {}
+    public void onEnd() {}
 
 }

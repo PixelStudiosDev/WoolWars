@@ -1,0 +1,63 @@
+displayname: "Assault"
+default-kit: false
+persistent-effects: []
+armor:
+  helmet: false
+  chestplate: false
+  leggings: true
+  boots: true
+items:
+  item-1:
+    material: WOODEN_SWORD
+    slot: 0
+  item-2:
+    material: SHEARS
+    enchantments:
+    - EFFICIENCY,2
+    slot: 1
+  item-3:
+    material: IRON_PICKAXE
+    slot: 2
+  item-4:
+    material: STONE_SHOVEL
+    slot: 3
+  item-5:
+    material: SPLASH_POTION
+    effect: INSTANT_HEALTH,0,2
+    slot: 4   
+  item-6:
+    material: SPLASH_POTION
+    effect: INSTANT_DAMAGE,0,1
+    slot: 5       
+  item-7:
+    material: WOOL
+    amount: 64
+    slot: 6    
+ability:
+  displayname: "&6&lKNOCKBACK TNT"
+  type: KNOCKBACK_TNT
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lKNOCKBACK TNT"
+    lore:
+    - "&7Place a TNT that doesn't deal"
+    - "&7damage, but deals massive"
+    - "&7knockback to enemies."
+    - ""
+    - "&6Press &e&lRight Click &6to activate"
+    - ""
+    - "&7You can only use your keystone"
+    - "&7ability &c&lONCE &7per round."
+    slot: 8    
+menu-item:
+  material: SHEARS
+  displayname: "&aAssault"
+  lore:
+   - "&7With good tools, potions and a"
+   - "&7powerful blast of TNT, secure"
+   - "&7the middle for a few seconds and"    
+   - "&7victory is within grasp!"
+   - ""
+   - "{kit_status}" 
+  slot: 13

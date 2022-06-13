@@ -1,0 +1,61 @@
+displayname: "Engineer"
+default-kit: false
+persistent-effects: []
+armor:
+  helmet: true
+  chestplate: true
+  leggings: true
+  boots: true
+items:
+  item-1:
+    material: STONE_SWORD
+    slot: 0
+  item-2:
+    material: BOW
+    slot: 1
+  item-3:
+    material: ARROW
+    amount: 4
+    slot: 2
+  item-4:
+    material: SHEARS
+    slot: 3
+  item-5:
+    material: STONE_PICKAXE
+    slot: 4
+  item-6:
+    material: SPLASH_POTION
+    effect: FIRE_RESISTANCE,0,1
+    slot: 5
+  item-7:
+    material: WOOL
+    amount: 64
+    slot: 6    
+ability:
+  displayname: "&6&lHACK"
+  type: HACK
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lHACK"  
+    lore: 
+    - "&7Disable players from placing or"
+    - "&7breaking middle blocks for 5"
+    - "&7seconds."
+    - ""
+    - "&6Press &e&lRight Click &6to activate"
+    - ""
+    - "&7You can only use your keystone"
+    - "&7ability &c&lONCE &7per round."
+    slot: 8    
+menu-item:
+  material: REDSTONE_BLOCK
+  displayname: "&aEngineer"
+  lore:
+   - "&7A great all purpose class that"
+   - "&7can lock middle for several"
+   - "&7seconds to give your team an"    
+   - "&7edge!"
+   - ""
+   - "{kit_status}"  
+  slot: 33

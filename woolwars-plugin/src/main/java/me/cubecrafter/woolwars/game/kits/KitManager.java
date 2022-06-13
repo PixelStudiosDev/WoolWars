@@ -23,7 +23,7 @@ public class KitManager {
 
     private void loadKits() {
         int loaded = 0;
-        for (File kitFile : WoolWars.getInstance().getFileManager().getKits()) {
+        for (File kitFile : WoolWars.getInstance().getFileManager().getKitFiles()) {
             String id = kitFile.getName().replace(".yml", "");
             YamlConfiguration kitConfig = YamlConfiguration.loadConfiguration(kitFile);
             Kit kit = new Kit(id, kitConfig);

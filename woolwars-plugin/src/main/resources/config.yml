@@ -1,32 +1,25 @@
-# Wool Wars configuration file
-
-# Your license key. Verify in the Discord server to get it. (https://discord.gg/WzQhrNJkYu)
+# WoolWars Configuration File
+# Version: ${project.version}
+# Author: CubeCrafter
+# Issues:
+# Wiki:
+# Discord:
 license-key: ""
-
-# If a player right clicks on one of these blocks, the event will be cancelled.
 disable-interaction-blocks:
   - CRAFTING_TABLE
   - HOPPER
   - FURNACE
-
-# Types of blocks that are placeable by players.
 placeable-blocks:
   - GLASS
-
-# Commands blocked in game.
 blocked-commands:
   - spawn
   - msg
-
-# Chat formatting options.
 chat-format:
   enabled: true
   lobby-format: ""
   waiting-lobby-format: ""
   game-format: ""
   spectator-format: ""
-
-# Storage method. SQLite will be used by default.
 mysql:
   enabled: false
   host: localhost
@@ -35,6 +28,5 @@ mysql:
   username: "username"
   password: "password"
   useSSL: false
-
 lobby-location:
 

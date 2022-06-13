@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class PowerupManager {
+public class PowerUpManager {
 
     private final List<PowerUpData> powerUps = new ArrayList<>();
+    private final Random random = new Random();
 
-    public PowerupManager() {
+    public PowerUpManager() {
         loadPowerups();
     }
 
@@ -48,7 +49,7 @@ public class PowerupManager {
     }
 
     public PowerUpData getRandom() {
-        return powerUps.get(new Random().nextInt(powerUps.size()));
+        return powerUps.get(random.nextInt(powerUps.size()));
     }
 
 }

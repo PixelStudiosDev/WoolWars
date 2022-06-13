@@ -2,7 +2,6 @@ package me.cubecrafter.woolwars.utils;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,9 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ScoreboardHandler implements Listener, Runnable {
 
@@ -47,14 +43,14 @@ public class ScoreboardHandler implements Listener, Runnable {
         }
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
-            switch (arena.getArenaState()) {
+            switch (arena.getGameState()) {
                 case WAITING:
                     scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.waiting")), arena, player));
                     break;
                 case STARTING:
                     scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.starting")), arena, player));
                     break;
-                case PLAYING:
+                default:
                     scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.playing")), arena, player));
                     break;
             }

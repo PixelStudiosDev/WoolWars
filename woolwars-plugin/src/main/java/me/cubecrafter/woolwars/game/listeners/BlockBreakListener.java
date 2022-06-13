@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.game.listeners;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.game.arena.GamePhase;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
 import me.cubecrafter.woolwars.game.arena.Arena;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -19,7 +19,7 @@ public class BlockBreakListener implements Listener {
         Player player = e.getPlayer();
         if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
+        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             e.setCancelled(true);
             player.sendMessage(TextUtil.color("&cYou can't break this block!"));
         } else if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {

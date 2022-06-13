@@ -5,12 +5,11 @@ import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.database.StatisticType;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.ArenaState;
-import me.cubecrafter.woolwars.game.arena.GamePhase;
 import me.cubecrafter.woolwars.game.powerup.PowerUp;
 import me.cubecrafter.woolwars.game.team.Team;
 import me.cubecrafter.woolwars.menu.menus.KitsMenu;
@@ -60,7 +59,7 @@ public class ArenaListener implements Listener {
             jumping.remove(player);
             return;
         }
-        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
+        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             player.setFireTicks(0);
             player.setHealth(20);
             e.setCancelled(true);
@@ -121,7 +120,7 @@ public class ArenaListener implements Listener {
                 arena.getPlayingTask().cancelTask();
                 TextUtil.sendMessage(arena.getPlayers(), "&cAll players died!");
                 arena.getPlayingTask().getRotatePowerUpsTask().cancel();
-                arena.setGamePhase(GamePhase.ROUND_OVER);
+                arena.setGameState(GameState.ROUND_OVER);
             }
         }
     }
@@ -140,7 +139,7 @@ public class ArenaListener implements Listener {
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            for (String material : ConfigPath.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
+            for (String material : Configuration.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
                 if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     e.setCancelled(true);
                     return;
@@ -149,7 +148,7 @@ public class ArenaListener implements Listener {
         }
         if (e.getItem() == null) return;
         if (e.getItem().getType().toString().contains("POTION")) {
-            if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) {
+            if (!arena.getGameState().equals(GameState.ACTIVE_ROUND)) {
                 e.setCancelled(true);
                 return;
             }
@@ -179,17 +178,17 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)) {
+        if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
             if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
                 player.teleport(arena.getLobbyLocation());
                 XSound.play(player, "ENTITY_ENDERMAN_TELEPORT");
             }
-        } else if (arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND) && !arena.getDeadPlayers().contains(player)) {
+        } else if (arena.getGameState().equals(GameState.ACTIVE_ROUND) && !arena.getDeadPlayers().contains(player)) {
             Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
             if (block.getType().equals(XMaterial.SLIME_BLOCK.parseMaterial())) {
                 jumping.add(player);
-                player.setVelocity(player.getLocation().getDirection().setY(1));
-                XSound.play(player, "ENTITY_BAT_TAKEOFF");
+                player.setVelocity(player.getLocation().getDirection().normalize().multiply(0.5).setY(1));
+                ArenaUtil.playSound(player, "ENTITY_BAT_TAKEOFF");
             }
             for (PowerUp powerUp : arena.getPowerUps().stream().filter(PowerUp::isActive).collect(Collectors.toList())) {
                 double distance = player.getLocation().distance(powerUp.getLocation());
@@ -222,7 +221,7 @@ public class ArenaListener implements Listener {
         Player player = (Player) e.getEntity();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (!arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) {
+        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND)) {
             e.setCancelled(true);
         }
     }
@@ -246,7 +245,7 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (arena.getGamePhase().equals(GamePhase.PRE_ROUND)) {
+        if (arena.getGameState().equals(GameState.PRE_ROUND)) {
             new KitsMenu(player).openMenu();
         }
         if (!arena.getDeadPlayers().contains(player)) return;
@@ -262,7 +261,7 @@ public class ArenaListener implements Listener {
         if (!e.getItem().getType().toString().contains("POTION")) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (arena.getGamePhase().equals(GamePhase.ACTIVE_ROUND)) return;
+        if (arena.getGameState().equals(GameState.ACTIVE_ROUND)) return;
         e.setCancelled(true);
     }
 

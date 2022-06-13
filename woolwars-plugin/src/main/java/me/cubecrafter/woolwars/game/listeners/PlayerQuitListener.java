@@ -11,11 +11,11 @@ public class PlayerQuitListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
+        e.setQuitMessage("");
         Player player = e.getPlayer();
-        if (ArenaUtil.isPlaying(player)) {
-            Arena arena = ArenaUtil.getArenaByPlayer(player);
-            arena.removePlayer(player, false);
-        }
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        arena.removePlayer(player, false);
     }
 
 }

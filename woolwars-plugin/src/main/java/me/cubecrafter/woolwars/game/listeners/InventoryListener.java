@@ -1,8 +1,8 @@
 package me.cubecrafter.woolwars.game.listeners;
 
 import com.cryptomorin.xseries.XSound;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.ArenaState;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -29,7 +29,7 @@ public class InventoryListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if (e.getInventory().getType().equals(InventoryType.CRAFTING) && !arena.getArenaState().equals(ArenaState.PLAYING)) {
+            if (e.getInventory().getType().equals(InventoryType.CRAFTING) && (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING))) {
                 e.setCancelled(true);
                 return;
             }

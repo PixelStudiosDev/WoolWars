@@ -1,12 +1,13 @@
-package me.cubecrafter.woolwars.game.arena;
+package me.cubecrafter.woolwars.api.game.arena;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum GamePhase {
+public enum GameState {
 
-    NONE("None"),
+    WAITING("Waiting"),
+    STARTING("Starting"),
     PRE_ROUND("Pre Round"),
     ACTIVE_ROUND("Active Round"),
     ROUND_OVER("Round Over"),

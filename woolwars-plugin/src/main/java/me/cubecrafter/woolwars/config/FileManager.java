@@ -7,39 +7,49 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class FileManager {
 
+    private final WoolWars plugin;
     private final File configFile;
     private final File messagesFile;
     private final File powerUpsFile;
+    private final File menusFile;
     @Getter private YamlConfiguration config;
     @Getter private YamlConfiguration messages;
     @Getter private YamlConfiguration powerUps;
+    @Getter private YamlConfiguration menus;
 
-    public FileManager() {
-        new File(WoolWars.getInstance().getDataFolder(), "arenas").mkdirs();
-        configFile = new File(WoolWars.getInstance().getDataFolder(), "config.yml");
-        messagesFile = new File(WoolWars.getInstance().getDataFolder(), "messages.yml");
-        powerUpsFile = new File(WoolWars.getInstance().getDataFolder(), "powerups.yml");
-        File kitsFolder = new File(WoolWars.getInstance().getDataFolder(), "kits");
+    public FileManager(WoolWars plugin) {
+        this.plugin = plugin;
+        configFile = new File(plugin.getDataFolder(), "config.yml");
+        messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        powerUpsFile = new File(plugin.getDataFolder(), "powerups.yml");
+        menusFile = new File(plugin.getDataFolder(), "menus.yml");
+        reload();
+    }
+
+    private void createFiles() {
+        new File(plugin.getDataFolder(), "arenas").mkdirs();
+        File kitsFolder = new File(plugin.getDataFolder(), "kits");
         if (kitsFolder.mkdirs()) {
-            WoolWars.getInstance().saveResource("kits/archer.yml", false);
-            WoolWars.getInstance().saveResource("kits/berserker.yml", false);
-            WoolWars.getInstance().saveResource("kits/builder.yml", false);
-            WoolWars.getInstance().saveResource("kits/tank.yml", false);
-            WoolWars.getInstance().saveResource("kits/utility.yml", false);
+            List<String> defaultKits = Arrays.asList("archer", "assault", "engineer", "golem", "swordsman", "tank");
+            defaultKits.forEach(kit -> plugin.saveResource("kits/" + kit + ".yml", false));
         }
         if (!configFile.exists()) {
-            WoolWars.getInstance().saveResource("config.yml", false);
+            plugin.saveResource("config.yml", false);
         }
         if (!messagesFile.exists()) {
-            WoolWars.getInstance().saveResource("messages.yml", false);
+            plugin.saveResource("messages.yml", false);
         }
         if (!powerUpsFile.exists()) {
-            WoolWars.getInstance().saveResource("powerups.yml", false);
+            plugin.saveResource("powerups.yml", false);
         }
-        reload();
+        if (!menusFile.exists()) {
+            plugin.saveResource("menus.yml", false);
+        }
     }
 
     public void save() {
@@ -47,26 +57,30 @@ public class FileManager {
             config.save(configFile);
             messages.save(messagesFile);
             powerUps.save(powerUpsFile);
+            menus.save(menusFile);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     public void reload() {
+        createFiles();
         config = YamlConfiguration.loadConfiguration(configFile);
         TextUtil.info("config.yml loaded!");
         messages = YamlConfiguration.loadConfiguration(messagesFile);
         TextUtil.info("messages.yml loaded!");
         powerUps = YamlConfiguration.loadConfiguration(powerUpsFile);
         TextUtil.info("powerups.yml loaded!");
+        menus = YamlConfiguration.loadConfiguration(menusFile);
+        TextUtil.info("menus.yml loaded!");
     }
 
-    public File[] getArenas() {
-        return new File(WoolWars.getInstance().getDataFolder(), "arenas").listFiles((dir, name) -> name.endsWith(".yml"));
+    public File[] getArenaFiles() {
+        return new File(plugin.getDataFolder(), "arenas").listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
-    public File[] getKits() {
-        return new File(WoolWars.getInstance().getDataFolder(), "kits").listFiles((dir, name) -> name.endsWith(".yml"));
+    public File[] getKitFiles() {
+        return new File(plugin.getDataFolder(), "kits").listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
 }

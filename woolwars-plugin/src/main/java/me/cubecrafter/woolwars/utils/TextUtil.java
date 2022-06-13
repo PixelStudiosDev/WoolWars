@@ -81,8 +81,7 @@ public class TextUtil {
                         .replace("{displayname}", arena.getDisplayName())
                         .replace("{round}", String.valueOf(arena.getRound()))
                         .replace("{group}", arena.getGroup())
-                        .replace("{phase}", arena.getGamePhase().getName())
-                        .replace("{state}", arena.getArenaState().getName())
+                        .replace("{state}", arena.getGameState().getName())
                         .replace("{required_points}", String.valueOf(arena.getRequiredPoints()))
                         .replace("{players}", String.valueOf(arena.getPlayers().size()))
                         .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
@@ -186,6 +185,7 @@ public class TextUtil {
         int duration = Integer.parseInt(effect[1]) * 20;
         int amplifier = Integer.parseInt(effect[2]);
         return new PotionEffect(type, duration, amplifier, false, false);
+
     }
 
 }

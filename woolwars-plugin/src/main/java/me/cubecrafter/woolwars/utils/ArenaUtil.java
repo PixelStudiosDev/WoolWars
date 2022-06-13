@@ -3,10 +3,10 @@ package me.cubecrafter.woolwars.utils;
 import com.cryptomorin.xseries.XSound;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.config.ConfigPath;
+import me.cubecrafter.woolwars.api.game.arena.GameState;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.arena.ArenaState;
 import me.cubecrafter.woolwars.game.kits.Kit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class ArenaUtil {
 
     public void teleportToLobby(Player player) {
-        player.teleport(ConfigPath.LOBBY_LOCATION.getAsLocation());
+        player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
     }
 
     public void showLobbyPlayers(Player player, Arena arena) {
@@ -90,7 +90,7 @@ public class ArenaUtil {
     }
 
     public boolean joinRandom(Player player) {
-        List<Arena> available = getArenas().stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
+        List<Arena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             TextUtil.sendMessage(player, "&cThere are no available arenas!");
             return false;
@@ -101,7 +101,7 @@ public class ArenaUtil {
     }
 
     public boolean joinRandomFromGroup(Player player, String group) {
-        List<Arena> available = getArenasByGroup(group).stream().filter(arena -> arena.getArenaState().equals(ArenaState.WAITING) || arena.getArenaState().equals(ArenaState.STARTING)).collect(Collectors.toList());
+        List<Arena> available = getArenasByGroup(group).stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             TextUtil.sendMessage(player, "&cThere are no available " + group + " arenas!");
             return false;
