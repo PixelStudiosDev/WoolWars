@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.game.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameArena;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public class ScoreboardHandler implements Listener, Runnable {
             scoreboard = PlayerScoreboard.createScoreboard(player);
             scoreboard.setTitle(TextUtil.color(messages.getString("scoreboard.title")));
         }
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             switch (arena.getGameState()) {
                 case WAITING:

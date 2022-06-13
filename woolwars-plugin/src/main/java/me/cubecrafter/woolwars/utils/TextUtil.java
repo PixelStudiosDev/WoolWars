@@ -6,10 +6,9 @@ import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.database.PlayerData;
-import me.cubecrafter.woolwars.database.StatisticType;
-import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.team.Team;
+import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.team.GameTeam;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -74,7 +73,7 @@ public class TextUtil {
                 : new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
     }
 
-    public String format(String s, Arena arena, Player player) {
+    public String format(String s, GameArena arena, Player player) {
         s = format(s)
                         .replace("{time}", arena.getTimerFormatted())
                         .replace("{id}", arena.getId())
@@ -85,7 +84,7 @@ public class TextUtil {
                         .replace("{required_points}", String.valueOf(arena.getRequiredPoints()))
                         .replace("{players}", String.valueOf(arena.getPlayers().size()))
                         .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
-        for (Team team : arena.getTeams()) {
+        for (GameTeam team : arena.getTeams()) {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < arena.getRequiredPoints(); i++) {
                 if (team.getPoints() <= i) {
@@ -118,14 +117,14 @@ public class TextUtil {
             s = PlaceholderAPI.setPlaceholders(player, s);
         }
         PlayerData data = ArenaUtil.getPlayerData(player);
-        s = s.replace("{wins}", String.valueOf(data.getStatistic(StatisticType.WINS)))
-                .replace("{losses}", String.valueOf(data.getStatistic(StatisticType.LOSSES)))
-                .replace("{games_played}", String.valueOf(data.getStatistic(StatisticType.GAMES_PLAYED)))
-                .replace("{kills}", String.valueOf(data.getStatistic(StatisticType.KILLS)))
-                .replace("{deaths}", String.valueOf(data.getStatistic(StatisticType.DEATHS)))
-                .replace("{placed_wool}", String.valueOf(data.getStatistic(StatisticType.PLACED_WOOL)))
-                .replace("{broken_blocks}", String.valueOf(data.getStatistic(StatisticType.BROKEN_BLOCKS)))
-                .replace("{powerups_collected}", String.valueOf(data.getStatistic(StatisticType.POWERUPS_COLLECTED)));
+        s = s.replace("{wins}", String.valueOf(data.getWins()))
+                .replace("{losses}", String.valueOf(data.getLosses()))
+                .replace("{games_played}", String.valueOf(data.getGamesPlayed()))
+                .replace("{kills}", String.valueOf(data.getKills()))
+                .replace("{deaths}", String.valueOf(data.getDeaths()))
+                .replace("{placed_wool}", String.valueOf(data.getPlacedWool()))
+                .replace("{broken_blocks}", String.valueOf(data.getBrokenBlocks()))
+                .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()));
         return format(s);
     }
 
@@ -143,7 +142,7 @@ public class TextUtil {
         return parsed;
     }
 
-    public List<String> format(List<String> lines, Arena arena, Player player) {
+    public List<String> format(List<String> lines, GameArena arena, Player player) {
         if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
         lines.forEach(s -> parsed.add(format(s, arena, player)));

@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.database;
 
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

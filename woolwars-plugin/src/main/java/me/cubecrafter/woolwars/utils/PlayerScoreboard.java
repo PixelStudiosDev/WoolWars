@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.utils;
 
+import me.cubecrafter.woolwars.team.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -56,14 +57,14 @@ public class PlayerScoreboard {
         sidebar.setDisplayName(color.length() > 32 ? color.substring(0, 32) : color);
     }
 
-    public void setGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
+    public void setGamePrefix(GameTeam team) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerScoreboard sidebar = getScoreboard(player);
             sidebar.setGamePrefixInternal(this.player, team);
         }
     }
 
-    private void setGamePrefixInternal(Player player, me.cubecrafter.woolwars.game.team.Team team) {
+    private void setGamePrefixInternal(Player player, GameTeam team) {
         Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
         if (scoreboardTeam == null) {
             scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
@@ -74,7 +75,7 @@ public class PlayerScoreboard {
         scoreboardTeam.addEntry(player.getName());
     }
 
-    public void removeGamePrefix(me.cubecrafter.woolwars.game.team.Team team) {
+    public void removeGamePrefix(GameTeam team) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerScoreboard sidebar = getScoreboard(player);
             if (sidebar == null) continue;
@@ -82,7 +83,7 @@ public class PlayerScoreboard {
         }
     }
 
-    private void removeGamePrefixInternal(Player player, me.cubecrafter.woolwars.game.team.Team team) {
+    private void removeGamePrefixInternal(Player player, GameTeam team) {
         Team scoreboardTeam = scoreboard.getTeam(team.getArena().getId() + "_" + team.getName());
         if (scoreboardTeam == null) return;
         scoreboardTeam.removeEntry(player.getName());

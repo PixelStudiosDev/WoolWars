@@ -3,11 +3,11 @@ package me.cubecrafter.woolwars.utils;
 import com.cryptomorin.xseries.XSound;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.api.game.arena.GameState;
+import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
-import me.cubecrafter.woolwars.database.PlayerData;
-import me.cubecrafter.woolwars.game.arena.Arena;
-import me.cubecrafter.woolwars.game.kits.Kit;
+import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.kits.Kit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -24,7 +24,7 @@ public class ArenaUtil {
         player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
     }
 
-    public void showLobbyPlayers(Player player, Arena arena) {
+    public void showLobbyPlayers(Player player, GameArena arena) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (arena.getPlayers().contains(online)) {
                 player.hidePlayer(online);
@@ -36,7 +36,7 @@ public class ArenaUtil {
         }
     }
 
-    public void hideDeadPlayer(Player player, Arena arena) {
+    public void hideDeadPlayer(Player player, GameArena arena) {
         for (Player alive : arena.getAlivePlayers()) {
             alive.hidePlayer(player);
         }
@@ -45,24 +45,24 @@ public class ArenaUtil {
         }
     }
 
-    public boolean isBlockInTeamBase(Block block, Arena arena) {
+    public boolean isBlockInTeamBase(Block block, GameArena arena) {
         return arena.getTeams().stream().anyMatch(team -> team.getBase().isInside(block.getLocation()));
     }
 
-    public Arena getArenaByPlayer(Player player) {
+    public GameArena getArenaByPlayer(Player player) {
         return getArenas().stream().filter(arena -> arena.getPlayers().contains(player)).findAny().orElse(null);
     }
 
-    public Arena getArenaById(String name) {
+    public GameArena getArenaById(String name) {
         return WoolWars.getInstance().getArenaManager().getArena(name);
     }
 
-    public List<Arena> getArenasByGroup(String group) {
+    public List<GameArena> getArenasByGroup(String group) {
         return getArenas().stream().filter(arena -> arena.getGroup().equals(group)).collect(Collectors.toList());
     }
 
     public List<String> getGroups() {
-        return getArenas().stream().map(Arena::getGroup).distinct().collect(Collectors.toList());
+        return getArenas().stream().map(GameArena::getGroup).distinct().collect(Collectors.toList());
     }
 
     public Kit getKit(String id) {
@@ -81,7 +81,7 @@ public class ArenaUtil {
         return getArenas().stream().anyMatch(arena -> arena.getPlayers().contains(player));
     }
 
-    public List<Arena> getArenas() {
+    public List<GameArena> getArenas() {
         return new ArrayList<>(WoolWars.getInstance().getArenaManager().getArenas().values());
     }
 
@@ -90,23 +90,23 @@ public class ArenaUtil {
     }
 
     public boolean joinRandom(Player player) {
-        List<Arena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
+        List<GameArena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             TextUtil.sendMessage(player, "&cThere are no available arenas!");
             return false;
         }
-        Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
+        GameArena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
         random.addPlayer(player);
         return true;
     }
 
     public boolean joinRandomFromGroup(Player player, String group) {
-        List<Arena> available = getArenasByGroup(group).stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
+        List<GameArena> available = getArenasByGroup(group).stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             TextUtil.sendMessage(player, "&cThere are no available " + group + " arenas!");
             return false;
         }
-        Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
+        GameArena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
         random.addPlayer(player);
         return true;
     }

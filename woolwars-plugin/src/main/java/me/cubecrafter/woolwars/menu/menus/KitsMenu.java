@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.menu.menus;
 
-import me.cubecrafter.woolwars.database.PlayerData;
-import me.cubecrafter.woolwars.game.kits.Kit;
+import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;

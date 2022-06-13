@@ -2,8 +2,7 @@ package me.cubecrafter.woolwars.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.database.PlayerData;
-import me.cubecrafter.woolwars.database.StatisticType;
+import me.cubecrafter.woolwars.api.database.PlayerData;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.entity.Player;
 
@@ -35,21 +34,21 @@ public class PlaceholderHook extends PlaceholderExpansion {
         PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
         switch (params) {
             case "wins":
-                return String.valueOf(data.getStatistic(StatisticType.WINS));
+                return String.valueOf(data.getWins());
             case "losses":
-                return String.valueOf(data.getStatistic(StatisticType.LOSSES));
+                return String.valueOf(data.getLosses());
             case "games_played":
-                return String.valueOf(data.getStatistic(StatisticType.GAMES_PLAYED));
+                return String.valueOf(data.getGamesPlayed());
             case "kills":
-                return String.valueOf(data.getStatistic(StatisticType.KILLS));
+                return String.valueOf(data.getKills());
             case "deaths":
-                return String.valueOf(data.getStatistic(StatisticType.DEATHS));
+                return String.valueOf(data.getDeaths());
             case "placed_wool":
-                return String.valueOf(data.getStatistic(StatisticType.PLACED_WOOL));
+                return String.valueOf(data.getPlacedWool());
             case "broken_blocks":
-                return String.valueOf(data.getStatistic(StatisticType.BROKEN_BLOCKS));
+                return String.valueOf(data.getBrokenBlocks());
             case "powerups_collected":
-                return String.valueOf(data.getStatistic(StatisticType.POWERUPS_COLLECTED));
+                return String.valueOf(data.getPowerUpsCollected());
             case "selected_kit":
                 return data.getSelectedKit();
         }

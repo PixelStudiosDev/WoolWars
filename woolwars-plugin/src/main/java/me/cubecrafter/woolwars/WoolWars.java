@@ -9,16 +9,16 @@ import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.PlayerDataManager;
-import me.cubecrafter.woolwars.game.arena.ArenaManager;
-import me.cubecrafter.woolwars.game.kits.KitManager;
-import me.cubecrafter.woolwars.game.listeners.ArenaListener;
-import me.cubecrafter.woolwars.game.listeners.BlockBreakListener;
-import me.cubecrafter.woolwars.game.listeners.BlockPlaceListener;
-import me.cubecrafter.woolwars.game.listeners.ChatListener;
-import me.cubecrafter.woolwars.game.listeners.InventoryListener;
-import me.cubecrafter.woolwars.game.listeners.PlayerJoinListener;
-import me.cubecrafter.woolwars.game.listeners.PlayerQuitListener;
-import me.cubecrafter.woolwars.game.powerup.PowerUpManager;
+import me.cubecrafter.woolwars.arena.ArenaManager;
+import me.cubecrafter.woolwars.kits.KitManager;
+import me.cubecrafter.woolwars.listeners.GameListener;
+import me.cubecrafter.woolwars.listeners.BlockBreakListener;
+import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
+import me.cubecrafter.woolwars.listeners.ChatListener;
+import me.cubecrafter.woolwars.listeners.InventoryListener;
+import me.cubecrafter.woolwars.listeners.PlayerJoinListener;
+import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
+import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.utils.Auth;
@@ -86,7 +86,7 @@ public final class WoolWars extends JavaPlugin {
         scoreboardHandler = new ScoreboardHandler();
         powerupManager = new PowerUpManager();
         kitManager = new KitManager();
-        Arrays.asList(new InventoryListener(), new ArenaListener(), new PlayerQuitListener(), new PlayerJoinListener(),
+        Arrays.asList(new InventoryListener(), new GameListener(), new PlayerQuitListener(), new PlayerJoinListener(),
                         new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
         playerDataManager.forceLoad();
