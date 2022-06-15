@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <name>WoolWars</name>
-    <description>A fun and efficient minigame to play with your friends!</description>
+    <description>A fun and unique minigame to play with your friends!</description>
 
     <modules>
         <module>woolwars-plugin</module>
