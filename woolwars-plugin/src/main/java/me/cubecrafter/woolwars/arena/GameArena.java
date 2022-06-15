@@ -171,7 +171,7 @@ public class GameArena implements Arena {
             }
         }
         if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
-            TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
+            TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers})"
                     .replace("{player}", player.getName())
                     .replace("{currentplayers}", String.valueOf(players.size()))
                     .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam())));

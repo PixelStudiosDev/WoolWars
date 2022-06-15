@@ -33,7 +33,7 @@ stone-pickaxe:
   displayed-item:
     material: STONE_PICKAXE
   hologram-line:
-      - "eStone Pickaxe"
+      - "&eStone Pickaxe"
   effects: []
   items:
     - STONE_PICKAXE
@@ -51,7 +51,7 @@ speed-boost:
     material: PLAYER_HEAD
     texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZlMGEzY2M2NjU3ZDQyMDU4MThmZmVmNWNjN2I3ZTM2YzM4MWQ0MjY5YjY5MDEwYzcyOTdhNmZhNjhkODNkNyJ9fX0=
   hologram-line:
-    - "eSpeed Boost"
+    - "&eSpeed Boost"
   effects:
     - SPEED,3,3
   items: []
@@ -59,7 +59,7 @@ iron-boots:
   displayed-item:
     material: IRON_BOOTS
   hologram-line:
-    - "eIron Boots"
+    - "&eIron Boots"
   effects: []
   items:
     - IRON_BOOTS
@@ -67,7 +67,7 @@ stone-sword:
   displayed-item:
     material: STONE_SWORD
   hologram-line:
-    - "eStone Sword"
+    - "&eStone Sword"
   effects: []
   items:
     - STONE_SWORD

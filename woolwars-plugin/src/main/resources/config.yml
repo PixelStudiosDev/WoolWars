@@ -111,6 +111,5 @@ mysql:
   database: woolwars
   username: "username"
   password: "password"
-  useSSL: false
-lobby-location:
-
+  use-ssl: false
+lobby-location: ""
