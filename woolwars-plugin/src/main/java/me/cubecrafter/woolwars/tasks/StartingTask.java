@@ -8,8 +8,13 @@ import me.cubecrafter.woolwars.utils.TextUtil;
 
 public class StartingTask extends ArenaTask {
 
-    public StartingTask(GameArena arena, int duration) {
-        super(arena, duration);
+    public StartingTask(GameArena arena) {
+        super(arena);
+    }
+
+    @Override
+    public void onStart() {
+
     }
 
     @Override
@@ -23,14 +28,19 @@ public class StartingTask extends ArenaTask {
     @Override
     public void onEnd() {
         arena.assignTeams();
-        arena.getTeams().forEach(GameTeam::setNameTags);
+        arena.getTeams().forEach(GameTeam::applyNameTags);
         TextUtil.sendTitle(arena.getPlayers(), 2, "&e&lPRE ROUND", "&7Select your kit!");
         TextUtil.sendMessage(arena.getPlayers(), "&8&m--------------------------------------------------            ");
         TextUtil.sendMessage(arena.getPlayers(), "&c               &lWOOL WARS                                      ");
-        TextUtil.sendMessage(arena.getPlayers(), "&7Matches are best of &e" + arena.getMaxRounds());
+        TextUtil.sendMessage(arena.getPlayers(), "&7Matches are best of &e3");
         TextUtil.sendMessage(arena.getPlayers(), "&7Place your team's color wool in the &acenter &7to win the round!");
         TextUtil.sendMessage(arena.getPlayers(), "&8&m--------------------------------------------------            ");
         arena.setGameState(GameState.PRE_ROUND);
+    }
+
+    @Override
+    public int getDuration() {
+        return 20;
     }
 
 }

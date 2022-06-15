@@ -25,17 +25,15 @@ import java.util.stream.Collectors;
 @Getter
 public class PlayingTask extends ArenaTask {
 
-    private final BukkitTask rotatePowerUpsTask;
-    private final Map<GameTeam, Integer> placedBlocks = new HashMap<>();
-    private final List<Block> jumpPads;
+    private BukkitTask rotatePowerUpsTask;
+    private final Map<GameTeam, Integer> placedWool = new HashMap<>();
+    private List<Block> jumpPads;
     private final Map<Player, Integer> roundKills = new HashMap<>();
     private final Map<Player, Integer> roundPlacedWool = new HashMap<>();
     private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
 
-    public PlayingTask(GameArena arena, int duration) {
-        super(arena, duration);
-        jumpPads = arena.getArenaRegion().getBlocks().stream().filter(block -> block.getType().equals(Material.SLIME_BLOCK)).collect(Collectors.toList());
-        rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
+    public PlayingTask(GameArena arena) {
+        super(arena);
     }
 
     @Override
@@ -50,98 +48,88 @@ public class PlayingTask extends ArenaTask {
 
     @Override
     public void onEnd() {
-        checkWinners();
-        placedBlocks.clear();
+        Map.Entry<GameTeam, Integer> bestTeam = placedWool.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
+        // NO PLACED BLOCKS
+        if (bestTeam == null) {
+            sendRoundEndedMessages(null, false, false);
+            arena.setGameState(GameState.ROUND_OVER);
+            // DRAW
+        } else if (placedWool.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
+            sendRoundEndedMessages(null, true, false);
+            arena.setGameState(GameState.ROUND_OVER);
+            // WINNER TEAM FOUND
+        } else {
+            GameTeam winner = bestTeam.getKey();
+            winner.addPoint();
+            if (winner.getPoints() == arena.getRequiredPoints()) {
+                addWinsLossesStats(winner);
+                sendRoundEndedMessages(winner, false, true);
+                arena.setGameState(GameState.GAME_ENDED);
+            } else {
+                sendRoundEndedMessages(winner, false, false);
+                arena.setGameState(GameState.ROUND_OVER);
+            }
+        }
         rotatePowerUpsTask.cancel();
         roundKills.forEach(arena::addKills);
         roundBrokenBlocks.forEach(arena::addBrokenBlocks);
-        roundPlacedWool.forEach(arena::addPlacedBlocks);
-        roundKills.clear();
-        roundPlacedWool.clear();
-        roundBrokenBlocks.clear();
+        roundPlacedWool.forEach(arena::addPlacedWool);
+    }
+
+    @Override
+    public int getDuration() {
+        return 60;
+    }
+
+    @Override
+    public void onStart() {
+        jumpPads = arena.getArenaRegion().getBlocks().stream().filter(block -> block.getType().equals(Material.SLIME_BLOCK)).collect(Collectors.toList());
+        rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
     }
 
     public void addPlacedWool(GameTeam team) {
         if (team == null) return;
-        placedBlocks.merge(team, 1, Integer::sum);
+        placedWool.merge(team, 1, Integer::sum);
     }
 
     public void removePlacedWool(GameTeam team) {
-        if (placedBlocks.get(team) == null) return;
-        placedBlocks.put(team, placedBlocks.get(team) - 1);
-        if (placedBlocks.get(team) == 0) placedBlocks.remove(team);
+        if (placedWool.get(team) == null) return;
+        placedWool.put(team, placedWool.get(team) - 1);
+        if (placedWool.get(team) == 0) placedWool.remove(team);
     }
 
     public void checkWinners() {
-        if (arena.getTimer() > 0) {
-            for (Map.Entry<GameTeam, Integer> entry : placedBlocks.entrySet()) {
-                if (entry.getValue() != arena.getWoolRegion().getTotalBlocks()) continue;
-                GameTeam team = entry.getKey();
-                team.addPoint();
-                placedBlocks.clear();
-                if (team.getPoints() == arena.getRequiredPoints() || arena.isLastRound()) {
-                    cancelTask();
-                    rotatePowerUpsTask.cancel();
-                    addWinsLossesStats(team);
-                    sendRoundEndedMessages(team, false, true);
-                    arena.setGameState(GameState.GAME_ENDED);
-                    return;
-                }
-                sendRoundEndedMessages(team, false, false);
-                cancelTask();
-                rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.ROUND_OVER);
-            }
-        } else if (arena.getTimer() == 0) {
-            Map.Entry<GameTeam, Integer> bestTeam = placedBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
-            // NO PLACED BLOCKS
-            if (bestTeam == null) {
-                sendRoundEndedMessages(null, false, false);
-                rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.ROUND_OVER);
-                // DRAW
-            } else if (placedBlocks.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
-                sendRoundEndedMessages(null, true, false);
-                rotatePowerUpsTask.cancel();
-                arena.setGameState(GameState.ROUND_OVER);
-                // WINNER TEAM FOUND
+        for (Map.Entry<GameTeam, Integer> entry : placedWool.entrySet()) {
+            if (entry.getValue() < arena.getWoolRegion().getTotalBlocks()) continue;
+            GameTeam team = entry.getKey();
+            team.addPoint();
+            if (team.getPoints() == arena.getRequiredPoints()) {
+                addWinsLossesStats(team);
+                sendRoundEndedMessages(team, false, true);
+                arena.setGameState(GameState.GAME_ENDED);
+                return;
             } else {
-                GameTeam winner = bestTeam.getKey();
-                winner.addPoint();
-                if (winner.getPoints() == arena.getRequiredPoints()) {
-                    addWinsLossesStats(winner);
-                    rotatePowerUpsTask.cancel();
-                    sendRoundEndedMessages(winner, false, true);
-                    arena.setGameState(GameState.GAME_ENDED);
-                } else {
-                    if (arena.isLastRound()) {
-                        addWinsLossesStats(winner);
-                        rotatePowerUpsTask.cancel();
-                        sendRoundEndedMessages(winner, false, true);
-                        arena.setGameState(GameState.GAME_ENDED);
-                    } else {
-                        rotatePowerUpsTask.cancel();
-                        sendRoundEndedMessages(winner, false, false);
-                        arena.setGameState(GameState.ROUND_OVER);
-                    }
-                }
+                sendRoundEndedMessages(team, false, false);
+                arena.setGameState(GameState.ROUND_OVER);
             }
+            rotatePowerUpsTask.cancel();
+            cancel();
         }
     }
+
 
     private void sendRoundEndedMessages(GameTeam winner, boolean draw, boolean lastRound) {
         if (lastRound) {
             for (GameTeam team : arena.getTeams()) {
-                team.sendMessage("&8&m--------------------------------------------------");
-                team.sendMessage("&f&l                 WOOL WARS");
-                team.sendMessage("");
-                team.sendMessage(team.equals(winner) ? "&a          Your team won!" : "&c          Your team lost!");
-                team.sendMessage("");
-                team.sendMessage("&e&lMost Kills &7- " + roundKills.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
-                team.sendMessage("&6&lMost Wool Placed &7- " + roundPlacedWool.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
-                team.sendMessage("&c&lMost Blocks Broken &7- " + roundBrokenBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
-                team.sendMessage("");
-                team.sendMessage("&8&m--------------------------------------------------");
+                TextUtil.sendMessage(team.getMembers(),"&8&m--------------------------------------------------");
+                TextUtil.sendMessage(team.getMembers(),"");
+                TextUtil.sendMessage(team.getMembers(), team.equals(winner) ? "&a          Your team won!" : "&c          Your team lost!");
+                TextUtil.sendMessage(team.getMembers(),"");
+                TextUtil.sendMessage(team.getMembers(),"&e&lMost Kills &7- " + roundKills.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
+                TextUtil.sendMessage(team.getMembers(),"&6&lMost Wool Placed &7- " + roundPlacedWool.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
+                TextUtil.sendMessage(team.getMembers(),"&c&lMost Blocks Broken &7- " + roundBrokenBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getDisplayName() + " &7- " + entry.getValue()).orElse("None"));
+                TextUtil.sendMessage(team.getMembers(),"");
+                TextUtil.sendMessage(team.getMembers(),"&8&m--------------------------------------------------");
             }
         } else {
             for (Player player : arena.getPlayers()) {
@@ -174,20 +162,20 @@ public class PlayingTask extends ArenaTask {
         for (GameTeam team : arena.getTeams()) {
             if (lastRound) {
                 if (team.equals(winner)) {
-                    team.sendTitle(40, "&a&lVICTORY", "&6Your team was victorious!");
-                    team.playSound("ENTITY_PLAYER_LEVELUP");
+                    TextUtil.sendTitle(team.getMembers(), 2, "&a&lVICTORY", "&6Your team was victorious!");
+                    ArenaUtil.playSound(team.getMembers(), "ENTITY_PLAYER_LEVELUP");
                 } else {
-                    team.sendTitle(40, "&a&lDEFEAT", "&6Your team was defeated!");
-                    team.playSound("GHAST_MOAN");
+                    TextUtil.sendTitle(team.getMembers(), 2, "&a&lDEFEAT", "&6Your team was defeated!");
+                    ArenaUtil.playSound(team.getMembers(), "GHAST_MOAN");
                 }
                 continue;
             }
             if (team.equals(winner)) {
-                team.sendTitle(40, arena.getTeamPointsFormatted(), "&e&lROUND WON");
-                team.playSound("ENTITY_PLAYER_LEVELUP");
+                TextUtil.sendTitle(team.getMembers(), 2, arena.getTeamPointsFormatted(), "&e&lROUND WON");
+                ArenaUtil.playSound(team.getMembers(), "ENTITY_PLAYER_LEVELUP");
             } else {
-                team.sendTitle(40, arena.getTeamPointsFormatted(), "&e&lROUND OVER");
-                team.playSound("GHAST_MOAN");
+                TextUtil.sendTitle(team.getMembers(), 2, arena.getTeamPointsFormatted(), "&e&lROUND OVER");
+                ArenaUtil.playSound(team.getMembers(), "GHAST_MOAN");
             }
         }
     }

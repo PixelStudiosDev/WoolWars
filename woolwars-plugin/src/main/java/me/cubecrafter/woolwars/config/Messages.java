@@ -16,16 +16,25 @@ public enum Messages {
     private final String path;
     private final YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
 
-    public String get() {
+    public String getAsString() {
         return messages.getString(path);
     }
 
+    public List<String> getAsStringList() {
+        return messages.getStringList(path);
+    }
+
     public void send(Player player) {
-        TextUtil.sendMessage(player, get());
+        if (messages.isString(path)) {
+            TextUtil.sendMessage(player, messages.getString(path));
+        } else if (messages.isList(path)) {
+            List<String> list = messages.getStringList(path);
+            list.forEach(s -> TextUtil.sendMessage(player, s));
+        }
     }
 
     public void send(List<Player> players) {
-        TextUtil.sendMessage(players, get());
+        players.forEach(this::send);
     }
 
 }

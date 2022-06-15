@@ -84,9 +84,6 @@ public class GameListener implements Listener {
         }
         if (((player.getHealth() - e.getFinalDamage()) <= 0)) {
             e.setCancelled(true);
-            arena.addDeaths(player, 1);
-            PlayerData data = ArenaUtil.getPlayerData(player);
-            data.setDeaths(data.getDeaths() + 1);
             GameTeam playerTeam = arena.getTeamByPlayer(player);
             if (e instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
@@ -101,26 +98,39 @@ public class GameListener implements Listener {
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
                 TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7fell from a high place ");
             }
-            arena.getDeadPlayers().add(player);
-            player.setGameMode(GameMode.ADVENTURE);
-            player.setAllowFlight(true);
-            player.setFlying(true);
-            player.getInventory().setArmorContents(null);
-            player.getInventory().clear();
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
-            player.setFireTicks(0);
-            player.setHealth(20);
-            Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
-            ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, TextUtil.color("&eYou will respawn next round!"), () -> arena.isDead(player));
-            ArenaUtil.hideDeadPlayer(player, arena);
-            ItemStack teleporter = new ItemBuilder("COMPASS").setDisplayName("&cTeleporter").setTag("teleport-item").build();
-            player.getInventory().setItem(0, teleporter);
-            if (arena.getAlivePlayers().size() == 0) {
-                arena.getPlayingTask().cancelTask();
-                TextUtil.sendMessage(arena.getPlayers(), "&cAll players died!");
-                arena.getPlayingTask().getRotatePowerUpsTask().cancel();
-                arena.setGameState(GameState.ROUND_OVER);
-            }
+            handleDeath(player, arena);
+        }
+    }
+
+    private void handleDeath(Player player, GameArena arena) {
+        arena.addDeaths(player, 1);
+        PlayerData data = ArenaUtil.getPlayerData(player);
+        data.setDeaths(data.getDeaths() + 1);
+        arena.getDeadPlayers().add(player);
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setAllowFlight(true);
+        player.setFlying(true);
+        player.getInventory().setArmorContents(null);
+        player.getInventory().clear();
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+        player.setFireTicks(0);
+        player.setHealth(20);
+        Titles.sendTitle(player, 0, 40, 0, TextUtil.color("&c&lYOU DIED"), TextUtil.color("&7You will respawn at the start of the next round!"));
+        ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, TextUtil.color("&eYou will respawn next round!"), () -> arena.isDead(player));
+        for (Player alive : arena.getAlivePlayers()) {
+            alive.hidePlayer(player);
+        }
+        for (Player dead : arena.getDeadPlayers()) {
+            player.showPlayer(dead);
+        }
+        ItemStack teleporter = ItemBuilder.fromConfig(Configuration.TELEPORTER_ITEM.getAsConfigSection()).setTag("teleport-item").build();
+        player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsConfigSection().getInt("slot"), teleporter);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 0, false, false));
+        if (arena.getAlivePlayers().size() == 0) {
+            TextUtil.sendMessage(arena.getPlayers(), "&cAll players died! Starting a new round!");
+            arena.getPlayingTask().getRotatePowerUpsTask().cancel();
+            arena.getPlayingTask().cancel();
+            arena.setGameState(GameState.ROUND_OVER);
         }
     }
 
@@ -138,7 +148,7 @@ public class GameListener implements Listener {
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            for (String material : Configuration.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
+            for (String material : Configuration.DISABLED_INTERACTION_BLOCKS.getAsStringList()) {
                 if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     e.setCancelled(true);
                     return;
@@ -174,9 +184,31 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
+        if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockZ() == e.getTo().getBlockZ() && e.getFrom().getBlockY() == e.getTo().getBlockY()) return;
         Player player = e.getPlayer();
         if (!ArenaUtil.isPlaying(player)) return;
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
+        if (!arena.getArenaRegion().isInside(e.getTo())) {
+            if (arena.isDead(player)) {
+                player.teleport(arena.getLobbyLocation());
+                ArenaUtil.playSound(player, "ENTITY_ENDERMAN_TELEPORT");
+            } else {
+                switch (arena.getGameState()) {
+                    case ACTIVE_ROUND:
+                        handleDeath(player, arena);
+                        break;
+                    case WAITING:
+                    case STARTING:
+                    case ROUND_OVER:
+                    case GAME_ENDED:
+                        player.teleport(arena.getLobbyLocation());
+                        ArenaUtil.playSound(player, "ENTITY_ENDERMAN_TELEPORT");
+                    case PRE_ROUND:
+                        player.teleport(arena.getTeamByPlayer(player).getSpawnLocation());
+                        ArenaUtil.playSound(player, "ENTITY_ENDERMAN_TELEPORT");
+                }
+            }
+        }
         if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
             if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
                 player.teleport(arena.getLobbyLocation());

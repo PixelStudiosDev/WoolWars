@@ -24,27 +24,6 @@ public class ArenaUtil {
         player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
     }
 
-    public void showLobbyPlayers(Player player, GameArena arena) {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            if (arena.getPlayers().contains(online)) {
-                player.hidePlayer(online);
-                online.hidePlayer(player);
-            } else {
-                player.showPlayer(online);
-                online.showPlayer(player);
-            }
-        }
-    }
-
-    public void hideDeadPlayer(Player player, GameArena arena) {
-        for (Player alive : arena.getAlivePlayers()) {
-            alive.hidePlayer(player);
-        }
-        for (Player dead : arena.getDeadPlayers()) {
-            player.showPlayer(dead);
-        }
-    }
-
     public boolean isBlockInTeamBase(Block block, GameArena arena) {
         return arena.getTeams().stream().anyMatch(team -> team.getBase().isInside(block.getLocation()));
     }

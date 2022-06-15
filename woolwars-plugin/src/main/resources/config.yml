@@ -1,25 +1,109 @@
-# WoolWars Configuration File
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | WOOLWARS CONFIGURATION FILE              |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Version: ${project.version}
 # Author: CubeCrafter
-# Issues:
-# Wiki:
-# Discord:
-license-key: ""
-disable-interaction-blocks:
+# Issues: TODO
+# Wiki: TODO
+# Discord: TODO
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | LICENSE KEY                              |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+license-key: "PUT-YOUR-LICENSE-KEY-HERE"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | GAME SETTINGS                            |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+enable-leave-command-shortcut: true
+enable-lobby-command-shortcut: true
+starting-countdown: 30
+pre-round-countdown: 10
+active-round-countdown: 60
+round-over-countdown: 5
+game-ended-countdown: 10
+disabled-interaction-blocks:
   - CRAFTING_TABLE
   - HOPPER
   - FURNACE
 placeable-blocks:
-  - GLASS
+  - COBBLESTONE
+fall-damage-enabled: true
+items:
+  play-again-item:
+    material: PAPER
+    displayname: "&bPlay Again &7(Right-Click)"
+    lore:
+      - "&7Right-Click to join a new game!"
+    slot: 7
+  leave-item:
+    material: RED_BED
+    displayname: "&cReturn to Lobby &7(Right-Click)"
+    lose:
+      - "&7Right-Click to return to the lobby!"
+    slot: 8
+  teleporter-item:
+    material: COMPASS
+    displayname: "&bTeleporter &7(Right-Click)"
+    lore:
+      - "&7Right-Click to open!"
+    slot: 0
+jump-pads:
+  top-block: SLIME_BLOCK
+  bottom-block: STONE
+  horizontal-power: 0.5
+  vertical-power: 1.0
+  particles:
+    enabled: true
+    type: HAPPY_VILLAGER
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | CHAT SETTINGS                            |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 blocked-commands:
-  - spawn
-  - msg
+  whitelist: false
+  commands:
+    - spawn
+    - msg
+    - fly
 chat-format:
   enabled: true
-  lobby-format: ""
-  waiting-lobby-format: ""
-  game-format: ""
-  spectator-format: ""
+  lobby-format: "%vault_prefix%{player}: &7{message}"
+  waiting-lobby-format: "%vault_prefix%{player}: &7{message}"
+  game-format: "{team_color}{team_letter}{player}: &7{message}"
+  spectator-format: "&7[Spect]%vault_prefix%{player}: &7{message}"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | SOUNDS                                   |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+sounds:
+  jump-pad:
+  round-start:
+  round-won:
+  round-lost:
+  teleport-to-base:
+  game-won:
+  game-lost:
+  powerup-collected:
+  player-death:
+  player-kill:
+  countdown:
+  player-joined:
+  player-left:
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | SCOREBOARD & NAME TAGS SETTINGS          |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+scoreboard:
+  enabled: true
+  refresh-interval: 1000
+name-tags:
+  enabled: true
+  format: "{team_color}{team_letter} &7{player}"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | STORAGE SETTINGS                         |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 mysql:
   enabled: false
   host: localhost

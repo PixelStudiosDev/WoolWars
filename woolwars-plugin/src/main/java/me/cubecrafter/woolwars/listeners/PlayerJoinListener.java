@@ -15,9 +15,10 @@ public class PlayerJoinListener implements Listener {
         Player player = e.getPlayer();
         ArenaUtil.teleportToLobby(player);
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (!ArenaUtil.isPlaying(player)) continue;
-            player.hidePlayer(online);
-            online.hidePlayer(player);
+            if (ArenaUtil.isPlaying(online)) {
+                player.hidePlayer(online);
+                online.hidePlayer(player);
+            }
         }
     }
 

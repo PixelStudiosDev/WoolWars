@@ -1,9 +1,85 @@
-# WoolWars Messages File
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | WOOLWARS MESSAGES FILE                   |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Version: ${project.version}
 # Author: CubeCrafter
-# Issues:
-# Wiki:
-# Discord:
+# Issues: TODO
+# Wiki: TODO
+# Discord: TODO
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | MESSAGES                                 |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+prefix: "&cWoolWars &8» "
+no-arena-or-group-found: "&cThere are no group called like this!"
+no-free-arenas: "&cThere are no available arenas!"
+already-in-a-game: "&cYou are already in this game!"
+force-start-already-start: "&cThe game is already started!"
+game-full: "&cThis game is full!"
+join-arena: "&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
+left-arena: "&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
+left: "&c{player} &7has left!"
+no-players-cancelled: "&cWe don't have enough players! Start cancelled!"
+unknown-command: "&cUnknown command!"
+command-only-by-player: "&cThis command can be executed only by a player!"
+no-permission: "&cYou don't have the permission to execute this command!"
+placed-block: "&7{player} placed block!"
+break-block: "&cYou can't break this block!"
+cant-place-block: "&cYou can't place blocks here!"
+cant-use-cmd-in-game: "You can't use this command while you are in game!"
+death-title: "&c&lYOU DIED"
+death-subtitle: "&7You will respawn at the start of the next round!"
+all-players-died: "&cAll players died!"
+death-by-fell: " &7fell from a high place "
+death-by-lava: " &7burned to death "
+killed-by: " &7was killed by "
+players-gui: "&7Players: &e{players}&7/&e{max_players}"
+group-gui: "&7Group: &b{group}"
+go-back-gui: "&cGo Back"
+to-main-menu-gui: "&7To Main Menu"
+already-kit-selected: "&cYou already have this kit selected!"
+gui-click-to-play: "&eClick to play!", "&7{count_total} currently playing!"
+available-arenas-gui: "&aAvailable Arenas"
+click-to-browse-arenas: "&eClick to browse!"
+close-gui: "&cClose"
+stats: "&aStatistics"
+click-to-see-stats: "&eClick to view your stats!"
+second-left: "&c{seconds} &7seconds left!"
+end-game-message:
+  - "&8&m--------------------------------------------------"
+  - ""
+  - "&a          Your team won!"  "&c          Your team lost!"
+  - ""
+  - "&e&lMost Kills &7- "
+  - "&6&lMost Wool Placed &7- "
+  - "c&lMost Blocks Broken &7- "
+  - ""
+  - "&8&m--------------------------------------------------"
+bow-damage:
+winner-title: "&a&lVICTORY"
+winner-subtitle: "&6Your team was victorious!"
+loser-title: "&a&lDEFEAT"
+loser-subtitle: "&6Your team was defeated!"
+round-win: "&e&lROUND WON"
+round-lost: "&e&lROUND OVER"
+welcome-message:
+  - "&8&m--------------------------------------------------            "
+  - "&c               &lWOOL WARS                                      "
+  - "&7Matches are best of &e3"
+  - "&7Place your team's color wool in the &acenter &7to win the round!"
+  - "&8&m--------------------------------------------------            "
+round-end-no-achieved: "&cNo stats achieved for this round!"
+kills: "&7Kills: "
+placed-wool: "&7Placed wool: "
+broken-blocks: "&7Broken blocks: "
+pre-round-title: "&a&lROUND START"
+pre-round-subtitle: "&bRound"
+shift-to-select-kit: "&eShift to select a kit!"
+game-start-in: "&7The game starts in &a{seconds} &7seconds!"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | SCOREBOARD                               |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 scoreboard:
   title: '&c&lWOOL WARS'
   lobby:

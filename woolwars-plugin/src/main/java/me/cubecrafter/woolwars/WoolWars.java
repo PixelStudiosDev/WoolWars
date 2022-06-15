@@ -22,7 +22,7 @@ import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.hooks.VaultHook;
 import me.cubecrafter.woolwars.utils.Auth;
-import me.cubecrafter.woolwars.utils.ScoreboardHandler;
+import me.cubecrafter.woolwars.listeners.ScoreboardHandler;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
@@ -47,6 +47,7 @@ public final class WoolWars extends JavaPlugin {
     private VaultHook vaultHook;
     private NMS nms;
     private WoolWarsAPI api;
+    private final String user = "%%__USER__%%";
 
     @Override
     public void onEnable() {

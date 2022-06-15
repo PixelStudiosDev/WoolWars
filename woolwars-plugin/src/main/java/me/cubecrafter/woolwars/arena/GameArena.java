@@ -3,12 +3,18 @@ package me.cubecrafter.woolwars.arena;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
+import me.cubecrafter.woolwars.api.arena.Arena;
+import me.cubecrafter.woolwars.api.arena.Cuboid;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.team.TeamColor;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.tasks.*;
 import me.cubecrafter.woolwars.team.GameTeam;
-import me.cubecrafter.woolwars.utils.*;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.utils.ItemBuilder;
+import me.cubecrafter.woolwars.utils.PlayerScoreboard;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -24,7 +30,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
-public class GameArena implements Runnable {
+public class GameArena implements Arena {
 
     private final String id;
     private final String displayName;
@@ -33,7 +39,6 @@ public class GameArena implements Runnable {
     private final int maxPlayersPerTeam;
     private final int minPlayers;
     private final int requiredPoints;
-    private final int maxRounds;
     private final List<Player> players = new ArrayList<>();
     private final List<Player> deadPlayers = new ArrayList<>();
     private final List<Block> arenaPlacedBlocks = new ArrayList<>();
@@ -41,7 +46,7 @@ public class GameArena implements Runnable {
     private final List<PowerUp> powerUps = new ArrayList<>();
     private final Map<Player, Integer> kills = new HashMap<>();
     private final Map<Player, Integer> deaths = new HashMap<>();
-    private final Map<Player, Integer> placedBlocks = new HashMap<>();
+    private final Map<Player, Integer> placedWool = new HashMap<>();
     private final Map<Player, Integer> brokenBlocks = new HashMap<>();
     private final Cuboid woolRegion;
     private final Cuboid arenaRegion;
@@ -63,7 +68,6 @@ public class GameArena implements Runnable {
         maxPlayersPerTeam = arenaConfig.getInt("max-players-per-team");
         minPlayers = arenaConfig.getInt("min-players");
         requiredPoints = arenaConfig.getInt("required-points-to-win");
-        maxRounds = arenaConfig.getInt("max-rounds");
         for (String key : arenaConfig.getConfigurationSection("teams").getKeys(false)) {
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
             Location barrier1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.point1"));
@@ -88,17 +92,18 @@ public class GameArena implements Runnable {
         killEntities();
     }
 
+    @Override
     public void addPlayer(Player player) {
         if (players.contains(player)) {
-            player.sendMessage(TextUtil.color("&cYou are already in this game!"));
+            TextUtil.sendMessage(player, "&cYou are already in this game!");
             return;
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING)) {
-            player.sendMessage(TextUtil.color("&cThe game is already started!"));
+            TextUtil.sendMessage(player, "&cThe game is already started!");
             return;
         }
         if (players.size() >= maxPlayersPerTeam * teams.size()) {
-            player.sendMessage(TextUtil.color("&cThis game is full!"));
+            TextUtil.sendMessage(player, "&cThis game is full!");
             return;
         }
         players.add(player);
@@ -120,8 +125,8 @@ public class GameArena implements Runnable {
                 player.hidePlayer(online);
             }
         }
-        ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby &7(Right-Click)").setLore(Arrays.asList("&7Click to return to the lobby!")).setTag("leave-item").build();
-        player.getInventory().setItem(8, leaveItem);
+        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsConfigSection()).setTag("leave-item").build();
+        player.getInventory().setItem(Configuration.LEAVE_ITEM.getAsConfigSection().getInt("slot"), leaveItem);
         TextUtil.sendMessage(players, "&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
@@ -131,10 +136,12 @@ public class GameArena implements Runnable {
         }
     }
 
+    @Override
     public void forceStart() {
         if (gameState.equals(GameState.WAITING)) setGameState(GameState.STARTING);
     }
 
+    @Override
     public void removePlayer(Player player, boolean teleportToLobby) {
         players.remove(player);
         GameTeam playerTeam = getTeamByPlayer(player);
@@ -154,7 +161,15 @@ public class GameArena implements Runnable {
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         if (teleportToLobby) ArenaUtil.teleportToLobby(player);
-        ArenaUtil.showLobbyPlayers(player, this);
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (players.contains(online)) {
+                player.hidePlayer(online);
+                online.hidePlayer(player);
+            } else {
+                player.showPlayer(online);
+                online.showPlayer(player);
+            }
+        }
         if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
             TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers}"
                     .replace("{player}", player.getName())
@@ -164,16 +179,16 @@ public class GameArena implements Runnable {
             TextUtil.sendMessage(players, "&c{player} &7has left!".replace("{player}", player.getDisplayName()));
         }
         if (gameState.equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
-            startingTask.cancelTask();
+            cancelTasks();
             TextUtil.sendMessage(players, "&cWe don't have enough players! Start cancelled!");
             setGameState(GameState.WAITING);
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {
-            TextUtil.info("Not enough players in game " + id + ". Restarting...");
-            restart();
+            setGameState(GameState.GAME_ENDED);
         }
     }
 
+    @Override
     public void removeAllPlayers() {
         for (Player player : players) {
             player.getInventory().setArmorContents(null);
@@ -184,33 +199,46 @@ public class GameArena implements Runnable {
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-            ArenaUtil.showLobbyPlayers(player, this);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (players.contains(online)) {
+                    player.hidePlayer(online);
+                    online.hidePlayer(player);
+                } else {
+                    player.showPlayer(online);
+                    online.showPlayer(player);
+                }
+            }
             ArenaUtil.teleportToLobby(player);
         }
         players.clear();
     }
 
+    @Override
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
         switch (gameState) {
+            case WAITING:
+                cancelTasks();
+                break;
             case STARTING:
-                startingTask = new StartingTask(this, 10);
+                startingTask = new StartingTask(this);
                 break;
             case PRE_ROUND:
-                preRoundTask = new PreRoundTask(this, 10);
+                preRoundTask = new PreRoundTask(this);
                 break;
             case ACTIVE_ROUND:
-                playingTask = new PlayingTask(this, 60);
+                playingTask = new PlayingTask(this);
                 break;
             case ROUND_OVER:
-                roundOverTask = new RoundOverTask(this, 5);
+                roundOverTask = new RoundOverTask(this);
                 break;
             case GAME_ENDED:
-                gameEndedTask = new GameEndedTask(this, 10);
+                gameEndedTask = new GameEndedTask(this);
                 break;
         }
     }
 
+    @Override
     public void restart() {
         cancelTasks();
         removeAllPlayers();
@@ -223,11 +251,12 @@ public class GameArena implements Runnable {
         deadPlayers.clear();
         kills.clear();
         deaths.clear();
-        placedBlocks.clear();
+        placedWool.clear();
         brokenBlocks.clear();
         setGameState(GameState.WAITING);
     }
 
+    @Override
     public void assignTeams() {
         for (Player player : players) {
             GameTeam minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size())));
@@ -235,30 +264,37 @@ public class GameArena implements Runnable {
         }
     }
 
+    @Override
     public List<Player> getAlivePlayers() {
         return players.stream().filter(player -> !deadPlayers.contains(player)).collect(Collectors.toList());
     }
 
+    @Override
     public GameTeam getTeamByName(String name) {
         return teams.stream().filter(team -> team.getName().equals(name)).findAny().orElse(null);
     }
 
+    @Override
     public GameTeam getTeamByPlayer(Player player) {
         return teams.stream().filter(team -> team.getMembers().contains(player)).findAny().orElse(null);
     }
 
+    @Override
     public boolean isTeammate(Player player, Player other) {
         return getTeamByPlayer(player).getMembers().contains(other);
     }
 
+    @Override
     public boolean isDead(Player player) {
         return deadPlayers.contains(player);
     }
 
+    @Override
     public boolean isAlive(Player player) {
         return !deadPlayers.contains(player);
     }
 
+    @Override
     public String getTimerFormatted() {
         int minutes = (timer / 60) % 60;
         int seconds = (timer) % 60;
@@ -274,6 +310,7 @@ public class GameArena implements Runnable {
         }
     }
 
+    @Override
     public void resetBlocks() {
         List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
         arenaPlacedBlocks.forEach(block -> block.setType(Material.AIR));
@@ -282,33 +319,7 @@ public class GameArena implements Runnable {
         woolRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
     }
 
-    public void respawnPlayers() {
-        for (Player player : players) {
-            player.setGameMode(GameMode.SURVIVAL);
-            player.setFlying(false);
-            player.setAllowFlight(false);
-            player.setHealth(20);
-            player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
-        }
-        deadPlayers.clear();
-        teams.forEach(GameTeam::teleportToSpawn);
-        for (Player player : players) {
-            players.forEach(player::showPlayer);
-        }
-    }
-
-    public void cancelTasks() {
-        if (startingTask != null) startingTask.cancelTask();
-        if (roundOverTask != null) roundOverTask.cancelTask();
-        if (playingTask != null) playingTask.cancelTask();
-        if (preRoundTask != null) preRoundTask.cancelTask();
-        if (gameEndedTask != null) gameEndedTask.cancelTask();
-    }
-
-    public boolean isLastRound() {
-        return round == maxRounds;
-    }
-
+    @Override
     public String getTeamPointsFormatted() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < teams.size(); i++) {
@@ -321,25 +332,32 @@ public class GameArena implements Runnable {
         return TextUtil.color(builder.toString());
     }
 
-    public void addKills(Player player, int n) {
-        kills.merge(player, n, Integer::sum);
-    }
-
-    public void addDeaths(Player player, int n) {
-        deaths.merge(player, n, Integer::sum);
-    }
-
-    public void addPlacedBlocks(Player player, int n) {
-        placedBlocks.merge(player, n, Integer::sum);
-    }
-
-    public void addBrokenBlocks(Player player, int n) {
-        brokenBlocks.merge(player, n, Integer::sum);
+    @Override
+    public void addKills(Player player, int number) {
+        kills.merge(player, number, Integer::sum);
     }
 
     @Override
-    public void run() {
+    public void addDeaths(Player player, int number) {
+        deaths.merge(player, number, Integer::sum);
+    }
 
+    @Override
+    public void addPlacedWool(Player player, int number) {
+        placedWool.merge(player, number, Integer::sum);
+    }
+
+    @Override
+    public void addBrokenBlocks(Player player, int number) {
+        brokenBlocks.merge(player, number, Integer::sum);
+    }
+
+    public void cancelTasks() {
+        if (startingTask != null) startingTask.cancel();
+        if (preRoundTask != null) preRoundTask.cancel();
+        if (playingTask != null) playingTask.cancel();
+        if (roundOverTask != null) roundOverTask.cancel();
+        if (gameEndedTask != null) gameEndedTask.cancel();
     }
 
 }

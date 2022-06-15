@@ -1,0 +1,16 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | WOOLWARS MENUS FILE                      |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Version: ${project.version}
+# Author: CubeCrafter
+# Issues: TODO
+# Wiki: TODO
+# Discord: TODO
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | MAIN MENU                                |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+main-menu:
+  title: ""
+  rows: 5
+  items:

@@ -66,7 +66,7 @@ public class Auth {
         con.setUseCaches(false);
         String hwid = getMac();
 
-        String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"nms\":\"dogpoop\"}";
+        String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
         //Align HWID again here if someone tries to spoof it
         outString = outString
                 .replaceAll("password", getHWID())
@@ -113,7 +113,7 @@ public class Auth {
         con.setUseCaches(false);
         String hwid = getMac();
 
-        String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"nms\":\"dogpoop\"}";
+        String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
         //Align HWID again here if someone tries to spoof it
         outString = outString
                 .replaceAll("password", getHWID())

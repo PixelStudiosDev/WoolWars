@@ -1,7 +1,10 @@
-package me.cubecrafter.woolwars.utils;
+package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.utils.PlayerScoreboard;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

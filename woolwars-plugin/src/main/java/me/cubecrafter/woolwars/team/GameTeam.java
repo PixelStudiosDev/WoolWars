@@ -1,21 +1,22 @@
 package me.cubecrafter.woolwars.team;
 
-import com.cryptomorin.xseries.XSound;
-import com.cryptomorin.xseries.messages.Titles;
+import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
+import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.api.team.TeamColor;
 import me.cubecrafter.woolwars.arena.GameArena;
-import me.cubecrafter.woolwars.utils.Cuboid;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.api.arena.Cuboid;
 import me.cubecrafter.woolwars.utils.PlayerScoreboard;
-import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class GameTeam {
+public class GameTeam implements Team {
 
     private final List<Player> members = new ArrayList<>();
     private final String name;
@@ -37,44 +38,51 @@ public class GameTeam {
         this.base = base;
     }
 
+    @Override
     public void addMember(Player player) {
         members.add(player);
     }
 
+    @Override
     public void removeMember(Player player) {
         members.remove(player);
     }
 
+    @Override
     public String getTeamLetter() {
         return name.substring(0,1).toUpperCase();
     }
 
-    public void setNameTags() {
+    @Override
+    public void applyNameTags() {
         for (Player player : getMembers()) {
             PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
             scoreboard.setGamePrefix(this);
         }
     }
 
+    @Override
     public void teleportToSpawn() {
-        for (Player player : members) {
-            player.teleport(spawnLocation);
-        }
-        playSound("ENDERMAN_TELEPORT");
+        members.forEach(member -> member.teleport(spawnLocation));
+        ArenaUtil.playSound(members, "ENDERMAN_TELEPORT");
     }
 
+    @Override
     public void addPoint() {
         points++;
     }
 
+    @Override
     public void removeBarrier() {
-        barrier.fill("AIR");
+        barrier.fill(Material.AIR);
     }
 
+    @Override
     public void spawnBarrier() {
-        barrier.fill(barrierBlock);
+        barrier.fill(XMaterial.matchXMaterial(barrierBlock).get().parseMaterial());
     }
 
+    @Override
     public void reset() {
         for (Player player : members) {
             PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
@@ -82,18 +90,6 @@ public class GameTeam {
         }
         points = 0;
         members.clear();
-    }
-
-    public void sendMessage(String msg) {
-        members.forEach(player -> player.sendMessage(TextUtil.color(msg)));
-    }
-
-    public void sendTitle(int stay, String title, String subtitle) {
-        members.forEach(player -> Titles.sendTitle(player, 0, stay, 0, TextUtil.color(title), TextUtil.color(subtitle)));
-    }
-
-    public void playSound(String sound) {
-        members.forEach(player -> XSound.play(player, sound));
     }
 
 }

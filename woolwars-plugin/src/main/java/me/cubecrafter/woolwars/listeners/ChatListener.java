@@ -54,10 +54,17 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Player player = e.getPlayer();
-        if (player.hasPermission("woolwars.admin")) return;
-        if (Configuration.BLOCKED_COMMANDS.getAsStringList().stream().anyMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
-            e.setCancelled(true);
-            player.sendMessage(TextUtil.color("You can't use this command while you are in game!"));
+        List<String> commands = Configuration.BLOCKED_COMMANDS.getAsStringList();
+        if (Configuration.BLOCKED_COMMANDS_WHITELIST.getAsBoolean()) {
+            if (commands.stream().noneMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
+                e.setCancelled(true);
+                player.sendMessage(TextUtil.color("You can't use this command while you are in game!"));
+            }
+        } else {
+            if (commands.stream().anyMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
+                e.setCancelled(true);
+                player.sendMessage(TextUtil.color("You can't use this command while you are in game!"));
+            }
         }
     }
 

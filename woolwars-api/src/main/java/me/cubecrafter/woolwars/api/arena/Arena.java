@@ -35,15 +35,7 @@ public interface Arena {
 
     String getTimerFormatted();
 
-    void killEntities();
-
     void resetBlocks();
-
-    void respawnPlayers();
-
-    void cancelTasks();
-
-    boolean isLastRound();
 
     String getTeamPointsFormatted();
 
@@ -51,7 +43,7 @@ public interface Arena {
 
     void addDeaths(Player player, int n);
 
-    void addPlacedBlocks(Player player, int n);
+    void addPlacedWool(Player player, int n);
 
     void addBrokenBlocks(Player player, int n);
 

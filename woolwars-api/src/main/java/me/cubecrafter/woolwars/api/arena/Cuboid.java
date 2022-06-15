@@ -1,8 +1,8 @@
-package me.cubecrafter.woolwars.utils;
+package me.cubecrafter.woolwars.api.arena;
 
-import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -54,9 +54,9 @@ public class Cuboid {
         return blocks;
     }
 
-    public void fill(String material) {
+    public void fill(Material material) {
         for (Block block : getBlocks()) {
-            block.setType(XMaterial.matchXMaterial(material).get().parseMaterial());
+            block.setType(material);
         }
     }
 
