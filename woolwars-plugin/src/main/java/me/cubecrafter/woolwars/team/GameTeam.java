@@ -5,6 +5,7 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.api.team.TeamColor;
 import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.api.arena.Cuboid;
 import me.cubecrafter.woolwars.utils.PlayerScoreboard;
@@ -64,7 +65,7 @@ public class GameTeam implements Team {
     @Override
     public void teleportToSpawn() {
         members.forEach(member -> member.teleport(spawnLocation));
-        ArenaUtil.playSound(members, "ENDERMAN_TELEPORT");
+        ArenaUtil.playSound(members, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
     }
 
     @Override

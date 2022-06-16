@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.listeners;
 
+import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.team.GameTeam;
@@ -19,35 +20,35 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
+        if (!Configuration.CHAT_FORMAT_ENABLED.getAsBoolean()) return;
         Player player = e.getPlayer();
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             if (arena.isAlive(player)) {
                 setRecipients(e, arena.getAlivePlayers());
+                if (arena.getGameState().equals(GameState.STARTING) || arena.getGameState().equals(GameState.WAITING)) {
+                    e.setFormat(TextUtil.format(Configuration.WAITING_LOBBY_CHAT_FORMAT.getAsString()
+                            .replace("{player}", player.getDisplayName())
+                            .replace("{message}", e.getMessage()), player));
+                } else {
+                    GameTeam team = arena.getTeamByPlayer(player);
+                    e.setFormat(TextUtil.format(Configuration.GAME_CHAT_FORMAT.getAsString()
+                            .replace("{player}", player.getDisplayName())
+                            .replace("{team_color}", team.getTeamColor().getChatColor().toString())
+                            .replace("{team}", team.getName())
+                            .replace("{message}", e.getMessage()), player));
+                }
             } else {
                 setRecipients(e, arena.getDeadPlayers());
-            }
-            switch (arena.getGameState()) {
-                case WAITING:
-                case STARTING:
-                    e.setFormat(TextUtil.color("&7{player_name}: {message}"
-                            .replace("{player_name}", player.getDisplayName())
-                            .replace("{message}", TextUtil.color(e.getMessage()))));
-                    break;
-                default:
-                    GameTeam team = arena.getTeamByPlayer(player);
-                    e.setFormat(TextUtil.color("{player_teamcolor}{player_team} &7{player_name}: {message}"
-                            .replace("{player_name}", player.getDisplayName())
-                            .replace("{player_teamcolor}", team.getTeamColor().getChatColor().toString())
-                            .replace("{player_team}", team.getName())
-                            .replace("{message}", TextUtil.color(e.getMessage()))));
-                    break;
+                e.setFormat(TextUtil.format(Configuration.SPECTATOR_CHAT_FORMAT.getAsString()
+                        .replace("{player}", player.getDisplayName())
+                        .replace("{message}", e.getMessage()), player));
             }
         } else {
-            setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> ArenaUtil.getArenaByPlayer(p) == null).collect(Collectors.toList()));
-            e.setFormat(TextUtil.color("&7{player_name}: {message}"
-                    .replace("{player_name}", player.getDisplayName())
-                    .replace("{message}", TextUtil.color(e.getMessage()))));
+            setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(player)).collect(Collectors.toList()));
+            e.setFormat(TextUtil.format(Configuration.LOBBY_CHAT_FORMAT.getAsString()
+                    .replace("{player}", player.getDisplayName())
+                    .replace("{message}", e.getMessage()), player));
         }
     }
 

@@ -26,7 +26,7 @@ public class StatsCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.stats";
     }
 
     @Override

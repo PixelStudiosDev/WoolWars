@@ -16,18 +16,15 @@ public class FileManager {
     private final File configFile;
     private final File messagesFile;
     private final File powerUpsFile;
-    private final File menusFile;
     @Getter private YamlConfiguration config;
     @Getter private YamlConfiguration messages;
     @Getter private YamlConfiguration powerUps;
-    @Getter private YamlConfiguration menus;
 
     public FileManager(WoolWars plugin) {
         this.plugin = plugin;
         configFile = new File(plugin.getDataFolder(), "config.yml");
         messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         powerUpsFile = new File(plugin.getDataFolder(), "powerups.yml");
-        menusFile = new File(plugin.getDataFolder(), "menus.yml");
         reload();
     }
 
@@ -47,9 +44,6 @@ public class FileManager {
         if (!powerUpsFile.exists()) {
             plugin.saveResource("powerups.yml", false);
         }
-        if (!menusFile.exists()) {
-            plugin.saveResource("menus.yml", false);
-        }
     }
 
     public void save() {
@@ -57,7 +51,6 @@ public class FileManager {
             config.save(configFile);
             messages.save(messagesFile);
             powerUps.save(powerUpsFile);
-            menus.save(menusFile);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -71,8 +64,6 @@ public class FileManager {
         TextUtil.info("messages.yml loaded!");
         powerUps = YamlConfiguration.loadConfiguration(powerUpsFile);
         TextUtil.info("powerups.yml loaded!");
-        menus = YamlConfiguration.loadConfiguration(menusFile);
-        TextUtil.info("menus.yml loaded!");
     }
 
     public File[] getArenaFiles() {

@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.utils;
 
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.team.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,6 +59,7 @@ public class PlayerScoreboard {
     }
 
     public void setGamePrefix(GameTeam team) {
+        if (!Configuration.NAME_TAGS_ENABLED.getAsBoolean()) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerScoreboard sidebar = getScoreboard(player);
             sidebar.setGamePrefixInternal(this.player, team);
@@ -70,12 +72,16 @@ public class PlayerScoreboard {
             scoreboardTeam = scoreboard.registerNewTeam(team.getArena().getId() + "_" + team.getName());
             scoreboardTeam.setCanSeeFriendlyInvisibles(false);
         }
-        String color = TextUtil.color(team.getTeamColor().getChatColor() + "&l" + team.getTeamLetter() + " " + team.getTeamColor().getChatColor());
+        String color = TextUtil.color(Configuration.NAME_TAGS_PREFIX.getAsString()
+                .replace("{team_color}", team.getTeamColor().getChatColor().toString())
+                .replace("{team}", team.getName())
+                .replace("{team_letter}", team.getTeamLetter()));
         scoreboardTeam.setPrefix(getFirstSplit(color));
         scoreboardTeam.addEntry(player.getName());
     }
 
     public void removeGamePrefix(GameTeam team) {
+        if (!Configuration.NAME_TAGS_ENABLED.getAsBoolean()) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerScoreboard sidebar = getScoreboard(player);
             if (sidebar == null) continue;

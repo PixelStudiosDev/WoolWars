@@ -51,7 +51,7 @@ public class GameArena implements Arena {
     private final Cuboid woolRegion;
     private final Cuboid arenaRegion;
     private StartingTask startingTask;
-    private PlayingTask playingTask;
+    private RoundTask roundTask;
     private PreRoundTask preRoundTask;
     private RoundOverTask roundOverTask;
     private GameEndedTask gameEndedTask;
@@ -131,6 +131,7 @@ public class GameArena implements Arena {
                 .replace("{player}", player.getName())
                 .replace("{currentplayers}", String.valueOf(players.size()))
                 .replace("{maxplayers}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
+        ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_JOINED.getAsString());
         if (gameState.equals(GameState.WAITING) && getPlayers().size() >= getMinPlayers()) {
             setGameState(GameState.STARTING);
         }
@@ -171,6 +172,7 @@ public class GameArena implements Arena {
             }
         }
         if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
+            ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_LEFT.getAsString());
             TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers})"
                     .replace("{player}", player.getName())
                     .replace("{currentplayers}", String.valueOf(players.size()))
@@ -183,7 +185,7 @@ public class GameArena implements Arena {
             TextUtil.sendMessage(players, "&cWe don't have enough players! Start cancelled!");
             setGameState(GameState.WAITING);
         }
-        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {
+        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && !gameState.equals(GameState.GAME_ENDED) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {
             setGameState(GameState.GAME_ENDED);
         }
     }
@@ -227,7 +229,7 @@ public class GameArena implements Arena {
                 preRoundTask = new PreRoundTask(this);
                 break;
             case ACTIVE_ROUND:
-                playingTask = new PlayingTask(this);
+                roundTask = new RoundTask(this);
                 break;
             case ROUND_OVER:
                 roundOverTask = new RoundOverTask(this);
@@ -355,7 +357,7 @@ public class GameArena implements Arena {
     public void cancelTasks() {
         if (startingTask != null) startingTask.cancel();
         if (preRoundTask != null) preRoundTask.cancel();
-        if (playingTask != null) playingTask.cancel();
+        if (roundTask != null) roundTask.cancel();
         if (roundOverTask != null) roundOverTask.cancel();
         if (gameEndedTask != null) gameEndedTask.cancel();
     }

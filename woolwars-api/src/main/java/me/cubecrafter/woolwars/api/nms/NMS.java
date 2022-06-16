@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.api;
+package me.cubecrafter.woolwars.api.nms;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

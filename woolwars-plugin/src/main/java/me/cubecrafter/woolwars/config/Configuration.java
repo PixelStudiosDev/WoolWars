@@ -17,7 +17,6 @@ public enum Configuration {
     // GAME SETTINGS
 
     ENABLE_LEAVE_COMMAND_SHORTCUT("enable-leave-command-shortcut"),
-    ENABLE_LOBBY_COMMAND_SHORTCUT("enable-lobby-command-shortcut"),
     STARTING_COUNTDOWN("starting-countdown"),
     PRE_ROUND_COUNTDOWN("pre-round-countdown"),
     ACTIVE_ROUND_COUNTDOWN("active-round-countdown"),
@@ -25,7 +24,7 @@ public enum Configuration {
     GAME_ENDED_COUNTDOWN("game-ended-countdown"),
     DISABLED_INTERACTION_BLOCKS("disabled-interaction-blocks"),
     PLACEABLE_BLOCKS("placeable-blocks"),
-    FALL_DAMAGE_ENABLED("fall-damage-enabled"),
+    DISABLE_FALL_DAMAGE("disable-fall-damage"),
     PLAY_AGAIN_ITEM("items.play-again-item"),
     LEAVE_ITEM("items.leave-item"),
     TELEPORTER_ITEM("items.teleporter-item"),
@@ -52,6 +51,7 @@ public enum Configuration {
     SOUNDS_ROUND_START("sounds.round-start"),
     SOUNDS_ROUND_WON("sounds.round-won"),
     SOUNDS_ROUND_LOST("sounds.round-lost"),
+    SOUNDS_ROUND_DRAW("sounds.round-draw"),
     SOUNDS_TELEPORT_TO_BASE("sounds.teleport-to-base"),
     SOUNDS_GAME_WON("sounds.game-won"),
     SOUNDS_GAME_LOST("sounds.game-lost"),
@@ -67,7 +67,7 @@ public enum Configuration {
     SCOREBOARD_ENABLED("scoreboard.enabled"),
     SCOREBOARD_REFRESH_INTERVAL("scoreboard.refresh-interval"),
     NAME_TAGS_ENABLED("name-tags.enabled"),
-    NAME_TAGS_FORMAT("name-tags.format"),
+    NAME_TAGS_PREFIX("name-tags.prefix"),
 
     // STORAGE SETTINGS
 
@@ -81,26 +81,29 @@ public enum Configuration {
     LOBBY_LOCATION("lobby-location");
 
     private final String path;
-    private final YamlConfiguration config = WoolWars.getInstance().getFileManager().getConfig();
 
     public String getAsString() {
-        return config.getString(path);
+        return WoolWars.getInstance().getFileManager().getConfig().getString(path);
     }
 
     public int getAsInt() {
-        return config.getInt(path);
+        return WoolWars.getInstance().getFileManager().getConfig().getInt(path);
+    }
+
+    public double getAsDouble() {
+        return WoolWars.getInstance().getFileManager().getConfig().getDouble(path);
     }
 
     public List<String> getAsStringList() {
-        return config.getStringList(path);
+        return WoolWars.getInstance().getFileManager().getConfig().getStringList(path);
     }
 
     public List<Integer> getAsIntegerList() {
-        return config.getIntegerList(path);
+        return WoolWars.getInstance().getFileManager().getConfig().getIntegerList(path);
     }
 
     public boolean getAsBoolean() {
-        return config.getBoolean(path);
+        return WoolWars.getInstance().getFileManager().getConfig().getBoolean(path);
     }
 
     public Location getAsLocation() {
@@ -108,7 +111,7 @@ public enum Configuration {
     }
 
     public ConfigurationSection getAsConfigSection() {
-        return config.getConfigurationSection(path);
+        return WoolWars.getInstance().getFileManager().getConfig().getConfigurationSection(path);
     }
 
 }

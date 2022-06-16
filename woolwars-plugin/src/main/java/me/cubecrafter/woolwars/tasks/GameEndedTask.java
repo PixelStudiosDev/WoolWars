@@ -1,7 +1,8 @@
 package me.cubecrafter.woolwars.tasks;
 
-import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
@@ -9,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.Arrays;
 
 public class GameEndedTask extends ArenaTask {
 
@@ -29,7 +28,7 @@ public class GameEndedTask extends ArenaTask {
 
     @Override
     public int getDuration() {
-        return 10;
+        return Configuration.GAME_ENDED_COUNTDOWN.getAsInt();
     }
 
     @Override
@@ -50,8 +49,8 @@ public class GameEndedTask extends ArenaTask {
                 player.showPlayer(dead);
             }
         }
-        ItemStack playAgainItem = new ItemBuilder("PAPER").setDisplayName("&dPlay Again").setTag("playagain-item").build();
-        ItemStack leaveItem = new ItemBuilder("RED_BED").setDisplayName("&cReturn to Lobby").setLore(Arrays.asList("&7Click to return to the lobby!")).setTag("leave-item").build();
+        ItemStack playAgainItem = ItemBuilder.fromConfig(Configuration.PLAY_AGAIN_ITEM.getAsConfigSection()).setTag("playagain-item").build();
+        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsConfigSection()).setTag("leave-item").build();
         for (Player player : arena.getPlayers()) {
             player.getInventory().setItem(7, playAgainItem);
             player.getInventory().setItem(8, leaveItem);

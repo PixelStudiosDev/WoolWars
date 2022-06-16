@@ -2,27 +2,19 @@ package me.cubecrafter.woolwars;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.api.API;
-import me.cubecrafter.woolwars.api.NMS;
 import me.cubecrafter.woolwars.api.WoolWarsAPI;
+import me.cubecrafter.woolwars.api.nms.NMS;
+import me.cubecrafter.woolwars.arena.ArenaManager;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.PlayerDataManager;
-import me.cubecrafter.woolwars.arena.ArenaManager;
-import me.cubecrafter.woolwars.kits.KitManager;
-import me.cubecrafter.woolwars.listeners.GameListener;
-import me.cubecrafter.woolwars.listeners.BlockBreakListener;
-import me.cubecrafter.woolwars.listeners.BlockPlaceListener;
-import me.cubecrafter.woolwars.listeners.ChatListener;
-import me.cubecrafter.woolwars.listeners.InventoryListener;
-import me.cubecrafter.woolwars.listeners.PlayerJoinListener;
-import me.cubecrafter.woolwars.listeners.PlayerQuitListener;
-import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
-import me.cubecrafter.woolwars.hooks.VaultHook;
+import me.cubecrafter.woolwars.kits.KitManager;
+import me.cubecrafter.woolwars.listeners.*;
+import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.utils.Auth;
-import me.cubecrafter.woolwars.listeners.ScoreboardHandler;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
@@ -44,7 +36,6 @@ public final class WoolWars extends JavaPlugin {
     private ScoreboardHandler scoreboardHandler;
     private PlayerDataManager playerDataManager;
     private PowerUpManager powerupManager;
-    private VaultHook vaultHook;
     private NMS nms;
     private WoolWarsAPI api;
     private final String user = "%%__USER__%%";
@@ -82,13 +73,12 @@ public final class WoolWars extends JavaPlugin {
         registerHooks();
         SQLDatabase = new Database();
         arenaManager = new ArenaManager();
-        commandManager = new CommandManager();
+        commandManager = new CommandManager(this);
         playerDataManager = new PlayerDataManager();
         scoreboardHandler = new ScoreboardHandler();
         powerupManager = new PowerUpManager();
         kitManager = new KitManager();
-        Arrays.asList(new InventoryListener(), new GameListener(), new PlayerQuitListener(), new PlayerJoinListener(),
-                        new BlockPlaceListener(), new BlockBreakListener(), new ChatListener())
+        Arrays.asList(new InventoryListener(), new GameListener(), new PlayerQuitListener(), new PlayerJoinListener(), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
         playerDataManager.forceLoad();
         api = new API();
@@ -109,18 +99,10 @@ public final class WoolWars extends JavaPlugin {
             new PlaceholderHook().register();
             TextUtil.info("Hooked into PlaceholderAPI!");
         }
-        if (isVaultEnabled()) {
-            vaultHook = new VaultHook();
-            TextUtil.info("Hooked into Vault!");
-        }
     }
 
     public boolean isPAPIEnabled() {
         return getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
-    }
-
-    public boolean isVaultEnabled() {
-        return getServer().getPluginManager().isPluginEnabled("Vault");
     }
 
 }

@@ -1,6 +1,6 @@
 package me.cubecrafter.woolwars.nms;
 
-import me.cubecrafter.woolwars.api.NMS;
+import me.cubecrafter.woolwars.api.nms.NMS;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;

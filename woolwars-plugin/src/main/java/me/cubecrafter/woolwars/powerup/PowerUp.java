@@ -5,8 +5,11 @@ import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -16,6 +19,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,9 +41,52 @@ public class PowerUp {
 
     public void use(Player player) {
         remove();
-        XSound.play(player, "ENTITY_PLAYER_LEVELUP");
+        ArenaUtil.playSound(player, Configuration.SOUNDS_POWERUP_COLLECTED.getAsString());
+        List<String> toReplace = Arrays.asList("_HELMET", "_CHESTPLATE", "_LEGGINGS", "_BOOTS", "_PICKAXE", "_SWORD", "_AXE", "_SHOVEL", "_HOE");
         for (ItemStack item : data.getItems()) {
-            player.getInventory().addItem(item);
+            String material = item.getType().toString();
+            String end = toReplace.stream().filter(material::endsWith).findAny().orElse(null);
+            if (end == null) {
+                player.getInventory().addItem(item);
+            } else {
+                boolean found = false;
+                for (int i = 0; i < player.getInventory().getSize(); i++) {
+                    ItemStack stack = player.getInventory().getItem(i);
+                    if (stack == null || stack.getType().equals(Material.AIR)) continue;
+                    if (stack.getType().toString().endsWith(end)) {
+                        player.getInventory().setItem(i, item);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    for (int i = 0; i < player.getInventory().getArmorContents().length; i++) {
+                        ItemStack stack = player.getInventory().getArmorContents()[i];
+                        if (stack == null || stack.getType().equals(Material.AIR)) continue;
+                        if (stack.getType().toString().endsWith(end)) {
+                            switch (i) {
+                                case 0:
+                                    player.getInventory().setBoots(item);
+                                    break;
+                                case 1:
+                                    player.getInventory().setLeggings(item);
+                                    break;
+                                case 2:
+                                    player.getInventory().setChestplate(item);
+                                    break;
+                                case 3:
+                                    player.getInventory().setHelmet(item);
+                                    break;
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    player.getInventory().addItem(item);
+                }
+            }
         }
         for (PotionEffect effect : data.getEffects()) {
             player.addPotionEffect(effect, true);
@@ -72,7 +119,7 @@ public class PowerUp {
         Location loc = armorStand.getLocation();
         loc.setYaw(rotation);
         armorStand.teleport(loc);
-        rotation += 4;
+        rotation += 3;
     }
 
     private void setupHolo() {

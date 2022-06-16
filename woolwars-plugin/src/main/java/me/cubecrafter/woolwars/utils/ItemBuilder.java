@@ -129,11 +129,9 @@ public class ItemBuilder {
         return item;
     }
 
-    public static boolean hasTag(ItemStack item, String tag) {
-        if (item == null) return false;
-        String tagValue = WoolWars.getInstance().getNms().getTag(item, "woolwars");
-        if (tagValue == null) return false;
-        return tagValue.equals(tag);
+    public static String getTag(ItemStack item) {
+        if (item == null) return null;
+        return WoolWars.getInstance().getNms().getTag(item, "woolwars");
     }
 
     public static ItemBuilder fromConfig(ConfigurationSection section) {

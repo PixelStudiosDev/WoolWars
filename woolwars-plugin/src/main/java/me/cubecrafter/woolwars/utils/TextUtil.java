@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 @UtilityClass
 public class TextUtil {
@@ -173,6 +174,10 @@ public class TextUtil {
         players.forEach(player -> sendActionBar(player, message));
     }
 
+    public void sendActionBarWhile(Player player, String message, Callable<Boolean> condition) {
+        ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, format(message, player), condition);
+    }
+
     public String getCurrentDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
         return dateFormat.format(new Date());
@@ -184,7 +189,6 @@ public class TextUtil {
         int duration = Integer.parseInt(effect[1]) * 20;
         int amplifier = Integer.parseInt(effect[2]);
         return new PotionEffect(type, duration, amplifier, false, false);
-
     }
 
 }

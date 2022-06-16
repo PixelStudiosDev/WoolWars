@@ -27,8 +27,8 @@ public class PowerUpManager {
             ItemStack displayedItem = ItemBuilder.fromConfig(config.getConfigurationSection(id + ".displayed-item")).build();
             List<String> holoLines = config.getStringList(id + ".hologram-lines");
             List<ItemStack> items = new ArrayList<>();
-            for (String item : config.getStringList(id + ".items")) {
-                ItemStack created = new ItemBuilder(item).build();
+            for (String item : config.getConfigurationSection(id + ".items").getKeys(false)) {
+                ItemStack created = ItemBuilder.fromConfig(config.getConfigurationSection(id + ".items." + item)).build();
                 items.add(created);
             }
             List<PotionEffect> effects = new ArrayList<>();

@@ -24,7 +24,7 @@ public class HelpCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.help";
     }
 
     @Override

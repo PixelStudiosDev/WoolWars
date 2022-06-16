@@ -1,18 +1,21 @@
 package me.cubecrafter.woolwars.tasks;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.particles.XParticle;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.GameState;
-import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -23,7 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
-public class PlayingTask extends ArenaTask {
+public class RoundTask extends ArenaTask {
 
     private BukkitTask rotatePowerUpsTask;
     private final Map<GameTeam, Integer> placedWool = new HashMap<>();
@@ -32,7 +35,7 @@ public class PlayingTask extends ArenaTask {
     private final Map<Player, Integer> roundPlacedWool = new HashMap<>();
     private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
 
-    public PlayingTask(GameArena arena) {
+    public RoundTask(GameArena arena) {
         super(arena);
     }
 
@@ -41,8 +44,10 @@ public class PlayingTask extends ArenaTask {
         if ((arena.getTimer() <= 30 && arena.getTimer() % 10 == 0) || arena.getTimer() <= 5) {
             TextUtil.sendMessage(arena.getPlayers(), "&c{seconds} &7seconds left!".replace("{seconds}", String.valueOf(arena.getTimer())));
         }
-        for (Block block : jumpPads) {
-            block.getWorld().playEffect(block.getLocation().add(0, 1.3, 0.5).subtract(-0.5, 0, 0), Effect.HAPPY_VILLAGER, 0);
+        if (Configuration.JUMP_PADS_PARTICLES_ENABLED.getAsBoolean()) {
+            for (Block block : jumpPads) {
+                block.getWorld().playEffect(block.getLocation().add(0.5, 1.3, 0.5), Effect.valueOf(Configuration.JUMP_PADS_PARTICLES_TYPE.getAsString()), 0);
+            }
         }
     }
 
@@ -71,6 +76,10 @@ public class PlayingTask extends ArenaTask {
             }
         }
         rotatePowerUpsTask.cancel();
+        addRoundStats();
+    }
+
+    private void addRoundStats() {
         roundKills.forEach(arena::addKills);
         roundBrokenBlocks.forEach(arena::addBrokenBlocks);
         roundPlacedWool.forEach(arena::addPlacedWool);
@@ -78,12 +87,15 @@ public class PlayingTask extends ArenaTask {
 
     @Override
     public int getDuration() {
-        return 60;
+        return Configuration.ACTIVE_ROUND_COUNTDOWN.getAsInt();
     }
 
     @Override
     public void onStart() {
-        jumpPads = arena.getArenaRegion().getBlocks().stream().filter(block -> block.getType().equals(Material.SLIME_BLOCK)).collect(Collectors.toList());
+        jumpPads = arena.getArenaRegion().getBlocks().stream()
+                .filter(block -> block.getType().equals(XMaterial.matchXMaterial(Configuration.JUMP_PADS_TOP_BLOCK.getAsString()).get().parseMaterial()))
+                .filter(block -> block.getRelative(BlockFace.DOWN).getType().equals(XMaterial.matchXMaterial(Configuration.JUMP_PADS_BOTTOM_BLOCK.getAsString()).get().parseMaterial()))
+                .collect(Collectors.toList());
         rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
     }
 
@@ -112,6 +124,7 @@ public class PlayingTask extends ArenaTask {
                 sendRoundEndedMessages(team, false, false);
                 arena.setGameState(GameState.ROUND_OVER);
             }
+            addRoundStats();
             rotatePowerUpsTask.cancel();
             cancel();
         }
@@ -156,26 +169,26 @@ public class PlayingTask extends ArenaTask {
 
         if (draw) {
             TextUtil.sendTitle(arena.getPlayers(), 2, arena.getTeamPointsFormatted(), "&e&lDRAW");
-            ArenaUtil.playSound(arena.getPlayers(), "GHAST_MOAN");
+            ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_DRAW.getAsString());
             return;
         }
         for (GameTeam team : arena.getTeams()) {
             if (lastRound) {
                 if (team.equals(winner)) {
                     TextUtil.sendTitle(team.getMembers(), 2, "&a&lVICTORY", "&6Your team was victorious!");
-                    ArenaUtil.playSound(team.getMembers(), "ENTITY_PLAYER_LEVELUP");
+                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_WON.getAsString());
                 } else {
                     TextUtil.sendTitle(team.getMembers(), 2, "&a&lDEFEAT", "&6Your team was defeated!");
-                    ArenaUtil.playSound(team.getMembers(), "GHAST_MOAN");
+                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_LOST.getAsString());
                 }
                 continue;
             }
             if (team.equals(winner)) {
                 TextUtil.sendTitle(team.getMembers(), 2, arena.getTeamPointsFormatted(), "&e&lROUND WON");
-                ArenaUtil.playSound(team.getMembers(), "ENTITY_PLAYER_LEVELUP");
+                ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_WON.getAsString());
             } else {
                 TextUtil.sendTitle(team.getMembers(), 2, arena.getTeamPointsFormatted(), "&e&lROUND OVER");
-                ArenaUtil.playSound(team.getMembers(), "GHAST_MOAN");
+                ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_LOST.getAsString());
             }
         }
     }

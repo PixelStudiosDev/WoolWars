@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.tasks;
 
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 
 public class RoundOverTask extends ArenaTask {
@@ -21,7 +22,7 @@ public class RoundOverTask extends ArenaTask {
 
     @Override
     public int getDuration() {
-        return 5;
+        return Configuration.ROUND_OVER_COUNTDOWN.getAsInt();
     }
 
     @Override

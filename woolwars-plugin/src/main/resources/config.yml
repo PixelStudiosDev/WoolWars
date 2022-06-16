@@ -16,8 +16,7 @@ license-key: "PUT-YOUR-LICENSE-KEY-HERE"
 # | GAME SETTINGS                            |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 enable-leave-command-shortcut: true
-enable-lobby-command-shortcut: true
-starting-countdown: 30
+starting-countdown: 15
 pre-round-countdown: 10
 active-round-countdown: 60
 round-over-countdown: 5
@@ -28,7 +27,7 @@ disabled-interaction-blocks:
   - FURNACE
 placeable-blocks:
   - COBBLESTONE
-fall-damage-enabled: true
+disable-fall-damage: true
 items:
   play-again-item:
     material: PAPER
@@ -44,7 +43,7 @@ items:
     slot: 8
   teleporter-item:
     material: COMPASS
-    displayname: "&bTeleporter &7(Right-Click)"
+    displayname: "&aTeleporter &7(Right-Click)"
     lore:
       - "&7Right-Click to open!"
     slot: 0
@@ -70,7 +69,7 @@ chat-format:
   enabled: true
   lobby-format: "%vault_prefix%{player}: &7{message}"
   waiting-lobby-format: "%vault_prefix%{player}: &7{message}"
-  game-format: "{team_color}{team_letter}{player}: &7{message}"
+  game-format: "{team_color}{team}{player}: &7{message}"
   spectator-format: "&7[Spect]%vault_prefix%{player}: &7{message}"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -99,7 +98,7 @@ scoreboard:
   refresh-interval: 1000
 name-tags:
   enabled: true
-  format: "{team_color}{team_letter} &7{player}"
+  prefix: "{team_color}{team_letter} "
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | STORAGE SETTINGS                         |

@@ -3,7 +3,7 @@ package me.cubecrafter.woolwars.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.cubecrafter.woolwars.WoolWars;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.cubecrafter.woolwars.config.Configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,24 +12,23 @@ import java.sql.SQLException;
 
 public class ConnectionPool {
 
-    private final YamlConfiguration config = WoolWars.getInstance().getFileManager().getConfig();
     private HikariDataSource dataSource;
     private final String host, port, database, username, password;
     private final boolean useSSL;
 
     public ConnectionPool() {
-        host = config.getString("mysql.host");
-        port = config.getString("mysql.port");
-        database = config.getString("mysql.database");
-        username = config.getString("mysql.username");
-        password = config.getString("mysql.password");
-        useSSL = config.getBoolean("mysql.useSSL");
+        host = Configuration.MYSQL_HOST.getAsString();
+        port = Configuration.MYSQL_PORT.getAsString();
+        database = Configuration.MYSQL_DATABASE.getAsString();
+        username = Configuration.MYSQL_USERNAME.getAsString();
+        password = Configuration.MYSQL_PASSWORD.getAsString();
+        useSSL = Configuration.MYSQL_SSL_ENABLED.getAsBoolean();
         setup();
     }
 
     private void setup() {
         HikariConfig hikariConfig = new HikariConfig();
-        if (config.getBoolean("mysql.enabled")) {
+        if (Configuration.MYSQL_ENABLED.getAsBoolean()) {
             hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
         } else {
             File database = new File(WoolWars.getInstance().getDataFolder(), "database.db");

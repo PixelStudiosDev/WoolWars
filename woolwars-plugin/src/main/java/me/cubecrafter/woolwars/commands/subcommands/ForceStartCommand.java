@@ -30,7 +30,7 @@ public class ForceStartCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.forcestart";
     }
 
     @Override

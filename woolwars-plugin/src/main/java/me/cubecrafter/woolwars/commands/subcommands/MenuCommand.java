@@ -26,7 +26,7 @@ public class MenuCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.menu";
     }
 
     @Override

@@ -32,7 +32,7 @@ public class LeaveCommand implements SubCommand, CommandExecutor {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.leave";
     }
 
     @Override

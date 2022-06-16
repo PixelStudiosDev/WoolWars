@@ -43,7 +43,7 @@ public class JoinCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.join";
     }
 
     @Override

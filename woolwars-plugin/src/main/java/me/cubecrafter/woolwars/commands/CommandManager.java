@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.commands;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.subcommands.*;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.menu.menus.MainMenu;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
@@ -23,12 +24,14 @@ public class CommandManager implements TabExecutor {
 
     private final Set<SubCommand> subCommands = new HashSet<>();
 
-    public CommandManager() {
+    public CommandManager(WoolWars plugin) {
         subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new MenuCommand(), new ForceStartCommand(), new ReloadCommand(), new StatsCommand()));
-        PluginCommand command = WoolWars.getInstance().getCommand("woolwars");
+        PluginCommand command = plugin.getCommand("woolwars");
         command.setExecutor(this);
         command.setTabCompleter(this);
-        WoolWars.getInstance().getCommand("leave").setExecutor(new LeaveCommand());
+        if (Configuration.ENABLE_LEAVE_COMMAND_SHORTCUT.getAsBoolean()) {
+            plugin.getCommand("leave").setExecutor(new LeaveCommand());
+        }
     }
 
     @Override

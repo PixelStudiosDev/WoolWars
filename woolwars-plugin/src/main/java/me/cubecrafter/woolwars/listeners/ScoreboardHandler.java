@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.PlayerScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -17,11 +18,13 @@ import org.bukkit.scheduler.BukkitTask;
 public class ScoreboardHandler implements Listener, Runnable {
 
     private YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
-    private final BukkitTask updateTask;
+    private BukkitTask updateTask;
 
     public ScoreboardHandler() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
-        updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, 20L);
+        if (Configuration.SCOREBOARD_ENABLED.getAsBoolean()) {
+            Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
+            updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, Configuration.SCOREBOARD_REFRESH_INTERVAL.getAsInt());
+        }
     }
 
     @EventHandler

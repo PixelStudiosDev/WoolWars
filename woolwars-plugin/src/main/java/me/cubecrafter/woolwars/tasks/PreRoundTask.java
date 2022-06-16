@@ -5,6 +5,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.database.PlayerData;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.kits.Ability;
 import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.powerup.PowerUp;
@@ -27,7 +28,7 @@ public class PreRoundTask extends ArenaTask {
     public void execute() {
         if (arena.getTimer() <= 3) {
             TextUtil.sendTitle(arena.getPlayers(), 1, "&c{seconds}".replace("{seconds}", String.valueOf(arena.getTimer())), "&7Get Ready");
-            ArenaUtil.playSound(arena.getPlayers(), "ENTITY_CHICKEN_EGG");
+            ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_COUNTDOWN.getAsString());
         }
     }
 
@@ -39,7 +40,7 @@ public class PreRoundTask extends ArenaTask {
             }
         });
         TextUtil.sendTitle(arena.getPlayers(), 1, "&a&lROUND START", "&bRound {round}".replace("{round}", String.valueOf(arena.getRound())));
-        ArenaUtil.playSound(arena.getPlayers(), "BLOCK_ANVIL_LAND");
+        ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_START.getAsString());
         arena.getTeams().forEach(GameTeam::removeBarrier);
         arena.getPowerUps().forEach(PowerUp::spawn);
         for (Block block : arena.getWoolRegion().getBlocks()) {
@@ -52,7 +53,7 @@ public class PreRoundTask extends ArenaTask {
 
     @Override
     public int getDuration() {
-        return 10;
+        return Configuration.PRE_ROUND_COUNTDOWN.getAsInt();
     }
 
     @Override

@@ -30,7 +30,7 @@ public class ReloadCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "woolwars";
+        return "woolwars.admin";
     }
 
     @Override
