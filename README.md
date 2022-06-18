@@ -1,2 +1,2 @@
 # WoolWars
-Minigame inspired by Hypixel's WoolWars
+A fun and unique minigame to play with your friends!
