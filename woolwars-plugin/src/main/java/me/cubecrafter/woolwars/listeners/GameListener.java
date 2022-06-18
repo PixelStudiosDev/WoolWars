@@ -6,6 +6,7 @@ import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.database.PlayerData;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.menu.menus.TeleporterMenu;
 import me.cubecrafter.woolwars.powerup.PowerUp;
@@ -93,7 +94,11 @@ public class GameListener implements Listener {
                 if (event.getDamager() instanceof Player) {
                     Player damager = (Player) event.getDamager();
                     GameTeam damagerTeam = arena.getTeamByPlayer(damager);
-                    TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was killed by " + damagerTeam.getTeamColor().getChatColor() + damager.getName());
+                    TextUtil.sendMessage(arena.getPlayers(), Messages.KILL_MESSAGE.getAsString()
+                            .replace("{player}", player.getDisplayName())
+                            .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString())
+                            .replace("{attacker}", damager.getDisplayName())
+                            .replace("{attacker_team_color}", damagerTeam.getTeamColor().getChatColor().toString()));
                     ArenaUtil.playSound(damager, Configuration.SOUNDS_PLAYER_KILL.getAsString());
                     arena.getRoundTask().addKill(damager);
                 } else if (event.getDamager() instanceof Projectile) {
@@ -101,13 +106,19 @@ public class GameListener implements Listener {
                     if (projectile.getShooter() instanceof Player) {
                         Player damager = (Player) projectile.getShooter();
                         GameTeam damagerTeam = arena.getTeamByPlayer(damager);
-                        TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7was shot by " + damagerTeam.getTeamColor().getChatColor() + damager.getName());
+                        TextUtil.sendMessage(arena.getPlayers(), Messages.KILL_MESSAGE.getAsString()
+                                .replace("{player}", player.getDisplayName())
+                                .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString())
+                                .replace("{attacker}", damager.getDisplayName())
+                                .replace("{attacker_team_color}", damagerTeam.getTeamColor().getChatColor().toString()));
                         ArenaUtil.playSound(damager, Configuration.SOUNDS_PLAYER_KILL.getAsString());
                         arena.getRoundTask().addKill(damager);
                     }
                 }
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
-                TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7burned to death");
+                TextUtil.sendMessage(arena.getPlayers(), Messages.DEATH_BY_LAVA.getAsString()
+                        .replace("{player}", player.getDisplayName())
+                        .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString()));
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
                 TextUtil.sendMessage(arena.getPlayers(), Messages.DEATH_BY_FALL.getAsString()
                         .replace("{player}", player.getDisplayName())
@@ -117,7 +128,9 @@ public class GameListener implements Listener {
                         .replace("{player}", player.getDisplayName())
                         .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString()));
             } else {
-                TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7died");
+                TextUtil.sendMessage(arena.getPlayers(), Messages.DEATH_GENERIC.getAsString()
+                        .replace("{player}", player.getDisplayName())
+                        .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString()));
             }
             handleDeath(player, arena);
         }
@@ -149,7 +162,7 @@ public class GameListener implements Listener {
         player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsConfigSection().getInt("slot"), teleporter);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 0, false, false));
         if (arena.getAlivePlayers().size() == 0) {
-            TextUtil.sendMessage(arena.getPlayers(), "&cAll players died! Starting a new round!");
+            TextUtil.sendMessage(arena.getPlayers(),  Messages.ALL_PLAYERS_DEAD.getAsString());
             arena.getRoundTask().getRotatePowerUpsTask().cancel();
             arena.getRoundTask().cancel();
             arena.setGameState(GameState.ROUND_OVER);
@@ -343,7 +356,7 @@ public class GameListener implements Listener {
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't break this block!"));
+            player.sendMessage(TextUtil.color( Messages.CANT_BREAK_BLOCK.getAsString()));
         } else if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
             if (arena.isCenterLocked()) {
                 TextUtil.sendMessage(player, "&cCenter is locked!");
@@ -362,7 +375,7 @@ public class GameListener implements Listener {
             arena.getRoundTask().addBrokenBlock(player);
         } else if (!arena.getArenaPlacedBlocks().contains(e.getBlock())) {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't break this block!"));
+            player.sendMessage(TextUtil.color(Messages.CANT_BREAK_BLOCK.getAsString()));
         } else {
             arena.getArenaPlacedBlocks().remove(e.getBlock());
             e.getBlock().setType(Material.AIR);
@@ -376,13 +389,13 @@ public class GameListener implements Listener {
         if (arena == null) return;
         if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
+            player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
             return;
         }
         if (!ArenaUtil.isBlockInTeamBase(e.getBlock(), arena)) {
             if (e.getBlockAgainst().getType().toString().contains("LAVA") || e.getBlockAgainst().getType().toString().contains("WATER")) {
                 e.setCancelled(true);
-                player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
+                player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
                 return;
             }
             if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
@@ -407,10 +420,10 @@ public class GameListener implements Listener {
                 }
             }
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't place this block here!"));
+            player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
         } else {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color("&cYou can't place blocks here!"));
+            player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
         }
     }
 

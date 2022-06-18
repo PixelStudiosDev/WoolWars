@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.subcommands.*;
 import me.cubecrafter.woolwars.config.Configuration;
-import me.cubecrafter.woolwars.menu.menus.MainMenu;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -35,15 +35,15 @@ public class CommandManager implements TabExecutor {
         if (args.length > 0) {
             SubCommand cmd = subCommands.stream().filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
-                sender.sendMessage(TextUtil.color("&cUnknown subcommand!"));
+                sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString()));
                 return true;
             }
             if (cmd.isPlayerOnly() && !(sender instanceof Player)) {
-                sender.sendMessage(TextUtil.color("&cThis command can be executed only by a player!"));
+                sender.sendMessage(TextUtil.color(Messages.ONLY_PLAYER_COMMAND.getAsString()));
                 return true;
             }
             if (!sender.hasPermission(cmd.getPermission())) {
-                sender.sendMessage(TextUtil.color("&cYou don't have the permission to execute this command!"));
+                sender.sendMessage(TextUtil.color(Messages.NO_PERMISSION.getAsString()));
                 return true;
             }
             cmd.execute(sender, args);

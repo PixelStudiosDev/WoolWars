@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.menu.menus;
 
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
@@ -42,7 +43,7 @@ public class KitsMenu extends Menu {
         for (Kit kit : ArenaUtil.getKits()) {
             items.put(kit.getMenuSlot(), new MenuItem(generateItem(kit), player).addAction(e -> {
                 if (data.getSelectedKit().equals(kit.getId())) {
-                    TextUtil.sendMessage(player, "&cYou already have this kit selected!");
+                    TextUtil.sendMessage(player,  Messages.KIT_ALREADY_SELECTED.getAsString());
                 } else {
                     kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
                     data.setSelectedKit(kit.getId());

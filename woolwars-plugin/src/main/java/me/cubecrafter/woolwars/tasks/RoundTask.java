@@ -39,7 +39,7 @@ public class RoundTask extends ArenaTask {
     @Override
     public void execute() {
         if ((arena.getTimer() <= 30 && arena.getTimer() % 10 == 0) || arena.getTimer() <= 5) {
-            TextUtil.sendMessage(arena.getPlayers(), "&c{seconds} &7seconds left!".replace("{seconds}", String.valueOf(arena.getTimer())));
+            TextUtil.sendMessage(arena.getPlayers(),  Messages.TIME_LEFT_COUNTDOWN.getAsString().replace("{seconds}", String.valueOf(arena.getTimer())));
         }
         if (Configuration.JUMP_PADS_PARTICLES_ENABLED.getAsBoolean()) {
             for (Block block : jumpPads) {
@@ -191,19 +191,19 @@ public class RoundTask extends ArenaTask {
         for (GameTeam team : arena.getTeams()) {
             if (lastRound) {
                 if (team.equals(winner)) {
-                    TextUtil.sendTitle(team.getMembers(), 2, "&a&lVICTORY", "&6Your team was victorious!");
+                    TextUtil.sendTitle(team.getMembers(), 2,  Messages.WINNER_TITLE.getAsString(),  Messages.WINNER_SUBTITLE.getAsString());
                     ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_WON.getAsString());
                 } else {
-                    TextUtil.sendTitle(team.getMembers(), 2, "&a&lDEFEAT", "&6Your team was defeated!");
+                    TextUtil.sendTitle(team.getMembers(), 2,  Messages.LOSER_TITLE.getAsString(),  Messages.LOSER_SUBTITLE.getAsString());
                     ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_LOST.getAsString());
                 }
                 continue;
             }
             if (team.equals(winner)) {
-                TextUtil.sendTitle(team.getMembers(), 2, arena.getTeamPointsFormatted(), "&e&lROUND WON");
+                TextUtil.sendTitle(team.getMembers(), 2, Messages.ROUND_WIN_TITLE.getAsString().replace("{points}", arena.getTeamPointsFormatted()),  Messages.ROUND_WIN_SUBTITLE.getAsString());
                 ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_WON.getAsString());
             } else {
-                TextUtil.sendTitle(team.getMembers(), 2, arena.getTeamPointsFormatted(), "&e&lROUND OVER");
+                TextUtil.sendTitle(team.getMembers(), 2, Messages.ROUND_LOSE_TITLE.getAsString().replace("{points}", arena.getTeamPointsFormatted()),  Messages.ROUND_LOSE_SUBTITLE.getAsString());
                 ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_LOST.getAsString());
             }
         }

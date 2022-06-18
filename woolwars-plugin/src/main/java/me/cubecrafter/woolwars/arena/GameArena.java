@@ -100,11 +100,11 @@ public class GameArena implements Arena {
             return;
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING)) {
-            TextUtil.sendMessage(player, "&cThe game is already started!");
+            TextUtil.sendMessage(player, Messages.GAME_ALREADY_STARTED.getAsString());
             return;
         }
         if (players.size() >= maxPlayersPerTeam * teams.size()) {
-            TextUtil.sendMessage(player, "&cThis game is full!");
+            TextUtil.sendMessage(player, Messages.ARENA_FULL.getAsString());
             return;
         }
         players.add(player);
@@ -128,7 +128,7 @@ public class GameArena implements Arena {
         }
         ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsConfigSection()).setTag("leave-item").build();
         player.getInventory().setItem(Configuration.LEAVE_ITEM.getAsConfigSection().getInt("slot"), leaveItem);
-        TextUtil.sendMessage(players, "&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
+        TextUtil.sendMessage(players, Messages.PLAYER_JOIN_ARENA.getAsString()
                 .replace("{player}", player.getName())
                 .replace("{current}", String.valueOf(players.size()))
                 .replace("{max}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
@@ -181,7 +181,7 @@ public class GameArena implements Arena {
         }
         if (gameState.equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             cancelTasks();
-            TextUtil.sendMessage(players, "&cWe don't have enough players! Start cancelled!");
+            TextUtil.sendMessage(players, Messages.START_CANCELLED.getAsString());
             setGameState(GameState.WAITING);
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && !gameState.equals(GameState.GAME_ENDED) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {

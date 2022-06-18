@@ -43,9 +43,9 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return String.valueOf(data.getKills());
             case "deaths":
                 return String.valueOf(data.getDeaths());
-            case "placed_wool":
+            case "wool_placed":
                 return String.valueOf(data.getWoolPlaced());
-            case "broken_blocks":
+            case "blocks_broken":
                 return String.valueOf(data.getBlocksBroken());
             case "powerups_collected":
                 return String.valueOf(data.getPowerUpsCollected());

@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.listeners;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -61,12 +62,12 @@ public class ChatListener implements Listener {
         if (Configuration.BLOCKED_COMMANDS_WHITELIST.getAsBoolean()) {
             if (commands.stream().noneMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
                 e.setCancelled(true);
-                player.sendMessage(TextUtil.color("You can't use this command while you are in game!"));
+                player.sendMessage(TextUtil.color(Messages.COMMAND_BLOCKED.getAsString()));
             }
         } else {
             if (commands.stream().anyMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
                 e.setCancelled(true);
-                player.sendMessage(TextUtil.color("You can't use this command while you are in game!"));
+                player.sendMessage(TextUtil.color(Messages.COMMAND_BLOCKED.getAsString()));
             }
         }
     }
