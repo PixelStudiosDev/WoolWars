@@ -3,6 +3,7 @@ package me.cubecrafter.woolwars.commands.subcommands;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.commands.SubCommand;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.CommandSender;
@@ -23,7 +24,7 @@ public class JoinCommand implements SubCommand {
         } else if (ArenaUtil.getGroups().contains(args[1])) {
             ArenaUtil.joinRandomFromGroup((Player) sender, args[1]);
         } else {
-            TextUtil.sendMessage((Player) sender, "&cArena or group not found!");
+            TextUtil.sendMessage((Player) sender, Messages.ARENA_NOT_FOUND.getAsString());
         }
     }
 

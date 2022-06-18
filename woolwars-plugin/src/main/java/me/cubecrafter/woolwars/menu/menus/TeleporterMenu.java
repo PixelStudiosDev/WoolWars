@@ -9,17 +9,15 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-public class TeleportMenu extends Menu {
+public class TeleporterMenu extends Menu {
 
     private final GameArena arena;
 
-    public TeleportMenu(Player player) {
+    public TeleporterMenu(Player player, GameArena arena) {
         super(player);
-        arena = ArenaUtil.getArenaByPlayer(player);
+        this.arena = arena;
     }
 
     @Override
@@ -33,21 +31,19 @@ public class TeleportMenu extends Menu {
     }
 
     @Override
-    public List<MenuItem> getItems() {
-        List<MenuItem> items = new ArrayList<>();
-
+    public Map<Integer, MenuItem> getItems() {
+        Map<Integer, MenuItem> items = new HashMap<>();
         for (int i = 0; i < arena.getAlivePlayers().size(); i++) {
             Player alive = arena.getAlivePlayers().get(i);
-            items.add(new MenuItem(i, new ItemBuilder("PLAYER_HEAD").setDisplayName(alive.getDisplayName()).setLore(Arrays.asList("&7Left click to teleport!", "&7Right click to spectate!")).setTexture(alive.getDisplayName()).build()).addAction(e -> {
+            items.put(i, new MenuItem(new ItemBuilder("PLAYER_HEAD").setDisplayName(alive.getDisplayName()).setLore(Arrays.asList("&7Left click to teleport!", "&7Right click to spectate!")).setTexture(alive.getDisplayName()).build(), player).addAction(e -> {
                 closeMenu();
                 player.teleport(alive);
-            }, ClickType.LEFT).addAction(e -> {
+            }, ClickType.LEFT, ClickType.SHIFT_LEFT).addAction(e -> {
                 closeMenu();
                 player.setGameMode(GameMode.SPECTATOR);
                 player.setSpectatorTarget(alive);
-            }, ClickType.RIGHT).setClickSound("ENTITY_SLIME_WALK"));
+            }, ClickType.RIGHT, ClickType.SHIFT_RIGHT));
         }
-
         return items;
     }
 

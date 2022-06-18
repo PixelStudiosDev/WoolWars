@@ -1,6 +1,5 @@
 package me.cubecrafter.woolwars.listeners;
 
-import com.cryptomorin.xseries.XSound;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.menu.Menu;
@@ -29,7 +28,7 @@ public class InventoryListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if (e.getInventory().getType().equals(InventoryType.CRAFTING) && (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING))) {
+            if (e.getInventory().getType().equals(InventoryType.CRAFTING) && !arena.getGameState().equals(GameState.PRE_ROUND) && !arena.getGameState().equals(GameState.ACTIVE_ROUND)) {
                 e.setCancelled(true);
                 return;
             }
@@ -37,14 +36,11 @@ public class InventoryListener implements Listener {
         if (e.getInventory().getHolder() instanceof Menu) {
             e.setCancelled(true);
             Menu menu = (Menu) e.getInventory().getHolder();
-            MenuItem item = menu.getItems().stream().filter(menuItem -> menuItem.getSlot() == e.getRawSlot()).findAny().orElse(null);
+            MenuItem item = menu.getItems().get(e.getSlot());
             if (item == null) return;
             for (Map.Entry<Consumer<InventoryClickEvent>, ClickType[]> entry : item.getActions().entrySet()) {
                 for (ClickType clickType : entry.getValue()) {
                     if (e.getClick().equals(clickType)) {
-                        if (item.getClickSound() != null) {
-                            XSound.play(player, item.getClickSound());
-                        }
                         entry.getKey().accept(e);
                         menu.updateMenu();
                     }

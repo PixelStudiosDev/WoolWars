@@ -8,6 +8,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,20 +17,22 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ItemBuilder {
 
     private ItemStack item;
-    private boolean legacySplashPotion;
+    private Player viewingPlayer;
+    private boolean legacySplashPotion = false;
 
     public ItemBuilder(String material) {
-        if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()){
+        if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
             legacySplashPotion = true;
             item = XMaterial.POTION.parseItem();
             return;
         }
-        legacySplashPotion = false;
         item = XMaterial.matchXMaterial(material).get().parseItem();
     }
 

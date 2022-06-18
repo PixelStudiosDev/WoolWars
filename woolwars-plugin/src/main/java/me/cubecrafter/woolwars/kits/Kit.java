@@ -8,11 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffect;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -26,7 +23,6 @@ public class Kit {
     private final ItemStack menuItem;
     private final int menuSlot;
     private final Ability ability;
-    private final List<PotionEffect> persistentEffects = new ArrayList<>();
 
     public Kit(String id, YamlConfiguration kitConfig) {
         this.id = id;
@@ -43,38 +39,28 @@ public class Kit {
             ItemStack item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("items." + section)).setUnbreakable(true).build();
             contents.put(item, kitConfig.getInt("items." + section + ".slot"));
         }
-        for (String effect : kitConfig.getStringList("persistent-effects")) {
-            persistentEffects.add(TextUtil.getEffect(effect));
-        }
     }
 
     public void addToPlayer(Player player, GameTeam team) {
-        if (team == null) return;
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        player.sendMessage(TextUtil.color("&7Kit &b" + displayName + " &7selected!"));
+        TextUtil.sendMessage(player, "&7Kit &b" + displayName + " &7selected!");
         if (helmetEnabled) player.getInventory().setHelmet(new ItemBuilder("LEATHER_HELMET").setColor(team.getTeamColor().getColor()).build());
         if (chestplateEnabled) player.getInventory().setChestplate(new ItemBuilder("LEATHER_CHESTPLATE").setColor(team.getTeamColor().getColor()).build());
         if (leggingsEnabled) player.getInventory().setLeggings(new ItemBuilder("LEATHER_LEGGINGS").setColor(team.getTeamColor().getColor()).build());
         if (bootsEnabled) player.getInventory().setBoots(new ItemBuilder("LEATHER_BOOTS").setColor(team.getTeamColor().getColor()).build());
         for (Map.Entry<ItemStack, Integer> entry : contents.entrySet()) {
             if (entry.getKey().getType().toString().contains("WOOL")) {
-                ItemMeta meta = entry.getKey().getItemMeta();
                 ItemStack oldWool = entry.getKey();
+                ItemMeta meta = oldWool.getItemMeta();
                 ItemStack wool = new ItemBuilder(team.getTeamColor().getWoolMaterial()).setAmount(oldWool.getAmount()).setDisplayName(meta.getDisplayName()).setLore(meta.getLore()).build();
                 player.getInventory().setItem(entry.getValue(), wool);
-            } else if (entry.getKey().getType().toString().contains("GLASS")) {
-                ItemMeta meta = entry.getKey().getItemMeta();
-                ItemStack oldGlass = entry.getKey();
-                ItemStack glass = new ItemBuilder(team.getTeamColor().getGlassMaterial()).setAmount(oldGlass.getAmount()).setDisplayName(meta.getDisplayName()).setLore(meta.getLore()).build();
-                player.getInventory().setItem(entry.getValue(), glass);
             } else {
                 player.getInventory().setItem(entry.getValue(), entry.getKey());
             }
         }
         player.getInventory().setItem(ability.getSlot(), ability.getItem());
-        persistentEffects.forEach(player::addPotionEffect);
     }
 
 }

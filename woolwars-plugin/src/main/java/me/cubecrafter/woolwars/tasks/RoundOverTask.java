@@ -22,7 +22,7 @@ public class RoundOverTask extends ArenaTask {
 
     @Override
     public int getDuration() {
-        return Configuration.ROUND_OVER_COUNTDOWN.getAsInt();
+        return Configuration.ROUND_OVER_DURATION.getAsInt();
     }
 
     @Override

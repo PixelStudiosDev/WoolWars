@@ -17,25 +17,24 @@ permissions:
   woolwars.player:
     description: Grant access to all player commands
     children:
-      - woolwars.help
       - woolwars.join
       - woolwars.leave
-      - woolwars.menu
+      - woolwars.arenas
       - woolwars.stats
       - woolwars.playagain
   woolwars.admin:
     description: Grant access to all admin commands
   woolwars.forcestart:
     description: Force start the game
-  woolwars.help:
-    description: Show the help menu
   woolwars.join:
     description: Join an arena
   woolwars.leave:
     description: Leave an arena
-  woolwars.menu:
-    description: Open the game gui
+  woolwars.arenas:
+    description: Open the arenas gui
   woolwars.stats:
     description: Open the stats gui
   woolwars.playagain:
     description: Play again
+  woolwars.bypass:
+    description: Bypass the command blocker

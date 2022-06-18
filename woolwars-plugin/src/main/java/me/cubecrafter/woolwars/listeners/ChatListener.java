@@ -55,6 +55,8 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Player player = e.getPlayer();
+        if (player.hasPermission("woolwars.bypass")) return;
+        if (!ArenaUtil.isPlaying(player)) return;
         List<String> commands = Configuration.BLOCKED_COMMANDS.getAsStringList();
         if (Configuration.BLOCKED_COMMANDS_WHITELIST.getAsBoolean()) {
             if (commands.stream().noneMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {

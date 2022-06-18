@@ -17,7 +17,7 @@ already-in-arena: "&cYou are already in this arena!"
 game-already-started: "&cThe game is already started!"
 arena-full: "&cThis game is full!"
 player-join-arena: "&e{player} &7joined the game! &8({current}/{max})"
-player-left-arena: "&e{player} &7left the game!"
+player-leave-arena: "&e{player} &7left the game!"
 start-cancelled: "&cWe don't have enough players! Start cancelled!"
 unknown-command: "&cUnknown command!"
 only-player-command: "&cThis command can be executed only by a player!"
@@ -27,41 +27,59 @@ cant-place-block: "&cYou can't place blocks here!"
 command-blocked: "You can't use this command while you are in game!"
 death-title: "&c&lYOU DIED"
 death-subtitle: "&7You will respawn at the start of the next round!"
-all-players-died: "&c&cAll players died! Starting a new round!"
-death-by-fall: " &7fell from a high place "
-death-by-lava: " &7burned to death "
-kill-message: " &7was killed by "
+all-players-dead: "&c&cAll players died! Starting a new round!"
+death-by-fall: "{player_team_color}{player} &7fell from a high place"
+death-by-lava: "{player_team_color}{player} &7burned to death"
+death-by-void: "{player_team_color}{player} &7fell out of the world"
+death-generic: "{player_team_color}{player} &7died"
+kill-message: "{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
 kit-already-selected: "&cYou already have this kit selected!"
-round-countdown: "&c{seconds} &7seconds left!"
+time-left-countdown: "&c{seconds} &7seconds left!"
+team-won-format: "&aYour team won!"
+team-lost-format: "&cYour team lost!"
+none-format: "&cNone"
+end-game-stats-format: "{player} &7- &e{value}"
 end-game-message:
   - "&8&m--------------------------------------------------"
   - ""
-  - "&a          Your team won!"  "&c          Your team lost!"
+  - "                  {team_status}"
   - ""
-  - "&e&lMost Kills &7- "
-  - "&6&lMost Wool Placed &7- "
-  - "c&lMost Blocks Broken &7- "
+  - "&e&lMost Kills &7- {top_kills}"
+  - "&6&lMost Wool Placed &7- {top_wool_placed}"
+  - "c&lMost Blocks Broken &7- {top_blocks_broken}"
   - ""
   - "&8&m--------------------------------------------------"
-bow-damage:
 winner-title: "&a&lVICTORY"
 winner-subtitle: "&6Your team was victorious!"
 loser-title: "&a&lDEFEAT"
 loser-subtitle: "&6Your team was defeated!"
-round-win: "&e&lROUND WON"
-round-lose: "&e&lROUND OVER"
+round-win-title: "{points}"
+round-win-subtitle: "&e&lROUND WON"
+round-lose-title: "{points}"
+round-lose-subtitle: "&e&lROUND OVER"
+round-draw-title: "{points}"
+round-draw-subtitle: "&e&lDRAW"
+round-start-countdown-title: "&c{seconds}"
+round-start-countdown-subtitle: "&7Get Ready!"
 game-start-message:
   - "&8&m--------------------------------------------------            "
   - "&c               &lWOOL WARS                                      "
   - "&7Matches are best of &e3"
   - "&7Place your team's color wool in the &acenter &7to win the round!"
   - "&8&m--------------------------------------------------            "
+stats-message:
+  - "&8&m--------------------------------------------------"
+  - "&e               Round #{round} stats"
+  - "{stats}"
+  - "&8&m--------------------------------------------------"
 no-stats-achieved: "&cNo stats achieved for this round!"
-kills: "&7Kills: "
-placed-wool: "&7Placed wool: "
-broken-blocks: "&7Broken blocks: "
+stats-kills: "&7Kills: {kills}"
+stats-wool-placed: "&7Wool placed: {wool_placed}"
+stats-blocks-broken: "&7Blocks broken: {blocks_broken}"
+pre-round-title: "&e&lPRE ROUND"
+pre-round-subtitle: "&7Select your kit!"
 round-start-title: "&a&lROUND START"
-round-start-subtitle: "&bRound {n}"
+round-start-subtitle: "&bRound {round}"
 shift-to-select-kit: "&eShift to select a kit!"
 game-start-countdown: "&7The game starts in &a{seconds} &7seconds!"
 
@@ -69,15 +87,16 @@ game-start-countdown: "&7The game starts in &a{seconds} &7seconds!"
 # | SCOREBOARD                               |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 scoreboard:
-  title: '&c&lWOOL WARS'
+  team-format: "{team_color}[{team_letter}] {team_progress} &8({team_points}/{win_points})"
+  title: "&c&lWOOL WARS"
   lobby:
+    - '&7{date}'
     - ''
-    - 'lobby scoreboard1'
-    - 'lobby scoreboard2'
-    - 'lobby scoreboard3'
-    - 'lobby scoreboard4'
+    - '&fWins: &7{wins}'
+    - '&fKills: &7{kills}'
+    - '&fLosses: &7{losses}'
     - ''
-    - 'www.cubecrafter.com'
+    - '&eplay.myserver.com'
   waiting:
     - ''
     - 'waiting scoreboard1'

@@ -1,0 +1,124 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | WOOLWARS MENUS FILE                      |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Version: ${project.version}
+# Author: CubeCrafter
+# Issues: TODO
+# Wiki: TODO
+# Discord: TODO
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | ARENAS MENU                              |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+arenas-menu:
+  title: "● Wool Wars Arenas"
+  rows: 6
+  filler:
+    enabled: true
+    material: GRAY_STAINED_GLASS_PANE
+    displayname: "&f"
+    slots: [0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,50,51,52,53]
+  items:
+    arena-item:
+      material: PAPER
+      displayname: "&a{displayname}"
+      lore:
+        - "&7State: &c{state}"
+        - "&7Players: &b{players}/{max_players}"
+        - "&7Group: &d{group}"
+        - ""
+        - "&eClick to join!"
+      slots: [10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34,37,38,39,40,41,42,43]
+    close-item:
+      material: BARRIER
+      displayname: "&cClose"
+      lore:
+        - "&7Click to close!"
+      slot: 49
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | STATS MENU                               |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+stats-menu:
+  title: "● Your Wool Wars Stats"
+  rows: 6
+  filler:
+    enabled: true
+    material: GRAY_STAINED_GLASS_PANE
+    displayname: "&f"
+    slots: [0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,50,51,52,53]
+  items:
+    wins-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJjM2Q3MzE3NzA3OTdlMTdhYmNiMTRhZTBmYzlkOWUwNjhkZWI3NDlkZGRiOTI1MDFjMGY2MTQ1NzY5ZTI1YyJ9fX0="
+      displayname: "&aWins"
+      lore:
+        - "&7{wins}"
+      slot: 20
+    losses-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VmMTE5ZjA4ODUxYTcyYTVmMTBmYmMzMjQ3ZDk1ZTFjMDA2MzYwZDJiNGY0MTJiMjNjZTA1NDA5Mjc1NmIwYyJ9fX0="
+      displayname: "&aLosses"
+      lore:
+        - "&7{losses}"
+      slot: 21
+    games-played-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc0MTcwYzY2YmYzMTQwZjIzNGIzMjJhZGQ3MjRjNWRmNjk0OWE5MjA5ZjgwN2ViZjg2ZDRmOWM4YzFlMTc4In19fQ=="
+      displayname: "&aGames Played"
+      lore:
+        - "&7{games_played}"
+      slot: 22
+    kills-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFmNTA1MmM3NGI3OTA1YmZmYmVmYjVjMTBiODU2NzViODk4M2VkYzllMWYyYjEwMWZmOTA2ZWI1YWMxNDQyYiJ9fX0="
+      displayname: "&aKills"
+      lore:
+        - "&7{kills}"
+      slot: 23
+    deaths-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFiOTZmODhiODJmMTIzNTRhMDkzZWU3N2FiMzdiOWQyNDVkYjNmY2EwZjYwMTJjZTE1NjViZTA2NjRjODA3MiJ9fX0="
+      displayname: "&aDeaths"
+      lore:
+        - "&7{deaths}"
+      slot: 24
+    placed-wool-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA4ZGY2MGM1MTA3NGVlZjI1NDRmZjM4Y2VhZDllMTY2NzVhZTQyNTE5MTYxMDUxODBlMWY4Y2UxOTdhYjNiYyJ9fX0="
+      displayname: "&aWool Placed"
+      lore:
+        - "&7{wool_placed}"
+      slot: 30
+    broken-blocks-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWU0MzUyNjgwZDBiYjI5YjkxMzhhZjc4MzMwMWEzOTFiMzQwOTBjYjQ5NDFkNTJjMDg3Y2E3M2M4MDM2Y2I1MSJ9fX0="
+      displayname: "&aBlocks Broken"
+      lore:
+        - "&7{blocks_broken}"
+      slot: 31
+    powerups-collected-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0="
+      displayname: "&aPowerups Collected"
+      lore:
+        - "&7{powerups_collected}"
+      slot: 32
+    close-item:
+      material: BARRIER
+      displayname: "&cClose"
+      lore:
+        - "&7Click to close!"
+      slot: 49
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | KITS MENU                                |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+kits-menu:
+  title: "&aKits"
+  rows: 6
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | TELEPORTER MENU                          |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+teleporter-menu:
+  title: "&aTeleporter"

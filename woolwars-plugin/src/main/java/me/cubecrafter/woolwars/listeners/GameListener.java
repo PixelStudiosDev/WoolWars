@@ -7,7 +7,7 @@ import me.cubecrafter.woolwars.api.database.PlayerData;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.menu.menus.KitsMenu;
-import me.cubecrafter.woolwars.menu.menus.TeleportMenu;
+import me.cubecrafter.woolwars.menu.menus.TeleporterMenu;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -38,7 +38,7 @@ public class GameListener implements Listener {
     @EventHandler
     public void onFoodChange(FoodLevelChangeEvent e) {
         Player player = (Player) e.getEntity();
-        if (ArenaUtil.getArenaByPlayer(player) != null) {
+        if (ArenaUtil.isPlaying(player)) {
             e.setCancelled(true);
         }
     }
@@ -109,7 +109,13 @@ public class GameListener implements Listener {
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
                 TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7burned to death");
             } else if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-                TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7fell from a high place");
+                TextUtil.sendMessage(arena.getPlayers(), Messages.DEATH_BY_FALL.getAsString()
+                        .replace("{player}", player.getDisplayName())
+                        .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString()));
+            } else if (e.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
+                TextUtil.sendMessage(arena.getPlayers(), Messages.DEATH_BY_VOID.getAsString()
+                        .replace("{player}", player.getDisplayName())
+                        .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString()));
             } else {
                 TextUtil.sendMessage(arena.getPlayers(), playerTeam.getTeamColor().getChatColor() + player.getName() + " &7died");
             }
@@ -131,8 +137,8 @@ public class GameListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
         player.setFireTicks(0);
         player.setHealth(20);
-        TextUtil.sendTitle(player, 2, "&c&lYOU DIED", "&7You will respawn at the start of the next round!");
-        TextUtil.sendActionBarWhile(player, "&eYou will respawn next round!", () -> arena.isDead(player));
+        TextUtil.sendTitle(player, 2,  Messages.DEATH_TITLE.getAsString(), Messages.DEATH_SUBTITLE.getAsString());
+        TextUtil.sendActionBarWhile(player,  Messages.DEATH_SUBTITLE.getAsString(), () -> arena.isDead(player));
         for (Player alive : arena.getAlivePlayers()) {
             alive.hidePlayer(player);
         }
@@ -164,7 +170,7 @@ public class GameListener implements Listener {
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            for (String material : Configuration.DISABLED_INTERACTION_BLOCKS.getAsStringList()) {
+            for (String material : Configuration.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
                 if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     e.setCancelled(true);
                     return;
@@ -183,7 +189,7 @@ public class GameListener implements Listener {
         if (tag == null) return;
         switch (tag) {
             case "teleport-item":
-                new TeleportMenu(player).openMenu();
+                new TeleporterMenu(player, arena).openMenu();
                 break;
             case "leave-item":
                 arena.removePlayer(player, true);
@@ -193,10 +199,10 @@ public class GameListener implements Listener {
                 break;
             case "playagain-item":
                 if (!player.hasPermission("woolwars.playagain")) {
-                    TextUtil.sendMessage(player, "&cYou don't have permission to play again!");
+                    TextUtil.sendMessage(player, "&cYou don't have the permission to play again!");
                     break;
                 }
-                if (ArenaUtil.joinRandom(player)) {
+                if (ArenaUtil.joinRandomFromGroup(player, arena.getGroup())) {
                     arena.removePlayer(player, false);
                 }
                 break;

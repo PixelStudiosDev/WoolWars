@@ -5,7 +5,6 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
 
@@ -18,11 +17,11 @@ public enum Configuration {
 
     ENABLE_LEAVE_COMMAND_SHORTCUT("enable-leave-command-shortcut"),
     STARTING_COUNTDOWN("starting-countdown"),
-    PRE_ROUND_COUNTDOWN("pre-round-countdown"),
-    ACTIVE_ROUND_COUNTDOWN("active-round-countdown"),
-    ROUND_OVER_COUNTDOWN("round-over-countdown"),
-    GAME_ENDED_COUNTDOWN("game-ended-countdown"),
-    DISABLED_INTERACTION_BLOCKS("disabled-interaction-blocks"),
+    PRE_ROUND_DURATION("pre-round-duration"),
+    ACTIVE_ROUND_DURATION("active-round-duration"),
+    ROUND_OVER_DURATION("round-over-duration"),
+    GAME_END_DURATION("game-end-duration"),
+    DISABLE_INTERACTION_BLOCKS("disable-interaction-blocks"),
     PLACEABLE_BLOCKS("placeable-blocks"),
     DISABLE_FALL_DAMAGE("disable-fall-damage"),
     PLAY_AGAIN_ITEM("items.play-again-item"),
@@ -96,10 +95,6 @@ public enum Configuration {
 
     public List<String> getAsStringList() {
         return WoolWars.getInstance().getFileManager().getConfig().getStringList(path);
-    }
-
-    public List<Integer> getAsIntegerList() {
-        return WoolWars.getInstance().getFileManager().getConfig().getIntegerList(path);
     }
 
     public boolean getAsBoolean() {

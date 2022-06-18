@@ -12,7 +12,6 @@ public class ReloadCommand implements SubCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         WoolWars.getInstance().getFileManager().reload();
-        WoolWars.getInstance().getScoreboardHandler().reload();
         WoolWars.getInstance().getKitManager().reload();
         WoolWars.getInstance().getPowerupManager().reload();
         sender.sendMessage(TextUtil.color("&aConfig files reloaded!"));

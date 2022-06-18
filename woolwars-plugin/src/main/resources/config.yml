@@ -16,11 +16,11 @@ license-key: "PUT-YOUR-LICENSE-KEY-HERE"
 # | GAME SETTINGS                            |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 enable-leave-command-shortcut: true
-starting-countdown: 15
-pre-round-countdown: 10
-active-round-countdown: 60
-round-over-countdown: 5
-game-ended-countdown: 10
+starting-countdown: 10
+pre-round-duration: 15
+active-round-duration: 60
+round-over-duration: 5
+game-end-duration: 10
 disabled-interaction-blocks:
   - CRAFTING_TABLE
   - HOPPER
@@ -76,19 +76,19 @@ chat-format:
 # | SOUNDS                                   |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 sounds:
-  jump-pad:
-  round-start:
-  round-won:
-  round-lost:
-  teleport-to-base:
-  game-won:
-  game-lost:
-  powerup-collected:
-  player-death:
-  player-kill:
-  countdown:
-  player-joined:
-  player-left:
+  jump-pad: ENTITY_BAT_TAKEOFF
+  round-start: BLOCK_ANVIL_LAND
+  round-won: ENTITY_PLAYER_LEVELUP
+  round-lost: GHAST_MOAN
+  teleport-to-base: ENTITY_ENDERMAN_TELEPORT
+  game-won: ENTITY_PLAYER_LEVELUP
+  game-lost: GHAST_MOAN
+  powerup-collected: ENTITY_EXPERIENCE_ORB_PICKUP
+  player-death: GHAST_MOAN
+  player-kill: ENTITY_EXPERIENCE_ORB_PICKUP
+  countdown: ENTITY_CHICKEN_EGG
+  player-joined: ENTITY_CHICKEN_EGG
+  player-left: ENTITY_CHICKEN_EGG
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | SCOREBOARD & NAME TAGS SETTINGS          |

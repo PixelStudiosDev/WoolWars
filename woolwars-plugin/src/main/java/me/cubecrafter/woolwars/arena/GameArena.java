@@ -8,6 +8,7 @@ import me.cubecrafter.woolwars.api.arena.Cuboid;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.team.TeamColor;
 import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.tasks.*;
 import me.cubecrafter.woolwars.team.GameTeam;
@@ -38,7 +39,7 @@ public class GameArena implements Arena {
     private final Location lobbyLocation;
     private final int maxPlayersPerTeam;
     private final int minPlayers;
-    private final int requiredPoints;
+    private final int winPoints;
     private final List<Player> players = new ArrayList<>();
     private final List<Player> deadPlayers = new ArrayList<>();
     private final List<Block> arenaPlacedBlocks = new ArrayList<>();
@@ -67,7 +68,7 @@ public class GameArena implements Arena {
         displayName = TextUtil.color(arenaConfig.getString("displayname"));
         maxPlayersPerTeam = arenaConfig.getInt("max-players-per-team");
         minPlayers = arenaConfig.getInt("min-players");
-        requiredPoints = arenaConfig.getInt("required-points-to-win");
+        winPoints = arenaConfig.getInt("required-points-to-win");
         for (String key : arenaConfig.getConfigurationSection("teams").getKeys(false)) {
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
             Location barrier1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.point1"));
@@ -95,7 +96,7 @@ public class GameArena implements Arena {
     @Override
     public void addPlayer(Player player) {
         if (players.contains(player)) {
-            TextUtil.sendMessage(player, "&cYou are already in this game!");
+            TextUtil.sendMessage(player, Messages.ALREADY_IN_ARENA.getAsString());
             return;
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING)) {
@@ -129,8 +130,8 @@ public class GameArena implements Arena {
         player.getInventory().setItem(Configuration.LEAVE_ITEM.getAsConfigSection().getInt("slot"), leaveItem);
         TextUtil.sendMessage(players, "&e{player} &7joined the game! &8({currentplayers}/{maxplayers})"
                 .replace("{player}", player.getName())
-                .replace("{currentplayers}", String.valueOf(players.size()))
-                .replace("{maxplayers}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
+                .replace("{current}", String.valueOf(players.size()))
+                .replace("{max}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
         ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_JOINED.getAsString());
         if (gameState.equals(GameState.WAITING) && getPlayers().size() >= getMinPlayers()) {
             setGameState(GameState.STARTING);
@@ -171,14 +172,12 @@ public class GameArena implements Arena {
                 online.showPlayer(player);
             }
         }
+        TextUtil.sendMessage(players, Messages.PLAYER_LEAVE_ARENA.getAsString()
+                .replace("{player}", player.getDisplayName())
+                .replace("{current}", String.valueOf(players.size()))
+                .replace("{max}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam())));
         if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
             ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_LEFT.getAsString());
-            TextUtil.sendMessage(players, "&e{player} &7left the game! &8({currentplayers}/{maxplayers})"
-                    .replace("{player}", player.getName())
-                    .replace("{currentplayers}", String.valueOf(players.size()))
-                    .replace("{maxplayers}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam())));
-        } else {
-            TextUtil.sendMessage(players, "&c{player} &7has left!".replace("{player}", player.getDisplayName()));
         }
         if (gameState.equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
             cancelTasks();
@@ -306,9 +305,7 @@ public class GameArena implements Arena {
     public void killEntities() {
         for (Entity entity : arenaRegion.getWorld().getEntities()) {
             if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PAINTING) || entity.getType().equals(EntityType.PLAYER)) continue;
-            if (arenaRegion.isInside(entity.getLocation())) {
-                entity.remove();
-            }
+            if (arenaRegion.isInside(entity.getLocation())) entity.remove();
         }
     }
 

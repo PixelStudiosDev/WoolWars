@@ -28,7 +28,7 @@ public class GameEndedTask extends ArenaTask {
 
     @Override
     public int getDuration() {
-        return Configuration.GAME_ENDED_COUNTDOWN.getAsInt();
+        return Configuration.GAME_END_DURATION.getAsInt();
     }
 
     @Override

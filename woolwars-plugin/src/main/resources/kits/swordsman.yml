@@ -1,6 +1,4 @@
 displayname: "Swordsman"
-default-kit: false
-persistent-effects: []
 armor:
   helmet: true
   chestplate: true

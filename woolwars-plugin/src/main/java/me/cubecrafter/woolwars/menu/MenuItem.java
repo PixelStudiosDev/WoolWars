@@ -1,8 +1,8 @@
 package me.cubecrafter.woolwars.menu;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -15,34 +15,37 @@ import java.util.function.Consumer;
 @Getter
 public class MenuItem {
 
-    private final int slot;
     private final ItemStack item;
+    private final Player player;
     private final Map<Consumer<InventoryClickEvent>, ClickType[]> actions = new HashMap<>();
-    private String clickSound;
     private static final ClickType[] defaultClickTypes = new ClickType[]{ClickType.LEFT, ClickType.RIGHT, ClickType.SHIFT_LEFT, ClickType.SHIFT_RIGHT};
 
-    public MenuItem(int slot, ItemStack item) {
-        this.slot = slot;
+    public MenuItem(ItemStack item, Player viewing) {
         this.item = item;
+        this.player = viewing;
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName()) {
-            meta.setDisplayName(TextUtil.format(meta.getDisplayName()));
+            if (player != null) {
+                meta.setDisplayName(TextUtil.format(meta.getDisplayName(), player));
+            } else {
+                meta.setDisplayName(TextUtil.format(meta.getDisplayName()));
+            }
         }
         if (meta.hasLore()) {
-            meta.setLore(TextUtil.format(meta.getLore()));
+            if (player != null) {
+                meta.setLore(TextUtil.format(meta.getLore(), player));
+            } else {
+                meta.setLore(TextUtil.format(meta.getLore()));
+            }
         }
         item.setItemMeta(meta);
     }
+
     public MenuItem addAction(Consumer<InventoryClickEvent> action, ClickType... clickTypes) {
         if (clickTypes.length == 0) {
             clickTypes = defaultClickTypes;
         }
         actions.put(action, clickTypes);
-        return this;
-    }
-
-    public MenuItem setClickSound(String sound) {
-        this.clickSound = sound;
         return this;
     }
 

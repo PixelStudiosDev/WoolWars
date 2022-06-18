@@ -50,6 +50,7 @@ stone-pickaxe:
   effects: {}
   items:
     - STONE_PICKAXE
+
 instant-health:
   displayed-item:
     material: PLAYER_HEAD
@@ -78,6 +79,7 @@ iron-boots:
   effects: []
   items:
     - IRON_BOOTS
+
 stone-sword:
   displayed-item:
     material: STONE_SWORD

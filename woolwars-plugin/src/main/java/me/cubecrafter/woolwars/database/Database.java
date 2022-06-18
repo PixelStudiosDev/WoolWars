@@ -24,8 +24,8 @@ public class Database {
                 "games_played BIGINT," +
                 "kills BIGINT," +
                 "deaths BIGINT," +
-                "placed_wool BIGINT," +
-                "broken_blocks BIGINT," +
+                "wool_placed BIGINT," +
+                "blocks_broken BIGINT," +
                 "powerups_collected BIGINT," +
                 "selected_kit VARCHAR" +
                 ")";
@@ -60,8 +60,8 @@ public class Database {
                 data.setGamesPlayed(resultSet.getInt("games_played"));
                 data.setKills(resultSet.getInt("kills"));
                 data.setDeaths(resultSet.getInt("deaths"));
-                data.setPlacedWool(resultSet.getInt("placed_wool"));
-                data.setBrokenBlocks(resultSet.getInt("broken_blocks"));
+                data.setWoolPlaced(resultSet.getInt("wool_placed"));
+                data.setBlocksBroken(resultSet.getInt("blocks_broken"));
                 data.setPowerUpsCollected(resultSet.getInt("powerups_collected"));
                 data.setSelectedKit(resultSet.getString("selected_kit"));
             } catch (SQLException ex) {
@@ -77,7 +77,7 @@ public class Database {
 
     public void savePlayerData(PlayerData data) {
         if (hasPlayerData(data.getUuid())) {
-            String sql = "UPDATE player_data SET name = ?, wins = ?, losses = ?, games_played = ?, kills = ?, deaths = ?, placed_wool = ?, broken_blocks = ?, powerups_collected = ?, selected_kit = ? WHERE uuid = ?";
+            String sql = "UPDATE player_data SET name = ?, wins = ?, losses = ?, games_played = ?, kills = ?, deaths = ?, wool_placed = ?, blocks_broken = ?, powerups_collected = ?, selected_kit = ? WHERE uuid = ?";
             try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, Bukkit.getOfflinePlayer(data.getUuid()).getName());
                 preparedStatement.setInt(2, data.getWins());
@@ -85,8 +85,8 @@ public class Database {
                 preparedStatement.setInt(4, data.getGamesPlayed());
                 preparedStatement.setInt(5, data.getKills());
                 preparedStatement.setInt(6, data.getDeaths());
-                preparedStatement.setInt(7, data.getPlacedWool());
-                preparedStatement.setInt(8, data.getBrokenBlocks());
+                preparedStatement.setInt(7, data.getWoolPlaced());
+                preparedStatement.setInt(8, data.getBlocksBroken());
                 preparedStatement.setInt(9, data.getPowerUpsCollected());
                 preparedStatement.setString(10, data.getSelectedKit());
                 preparedStatement.setString(11, data.getUuid().toString());
@@ -95,7 +95,7 @@ public class Database {
                 ex.printStackTrace();
             }
         } else {
-            String sql = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, placed_wool, broken_blocks, powerups_collected, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
             try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, data.getUuid().toString());
                 preparedStatement.setString(2, Bukkit.getOfflinePlayer(data.getUuid()).getName());
@@ -104,8 +104,8 @@ public class Database {
                 preparedStatement.setInt(5, data.getGamesPlayed());
                 preparedStatement.setInt(6, data.getKills());
                 preparedStatement.setInt(7, data.getDeaths());
-                preparedStatement.setInt(8, data.getPlacedWool());
-                preparedStatement.setInt(9, data.getBrokenBlocks());
+                preparedStatement.setInt(8, data.getWoolPlaced());
+                preparedStatement.setInt(9, data.getBlocksBroken());
                 preparedStatement.setInt(10, data.getPowerUpsCollected());
                 preparedStatement.setString(11, data.getSelectedKit());
                 preparedStatement.executeUpdate();

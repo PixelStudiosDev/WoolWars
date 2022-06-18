@@ -12,11 +12,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -25,7 +21,7 @@ public class CommandManager implements TabExecutor {
     private final Set<SubCommand> subCommands = new HashSet<>();
 
     public CommandManager(WoolWars plugin) {
-        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new MenuCommand(), new ForceStartCommand(), new ReloadCommand(), new StatsCommand()));
+        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new ArenasCommand(), new ForceStartCommand(), new ReloadCommand(), new StatsCommand()));
         PluginCommand command = plugin.getCommand("woolwars");
         command.setExecutor(this);
         command.setTabCompleter(this);
@@ -51,8 +47,8 @@ public class CommandManager implements TabExecutor {
                 return true;
             }
             cmd.execute(sender, args);
-        } else if (sender instanceof Player) {
-            new MainMenu((Player) sender).openMenu();
+        } else {
+            sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString()));
         }
         return true;
     }

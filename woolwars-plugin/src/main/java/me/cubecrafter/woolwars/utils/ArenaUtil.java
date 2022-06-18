@@ -4,11 +4,11 @@ import com.cryptomorin.xseries.XSound;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.api.database.PlayerData;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
-import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.kits.Kit;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -71,7 +71,7 @@ public class ArenaUtil {
     public boolean joinRandom(Player player) {
         List<GameArena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
-            TextUtil.sendMessage(player, "&cThere are no available arenas!");
+            TextUtil.sendMessage(player, Messages.NO_ARENAS_AVAILABLE.getAsString());
             return false;
         }
         GameArena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
@@ -82,7 +82,7 @@ public class ArenaUtil {
     public boolean joinRandomFromGroup(Player player, String group) {
         List<GameArena> available = getArenasByGroup(group).stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
-            TextUtil.sendMessage(player, "&cThere are no available " + group + " arenas!");
+            TextUtil.sendMessage(player, Messages.NO_ARENAS_AVAILABLE.getAsString());
             return false;
         }
         GameArena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));

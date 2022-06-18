@@ -1,17 +1,17 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.menu.menus.MainMenu;
+import me.cubecrafter.woolwars.menu.menus.ArenasMenu;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class MenuCommand implements SubCommand {
+public class ArenasCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        new MainMenu((Player) sender).openMenu();
+        new ArenasMenu((Player) sender).openMenu();
     }
 
     @Override
@@ -21,12 +21,12 @@ public class MenuCommand implements SubCommand {
 
     @Override
     public String getLabel() {
-        return "menu";
+        return "arenas";
     }
 
     @Override
     public String getPermission() {
-        return "woolwars.menu";
+        return "woolwars.arenas";
     }
 
     @Override

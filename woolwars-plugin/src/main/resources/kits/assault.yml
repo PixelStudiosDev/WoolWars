@@ -1,6 +1,4 @@
 displayname: "Assault"
-default-kit: false
-persistent-effects: []
 armor:
   helmet: false
   chestplate: false

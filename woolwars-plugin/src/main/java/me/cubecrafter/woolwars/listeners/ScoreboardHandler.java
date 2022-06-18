@@ -3,11 +3,12 @@ package me.cubecrafter.woolwars.listeners;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Messages;
+import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.PlayerScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,9 +16,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ScoreboardHandler implements Listener, Runnable {
 
-    private YamlConfiguration messages = WoolWars.getInstance().getFileManager().getMessages();
     private BukkitTask updateTask;
 
     public ScoreboardHandler() {
@@ -45,23 +48,23 @@ public class ScoreboardHandler implements Listener, Runnable {
             scoreboard = PlayerScoreboard.getScoreboard(player);
         } else {
             scoreboard = PlayerScoreboard.createScoreboard(player);
-            scoreboard.setTitle(TextUtil.color(messages.getString("scoreboard.title")));
+            scoreboard.setTitle(TextUtil.color(Messages.SCOREBOARD_TITLE.getAsString()));
         }
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             switch (arena.getGameState()) {
                 case WAITING:
-                    scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.waiting")), arena, player));
+                    scoreboard.setLines(TextUtil.format(Messages.SCOREBOARD_WAITING.getAsStringList(), arena, player));
                     break;
                 case STARTING:
-                    scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.starting")), arena, player));
+                    scoreboard.setLines(TextUtil.format(Messages.SCOREBOARD_STARTING.getAsStringList(), arena, player));
                     break;
                 default:
-                    scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.playing")), arena, player));
+                    scoreboard.setLines(TextUtil.format(formatGameScoreboard(Messages.SCOREBOARD_PLAYING.getAsStringList(), arena), arena, player));
                     break;
             }
         } else {
-            scoreboard.setLines(TextUtil.format(TextUtil.color(messages.getStringList("scoreboard.lobby")), player));
+            scoreboard.setLines(TextUtil.format(Messages.SCOREBOARD_LOBBY.getAsStringList(), player));
         }
     }
 
@@ -79,8 +82,32 @@ public class ScoreboardHandler implements Listener, Runnable {
         }
     }
 
-    public void reload() {
-        messages = WoolWars.getInstance().getFileManager().getMessages();
+    private List<String> formatGameScoreboard(List<String> original, GameArena arena) {
+        List<String> formatted = new ArrayList<>();
+        for (String line : original) {
+            if (!line.contains("{teams}")) {
+                formatted.add(line);
+                continue;
+            }
+            String teamFormat = Messages.SCOREBOARD_TEAM_FORMAT.getAsString();
+            for (GameTeam team : arena.getTeams()) {
+                StringBuilder builder = new StringBuilder();
+                for (int index = 0; index < arena.getWinPoints(); index++) {
+                    if (team.getPoints() <= index) {
+                        builder.append(TextUtil.color("&7⬤"));
+                    } else {
+                        builder.append(TextUtil.color(team.getTeamColor().getChatColor() + "⬤"));
+                    }
+                }
+                formatted.add(teamFormat.replace("{team_color}", team.getTeamColor().getChatColor().toString())
+                        .replace("{team_letter}", team.getTeamLetter())
+                        .replace("{team_progress}", builder.toString())
+                        .replace("{team_points}", String.valueOf(team.getPoints()))
+                        .replace("{win_points}", String.valueOf(arena.getWinPoints()))
+                        .replace("{team_alive}", String.valueOf(team.getMembers().stream().filter(arena::isAlive).count())));
+            }
+        }
+        return formatted;
     }
 
 }

@@ -1,6 +1,4 @@
 displayname: "Tank"
-default-kit: true
-persistent-effects: []
 armor:
   helmet: true
   chestplate: true

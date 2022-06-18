@@ -1,6 +1,4 @@
 displayname: "Engineer"
-default-kit: false
-persistent-effects: []
 armor:
   helmet: true
   chestplate: true

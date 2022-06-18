@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public abstract class Menu implements InventoryHolder {
@@ -20,7 +21,7 @@ public abstract class Menu implements InventoryHolder {
     private BukkitTask updateTask;
     public abstract String getTitle();
     public abstract int getRows();
-    public abstract List<MenuItem> getItems();
+    public abstract Map<Integer, MenuItem> getItems();
     public abstract boolean update();
 
     public void openMenu() {
@@ -41,7 +42,9 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void updateMenu() {
-        getItems().forEach(item -> getInventory().setItem(item.getSlot(), item.getItem()));
+        for (Map.Entry<Integer, MenuItem> entry : getItems().entrySet()) {
+            getInventory().setItem(entry.getKey(), entry.getValue().getItem());
+        }
     }
 
     public void addFiller(ItemStack filler, List<Integer> slots) {

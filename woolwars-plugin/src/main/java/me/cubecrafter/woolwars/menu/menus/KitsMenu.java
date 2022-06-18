@@ -12,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class KitsMenu extends Menu {
@@ -35,17 +37,17 @@ public class KitsMenu extends Menu {
     }
 
     @Override
-    public List<MenuItem> getItems() {
-        List<MenuItem> items = new ArrayList<>();
+    public Map<Integer, MenuItem> getItems() {
+        Map<Integer, MenuItem> items = new HashMap<>();
         for (Kit kit : ArenaUtil.getKits()) {
-            items.add(new MenuItem(kit.getMenuSlot(), generateItem(kit)).addAction(e -> {
+            items.put(kit.getMenuSlot(), new MenuItem(generateItem(kit), player).addAction(e -> {
                 if (data.getSelectedKit().equals(kit.getId())) {
                     TextUtil.sendMessage(player, "&cYou already have this kit selected!");
                 } else {
                     kit.addToPlayer(player, ArenaUtil.getArenaByPlayer(player).getTeamByPlayer(player));
                     data.setSelectedKit(kit.getId());
                 }
-            }).setClickSound("UI_BUTTON_CLICK"));
+            }));
         }
         return items;
     }
