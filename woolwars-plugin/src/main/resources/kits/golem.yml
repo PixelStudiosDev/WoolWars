@@ -27,16 +27,4 @@ ability:
     - ""
     - "&7You can only use your keystone"
     - "&7ability &c&lONCE &7per round."        
-    slot: 8    
-menu-item:
-  material: GOLDEN_CHESTPLATE
-  displayname: "&aGolem"
-  lore:
-   - "&7Powered down, the golem lacks"
-   - "&7all but a hard hitting offense,"
-   - "&7but for a few seconds, the golem"    
-   - "&7can become the toughest entity"
-   - "&7around!"
-   - ""
-   - "{kit_status}"  
-  slot: 31
+    slot: 8

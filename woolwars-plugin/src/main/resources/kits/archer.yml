@@ -39,16 +39,4 @@ ability:
     - ""
     - "&7You can only use your keystone"
     - "&7ability &c&lONCE &7per round."
-    slot: 8    
-menu-item:
-  material: BOW
-  displayname: "&aArcher"
-  lore:
-   - "&7Low in armor and weak in melee,"
-   - "&7the archer has to use its"
-   - "&7superior mobility to kite its"    
-   - "&7marks and its bow to finish the"
-   - "&7fight!"
-   - ""
-   - "{kit_status}"
-  slot: 15  
+    slot: 8

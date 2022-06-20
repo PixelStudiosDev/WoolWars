@@ -45,15 +45,4 @@ ability:
     - ""
     - "&7You can only use your keystone"
     - "&7ability &c&lONCE &7per round."
-    slot: 8    
-menu-item:
-  material: REDSTONE_BLOCK
-  displayname: "&aEngineer"
-  lore:
-   - "&7A great all purpose class that"
-   - "&7can lock middle for several"
-   - "&7seconds to give your team an"    
-   - "&7edge!"
-   - ""
-   - "{kit_status}"  
-  slot: 33
+    slot: 8

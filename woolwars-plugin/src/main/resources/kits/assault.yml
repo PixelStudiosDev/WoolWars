@@ -47,15 +47,4 @@ ability:
     - ""
     - "&7You can only use your keystone"
     - "&7ability &c&lONCE &7per round."
-    slot: 8    
-menu-item:
-  material: SHEARS
-  displayname: "&aAssault"
-  lore:
-   - "&7With good tools, potions and a"
-   - "&7powerful blast of TNT, secure"
-   - "&7the middle for a few seconds and"    
-   - "&7victory is within grasp!"
-   - ""
-   - "{kit_status}" 
-  slot: 13
+    slot: 8

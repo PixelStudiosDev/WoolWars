@@ -39,15 +39,4 @@ ability:
     - ""
     - "&7You can only use your keystone"
     - "&7ability &c&lONCE &7per round."    
-    slot: 8    
-menu-item:
-  material: STONE_SWORD
-  displayname: "&aSwordsman"
-  lore: 
-   - "&7Using their powerful sword and"
-   - "&7swiftness, they can cut through"
-   - "&7any enemies in his way to"    
-   - "&7achieve victory."
-   - ""
-   - "{kit_status}"
-  slot: 29
+    slot: 8

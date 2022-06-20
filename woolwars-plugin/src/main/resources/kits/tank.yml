@@ -36,14 +36,3 @@ ability:
     - "&7You can only use your keystone"
     - "&7ability &c&lONCE &7per round."
     slot: 8
-menu-item:
-  material: IRON_BLOCK
-  displayname: "&aTank"
-  lore:
-   - "&7With the highest base defenses"
-   - "&7and a powerful shield and"
-   - "&7recovery, this kit can control"    
-   - "&7middle and dominate the enemy!"
-   - ""
-   - "{kit_status}"    
-  slot: 11

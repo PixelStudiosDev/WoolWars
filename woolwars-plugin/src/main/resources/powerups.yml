@@ -46,7 +46,8 @@ pickaxe:
   hologram-lines:
       - "&6Stone Pickaxe"
   items:
-    - STONE_PICKAXE
+    item-1:
+      material: STONE_PICKAXE
 
 instant-health:
   displayed-item:
@@ -81,4 +82,5 @@ sword:
   hologram-lines:
     - "&6Stone Sword"
   items:
-    - STONE_SWORD
+    item-1:
+      material: STONE_SWORD
