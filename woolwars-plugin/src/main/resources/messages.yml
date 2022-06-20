@@ -3,86 +3,100 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Version: ${project.version}
 # Author: CubeCrafter
-# Issues: TODO
-# Wiki: TODO
-# Discord: TODO
+# Issues: https://github.com/CubeCrafter/WoolWars/issues
+# Wiki: https://cubecrafter.gitbook.io/
+# Discord: https://discord.gg/WzQhrNJkYu
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | MESSAGES                                 |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 prefix: "&cWoolWars &8» "
-arena-not-found: "&cThere are no group called like this!"
-no-arenas-available: "&cThere are no arenas available!"
-already-in-arena: "&cYou are already in this arena!"
-game-already-started: "&cThe game is already started!"
-arena-full: "&cThis game is full!"
-player-join-arena: "&e{player} &7joined the game! &8({current}/{max})"
-player-leave-arena: "&e{player} &7left the game!"
-start-cancelled: "&cWe don't have enough players! Start cancelled!"
-unknown-command: "&cUnknown command!"
-only-player-command: "&cThis command can be executed only by a player!"
-no-permission: "&cYou don't have the permission to execute this command!"
-cant-break-block: "&cYou can't break this block!"
-cant-place-block: "&cYou can't place blocks here!"
-command-blocked: "You can't use this command while you are in game!"
-death-title: "&c&lYOU DIED"
-death-subtitle: "&7You will respawn at the start of the next round!"
-all-players-dead: "&c&cAll players died! Starting a new round!"
-death-by-fall: "{player_team_color}{player} &7fell from a high place"
-death-by-lava: "{player_team_color}{player} &7burned to death"
-death-by-void: "{player_team_color}{player} &7fell out of the world"
-death-generic: "{player_team_color}{player} &7died"
-kill-message: "{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
-kit-already-selected: "&cYou already have this kit selected!"
-time-left-countdown: "&c{seconds} &7seconds left!"
-team-won-format: "&aYour team won!"
-team-lost-format: "&cYour team lost!"
-none-format: "&cNone"
-end-game-stats-format: "{player} &7- &e{value}"
-end-game-message:
-  - "&8&m--------------------------------------------------"
-  - ""
-  - "                  {team_status}"
-  - ""
-  - "&e&lMost Kills &7- {top_kills}"
-  - "&6&lMost Wool Placed &7- {top_wool_placed}"
-  - "c&lMost Blocks Broken &7- {top_blocks_broken}"
-  - ""
-  - "&8&m--------------------------------------------------"
-winner-title: "&a&lVICTORY"
-winner-subtitle: "&6Your team was victorious!"
-loser-title: "&a&lDEFEAT"
-loser-subtitle: "&6Your team was defeated!"
-round-win-title: "{points}"
-round-win-subtitle: "&e&lROUND WON"
-round-lose-title: "{points}"
-round-lose-subtitle: "&e&lROUND OVER"
-round-draw-title: "{points}"
-round-draw-subtitle: "&e&lDRAW"
-round-start-countdown-title: "&c{seconds}"
-round-start-countdown-subtitle: "&7Get Ready!"
-game-start-message:
-  - "&8&m--------------------------------------------------            "
-  - "&c               &lWOOL WARS                                      "
-  - "&7Matches are best of &e3"
-  - "&7Place your team's color wool in the &acenter &7to win the round!"
-  - "&8&m--------------------------------------------------            "
-stats-message:
-  - "&8&m--------------------------------------------------"
-  - "&e               Round #{round} stats"
-  - "{stats}"
-  - "&8&m--------------------------------------------------"
-no-stats-achieved: "&cNo stats achieved for this round!"
-stats-kills: "&7Kills: {kills}"
-stats-wool-placed: "&7Wool placed: {wool_placed}"
-stats-blocks-broken: "&7Blocks broken: {blocks_broken}"
-pre-round-title: "&e&lPRE ROUND"
-pre-round-subtitle: "&7Select your kit!"
-round-start-title: "&a&lROUND START"
-round-start-subtitle: "&bRound {round}"
-shift-to-select-kit: "&eShift to select a kit!"
-game-start-countdown: "&7The game starts in &a{seconds} &7seconds!"
-
+general:
+  arena-not-found: "{prefix}&cThere are no groups or arenas called like this!"
+  no-arenas-available: "{prefix}&cThere are no arenas available!"
+  already-in-arena: "{prefix}&cYou are already in this arena!"
+  game-already-started: "{prefix}&cThe game is already started!"
+  arena-full: "{prefix}&cThis game is full!"
+  unknown-command: "{prefix}&cUnknown command!"
+  only-player-command: "{prefix}&cThis command can be executed only by a player!"
+  no-permission: "{prefix}&cYou don't have the permission to execute this command!"
+  command-blocked: "{prefix}You can't use this command while you are in game!"
+game:
+  player-join: "{prefix}&e{player} &7joined the game! &8({current}/{max})"
+  player-leave: "{prefix}&e{player} &7left the game!"
+  start-cancelled: "{prefix}&cWe don't have enough players! Start cancelled!"
+  cant-break-block: "{prefix}&cYou can't break this block!"
+  cant-place-block: "{prefix}&cYou can't place blocks here!"
+  round-time-left-countdown: "{prefix}&c{seconds} &7seconds left in the round!"
+  all-players-dead: "{prefix}&cAll players died! Starting a new round!"
+  start-countdown: "{prefix}&7The game starts in &a{seconds} &7seconds!"
+  start-message:
+    - "&8&m--------------------------------------------------"
+    - "<center>&c&lWOOL WARS</center>"
+    - "<center>&7Matches are best of &e3</center>"
+    - "<center>&7Place your team's color wool in the &acenter &7to win the round!</center>"
+    - "&8&m--------------------------------------------------"
+  player-death:
+    title: "&c&lYOU DIED"
+    subtitle: "&7You will respawn at the start of the next round!"
+    fall: "{prefix}{player_team_color}{player} &7fell from a high place"
+    lava: "{prefix}{player_team_color}{player} &7burned to death"
+    void: "{prefix}{player_team_color}{player} &7fell out of the world"
+    generic: "{prefix}{player_team_color}{player} &7died"
+    kill-message: "{prefix}{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
+  round-start:
+    title: "&a&lROUND START"
+    subtitle: "&bRound {round}"
+    countdown-title: "&c{seconds}"
+    countdown-subtitle: "&7Get Ready!"
+  pre-round:
+    title: "&e&lPRE ROUND"
+    subtitle: "&7Select your kit!"
+    shift-to-select-kit: "&eShift to select a kit!"
+    kit-already-selected: "{prefix}&cYou already have this kit selected!"
+    kit-selected: "{prefix}&7You have selected the &b{displayname} &7kit!"
+  round-end:
+    winner-team:
+      title: "{points}"
+      subtitle: "&e&lROUND WON"
+    loser-team:
+      title: "{points}"
+      subtitle: "&e&lROUND WON"
+    draw:
+      title: "{points}"
+      subtitle: "&e&lDRAW"
+    stats-message:
+      no-stats-achieved: "<center>&cNo stats achieved for this round!</center>"
+      kills-format: "<center>&7Kills: {kills}</center>"
+      wool-placed-format: "<center>&7Wool placed: {wool_placed}</center>"
+      blocks-broken-format: "<center>&7Blocks broken: {blocks_broken}</center>"
+      message:
+        - "&8&m--------------------------------------------------"
+        - "<center>&eRound #{round} stats</center>"
+        - "{stats}"
+        - "&8&m--------------------------------------------------"
+  game-end:
+    winner-team:
+      title: "&a&lVICTORY"
+      subtitle: "&6Your team was victorious!"
+    loser-team:
+      title: "&c&lDEFEAT"
+      subtitle: "&6Your team was defeated!"
+    stats-message:
+      team-winner-format: "&aYour team won!"
+      team-loser-format: "&cYour team lost!"
+      statistic-format: "&7{player} &7- &e{value}"
+      none-format: "&cNone"
+      message:
+        - "&8&m--------------------------------------------------"
+        - ""
+        - "<center>{team_status}</center>"
+        - ""
+        - "<center>&e&lMost Kills &7- {top_kills}</center>"
+        - "<center>&6&lMost Wool Placed &7- {top_wool_placed}</center>"
+        - "<center>&c&lMost Blocks Broken &7- {top_blocks_broken}</center>"
+        - ""
+        - "&8&m--------------------------------------------------"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | SCOREBOARD                               |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -94,25 +108,24 @@ scoreboard:
     - ''
     - '&fWins: &7{wins}'
     - '&fKills: &7{kills}'
-    - '&fLosses: &7{losses}'
     - ''
-    - '&eplay.myserver.com'
+    - '&ewww.myserver.com'
   waiting:
-    - '&7{date} &8{server}'
+    - '&7{date}'
     - ''
-    - 'fMap: &a{displayname}'
+    - '&fMap: &a{displayname}'
     - '&fPlayers: &a{players}/{max_players}'
     - ''
-    - '&f&lState: {state}'
+    - '&fWaiting...'
     - ''
-    - '&eplay.myserver.com'
+    - '&ewww.myserver.com'
   starting:
-    - '&7{date} &8{server}'
+    - '&7{date}'
     - ''
-    - 'fMap: &a{displayname}'
+    - '&fMap: &a{displayname}'
     - '&fPlayers: &a{players}/{max_players}'
     - ''
-    - '&f&lState: {state}'
+    - '&fStarting in: &a{time}s'
     - ''
     - '&ewww.myserver.net'
   playing:
@@ -123,6 +136,6 @@ scoreboard:
     - ''
     - '{teams}'
     - ''
-    - '&fTime Left: &a{time}'
+    - '&fTime Left: &a{time_formatted}'
     - ''
     - '&ewww.myserver.net'

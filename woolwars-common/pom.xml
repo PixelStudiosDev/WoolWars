@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>woolwars-v1_8_R3</artifactId>
+    <artifactId>woolwars-common</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -20,19 +20,13 @@
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>me.cubecrafter</groupId>
             <artifactId>woolwars-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.cubecrafter</groupId>
-            <artifactId>woolwars-common</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

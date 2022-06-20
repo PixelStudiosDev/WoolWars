@@ -1,7 +1,6 @@
 package me.cubecrafter.woolwars.powerup;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameArena;

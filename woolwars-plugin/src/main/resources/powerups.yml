@@ -3,9 +3,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Version: ${project.version}
 # Author: CubeCrafter
-# Issues: TODO
-# Wiki: TODO
-# Discord: TODO
+# Issues: https://github.com/CubeCrafter/WoolWars/issues
+# Wiki: https://cubecrafter.gitbook.io/
+# Discord: https://discord.gg/WzQhrNJkYu
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | POWER-UPS                                |
@@ -15,39 +15,36 @@ jump-boost:
     material: PLAYER_HEAD
     texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYyZWQ0ZWYzNThiZjkyNTJlYTczYTZiMGY0ZTg2OGIyN2ZlZWJjYWU2MDNlZTVlNWQwOTgyYjZkOWU2NjkwIn19fQ
   hologram-lines:
-    - "&eJump-Boost"
+    - "&6Jump Boost"
   effects:
     - JUMP,3,1
-  items: {}
 
-chainmail:
+chestplate:
   displayed-item:
     material: CHAINMAIL_CHESTPLATE
   hologram-lines:
-      - "&eChainmail"
-  effects: {}
+    - "&6Chainmail Chestplate"
   items:
-    - CHAINMAIL_CHESTPLATE
+    item-1:
+      material: CHAINMAIL_CHESTPLATE
+
 bow:
   displayed-item:
     material: BOW
   hologram-lines:
-      - "&eBow"
-  effects: {}
+    - "&6Bow"
   items:
     item-1:
       material: BOW
-      amount: 1
     item-2:
       material: ARROW
       amount: 3
 
-stone-pickaxe:
+pickaxe:
   displayed-item:
     material: STONE_PICKAXE
   hologram-lines:
-      - "&eStone Pickaxe"
-  effects: {}
+      - "&6Stone Pickaxe"
   items:
     - STONE_PICKAXE
 
@@ -56,35 +53,32 @@ instant-health:
     material: PLAYER_HEAD
     texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTZhMTA2YmQ3YzViZDNmZDA2ZDkwOGRmZjFjNzczMjVjNTIxZGM4NzM1YzAxYWFkZTc3N2YwNTY0MjFhZDkyOSJ9fX0=
   hologram-lines:
-    - "&eInstant Health"
+    - "&6Instant Health"
   effects:
     - INSTANT_HEALTH,2,3
-  items: {}
 
 speed-boost:
   displayed-item:
     material: PLAYER_HEAD
     texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZlMGEzY2M2NjU3ZDQyMDU4MThmZmVmNWNjN2I3ZTM2YzM4MWQ0MjY5YjY5MDEwYzcyOTdhNmZhNjhkODNkNyJ9fX0=
   hologram-lines:
-    - "&eSpeed Boost"
+    - "&6Speed Boost"
   effects:
     - SPEED,3,3
-  items: {}
 
-iron-boots:
+boots:
   displayed-item:
     material: IRON_BOOTS
   hologram-lines:
-    - "&eIron Boots"
-  effects: []
+    - "&6Iron Boots"
   items:
-    - IRON_BOOTS
+    item-1:
+      material: IRON_BOOTS
 
-stone-sword:
+sword:
   displayed-item:
     material: STONE_SWORD
   hologram-lines:
-    - "&eStone Sword"
-  effects: []
+    - "&6Stone Sword"
   items:
     - STONE_SWORD

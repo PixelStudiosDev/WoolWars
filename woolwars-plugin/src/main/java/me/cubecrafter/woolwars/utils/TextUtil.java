@@ -76,7 +76,8 @@ public class TextUtil {
 
     public String format(String s, GameArena arena, Player player) {
         s = format(s, player)
-                .replace("{time}", arena.getTimerFormatted())
+                .replace("{time_formatted}", arena.getTimerFormatted())
+                .replace("{time}", String.valueOf(arena.getTimer()))
                 .replace("{id}", arena.getId())
                 .replace("{displayname}", arena.getDisplayName())
                 .replace("{round}", String.valueOf(arena.getRound()))
@@ -105,14 +106,16 @@ public class TextUtil {
             s = PlaceholderAPI.setPlaceholders(player, s);
         }
         PlayerData data = ArenaUtil.getPlayerData(player);
-        s = s.replace("{wins}", String.valueOf(data.getWins()))
-                .replace("{losses}", String.valueOf(data.getLosses()))
-                .replace("{games_played}", String.valueOf(data.getGamesPlayed()))
-                .replace("{kills}", String.valueOf(data.getKills()))
-                .replace("{deaths}", String.valueOf(data.getDeaths()))
-                .replace("{wool_placed}", String.valueOf(data.getWoolPlaced()))
-                .replace("{blocks_broken}", String.valueOf(data.getBlocksBroken()))
-                .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()));
+        if (data != null) {
+            s = s.replace("{wins}", String.valueOf(data.getWins()))
+                    .replace("{losses}", String.valueOf(data.getLosses()))
+                    .replace("{games_played}", String.valueOf(data.getGamesPlayed()))
+                    .replace("{kills}", String.valueOf(data.getKills()))
+                    .replace("{deaths}", String.valueOf(data.getDeaths()))
+                    .replace("{wool_placed}", String.valueOf(data.getWoolPlaced()))
+                    .replace("{blocks_broken}", String.valueOf(data.getBlocksBroken()))
+                    .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()));
+        }
         return format(s);
     }
 
@@ -138,7 +141,11 @@ public class TextUtil {
     }
 
     public void sendMessage(Player player, String message) {
-        player.sendMessage(format(message.replace("{prefix}", Messages.PREFIX.getAsString()), player));
+        message = message.replace("{prefix}", Messages.PREFIX.getAsString());
+        if (message.startsWith("<center>") && message.endsWith("</center>")) {
+            message = getCenteredMessage(message);
+        }
+        player.sendMessage(format(message, player));
     }
 
     public void sendMessage(Player player, List<String> messages) {
@@ -180,6 +187,36 @@ public class TextUtil {
         int duration = Integer.parseInt(effect[1]) * 20;
         int amplifier = Integer.parseInt(effect[2]);
         return new PotionEffect(type, duration, amplifier, false, false);
+    }
+
+    public String getCenteredMessage(String message) {
+        if (message == null || message.equals("")) return "";
+        message = color(message.replace("<center>", "").replace("</center>", ""));
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
+                previousCode = true;
+            } else if (previousCode) {
+                previousCode = false;
+                isBold = c == 'l' || c == 'L';
+            } else {
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = 154 - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while (compensated < toCompensate) {
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return sb + message;
     }
 
 }

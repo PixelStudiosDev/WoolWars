@@ -11,8 +11,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum Configuration {
 
-    LICENSE_KEY("license-key"),
-
     // GAME SETTINGS
 
     ENABLE_LEAVE_COMMAND_SHORTCUT("enable-leave-command-shortcut"),

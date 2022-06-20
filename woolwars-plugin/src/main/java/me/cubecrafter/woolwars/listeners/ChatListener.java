@@ -37,6 +37,7 @@ public class ChatListener implements Listener {
                             .replace("{player}", player.getDisplayName())
                             .replace("{team_color}", team.getTeamColor().getChatColor().toString())
                             .replace("{team}", team.getName())
+                            .replace("{team_letter}", team.getTeamLetter())
                             .replace("{message}", e.getMessage()), player));
                 }
             } else {

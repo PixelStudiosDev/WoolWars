@@ -3,9 +3,11 @@ package me.cubecrafter.woolwars.arena;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.arena.Cuboid;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.api.nms.NMS;
 import me.cubecrafter.woolwars.api.team.TeamColor;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
@@ -117,13 +119,14 @@ public class GameArena implements Arena {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        NMS nms = WoolWars.getInstance().getNms();
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (players.contains(online)) {
-                online.showPlayer(player);
-                player.showPlayer(online);
+                nms.showPlayer(player, online);
+                nms.showPlayer(online, player);
             } else {
-                online.hidePlayer(player);
-                player.hidePlayer(online);
+                nms.hidePlayer(player, online);
+                nms.hidePlayer(online, player);
             }
         }
         ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsConfigSection()).setTag("leave-item").build();
@@ -163,13 +166,14 @@ public class GameArena implements Arena {
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         if (teleportToLobby) ArenaUtil.teleportToLobby(player);
+        NMS nms = WoolWars.getInstance().getNms();
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (players.contains(online)) {
-                player.hidePlayer(online);
-                online.hidePlayer(player);
+                nms.hidePlayer(player, online);
+                nms.hidePlayer(online, player);
             } else {
-                player.showPlayer(online);
-                online.showPlayer(player);
+                nms.showPlayer(player, online);
+                nms.showPlayer(online, player);
             }
         }
         TextUtil.sendMessage(players, Messages.PLAYER_LEAVE_ARENA.getAsString()
@@ -185,6 +189,7 @@ public class GameArena implements Arena {
             setGameState(GameState.WAITING);
         }
         if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && !gameState.equals(GameState.GAME_ENDED) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {
+            cancelTasks();
             setGameState(GameState.GAME_ENDED);
         }
     }
@@ -200,13 +205,14 @@ public class GameArena implements Arena {
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+            NMS nms = WoolWars.getInstance().getNms();
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (players.contains(online)) {
-                    player.hidePlayer(online);
-                    online.hidePlayer(player);
+                    nms.hidePlayer(player, online);
+                    nms.hidePlayer(online, player);
                 } else {
-                    player.showPlayer(online);
-                    online.showPlayer(player);
+                    nms.showPlayer(player, online);
+                    nms.showPlayer(online, player);
                 }
             }
             ArenaUtil.teleportToLobby(player);

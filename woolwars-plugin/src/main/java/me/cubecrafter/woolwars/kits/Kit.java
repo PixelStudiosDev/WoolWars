@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.kits;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -18,10 +19,7 @@ public class Kit {
     private final String id;
     private final String displayName;
     private final boolean helmetEnabled, chestplateEnabled, leggingsEnabled, bootsEnabled;
-    private final boolean defaultKit;
     private final Map<ItemStack, Integer> contents = new HashMap<>();
-    private final ItemStack menuItem;
-    private final int menuSlot;
     private final Ability ability;
 
     public Kit(String id, YamlConfiguration kitConfig) {
@@ -31,10 +29,7 @@ public class Kit {
         this.chestplateEnabled = kitConfig.getBoolean("armor.chestplate");
         this.leggingsEnabled = kitConfig.getBoolean("armor.leggings");
         this.bootsEnabled = kitConfig.getBoolean("armor.boots");
-        this.defaultKit = kitConfig.getBoolean("default-kit");
         this.ability = new Ability(kitConfig);
-        this.menuSlot = kitConfig.getInt("menu-item.slot");
-        menuItem = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("menu-item")).build();
         for (String section : kitConfig.getConfigurationSection("items").getKeys(false)) {
             ItemStack item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("items." + section)).setUnbreakable(true).build();
             contents.put(item, kitConfig.getInt("items." + section + ".slot"));
@@ -45,7 +40,7 @@ public class Kit {
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        TextUtil.sendMessage(player, "&7Kit &b" + displayName + " &7selected!");
+        TextUtil.sendMessage(player, Messages.KIT_SELECTED.getAsString().replace("{displayname}", displayName));
         if (helmetEnabled) player.getInventory().setHelmet(new ItemBuilder("LEATHER_HELMET").setColor(team.getTeamColor().getColor()).build());
         if (chestplateEnabled) player.getInventory().setChestplate(new ItemBuilder("LEATHER_CHESTPLATE").setColor(team.getTeamColor().getColor()).build());
         if (leggingsEnabled) player.getInventory().setLeggings(new ItemBuilder("LEATHER_LEGGINGS").setColor(team.getTeamColor().getColor()).build());

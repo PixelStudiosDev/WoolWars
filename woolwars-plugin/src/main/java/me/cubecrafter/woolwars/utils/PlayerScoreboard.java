@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.utils;
 
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.team.GameTeam;
 import org.bukkit.Bukkit;

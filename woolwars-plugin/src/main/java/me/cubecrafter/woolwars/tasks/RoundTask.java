@@ -51,24 +51,21 @@ public class RoundTask extends ArenaTask {
     @Override
     public void onEnd() {
         Map.Entry<GameTeam, Integer> bestTeam = placedWool.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
-        // NO PLACED BLOCKS
         if (bestTeam == null) {
-            sendRoundEndedMessages(null, false, false);
+            sendRoundEndMessages(null, false, false);
             arena.setGameState(GameState.ROUND_OVER);
-            // DRAW
         } else if (placedWool.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
-            sendRoundEndedMessages(null, true, false);
+            sendRoundEndMessages(null, true, false);
             arena.setGameState(GameState.ROUND_OVER);
-            // WINNER TEAM FOUND
         } else {
             GameTeam winner = bestTeam.getKey();
             winner.addPoint();
             if (winner.getPoints() == arena.getWinPoints()) {
                 addWinsLossesStats(winner);
-                sendRoundEndedMessages(winner, false, true);
+                sendRoundEndMessages(winner, false, true);
                 arena.setGameState(GameState.GAME_ENDED);
             } else {
-                sendRoundEndedMessages(winner, false, false);
+                sendRoundEndMessages(winner, false, false);
                 arena.setGameState(GameState.ROUND_OVER);
             }
         }
@@ -114,11 +111,11 @@ public class RoundTask extends ArenaTask {
             team.addPoint();
             if (team.getPoints() == arena.getWinPoints()) {
                 addWinsLossesStats(team);
-                sendRoundEndedMessages(team, false, true);
+                sendRoundEndMessages(team, false, true);
                 arena.setGameState(GameState.GAME_ENDED);
                 return;
             } else {
-                sendRoundEndedMessages(team, false, false);
+                sendRoundEndMessages(team, false, false);
                 arena.setGameState(GameState.ROUND_OVER);
             }
             addRoundStats();
@@ -127,8 +124,7 @@ public class RoundTask extends ArenaTask {
         }
     }
 
-
-    private void sendRoundEndedMessages(GameTeam winner, boolean draw, boolean lastRound) {
+    private void sendRoundEndMessages(GameTeam winner, boolean draw, boolean lastRound) {
         if (lastRound) {
             String statsFormat = Messages.END_GAME_STATS_FORMAT.getAsString();
             String topKillsFormat;
@@ -172,39 +168,37 @@ public class RoundTask extends ArenaTask {
                         formatted.add(Messages.STATS_KILLS.getAsString().replace("{kills}", String.valueOf(roundKills.get(player))));
                     }
                     if (roundPlacedWool.get(player) != null) {
-                        formatted.add(Messages.STATS_PLACED_WOOL.getAsString().replace("{placed_wool}", String.valueOf(roundPlacedWool.get(player))));
+                        formatted.add(Messages.STATS_PLACED_WOOL.getAsString().replace("{wool_placed}", String.valueOf(roundPlacedWool.get(player))));
                     }
                     if (roundBrokenBlocks.get(player) != null) {
-                        formatted.add(Messages.STATS_BROKEN_BLOCKS.getAsString().replace("{broken_blocks}", String.valueOf(roundBrokenBlocks.get(player))));
+                        formatted.add(Messages.STATS_BROKEN_BLOCKS.getAsString().replace("{blocks_broken}", String.valueOf(roundBrokenBlocks.get(player))));
                     }
                 }
                 TextUtil.sendMessage(player, formatted);
             }
         }
-
-
         if (draw) {
-            TextUtil.sendTitle(arena.getPlayers(), 2, Messages.ROUND_DRAW_TITLE.getAsString(), Messages.ROUND_DRAW_SUBTITLE.getAsString());
+            TextUtil.sendTitle(arena.getPlayers(), 3, Messages.ROUND_DRAW_TITLE.getAsString(), Messages.ROUND_DRAW_SUBTITLE.getAsString());
             ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_DRAW.getAsString());
             return;
         }
         for (GameTeam team : arena.getTeams()) {
             if (lastRound) {
                 if (team.equals(winner)) {
-                    TextUtil.sendTitle(team.getMembers(), 2,  Messages.WINNER_TITLE.getAsString(),  Messages.WINNER_SUBTITLE.getAsString());
+                    TextUtil.sendTitle(team.getMembers(), 3,  Messages.WINNER_TITLE.getAsString(),  Messages.WINNER_SUBTITLE.getAsString());
                     ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_WON.getAsString());
                 } else {
-                    TextUtil.sendTitle(team.getMembers(), 2,  Messages.LOSER_TITLE.getAsString(),  Messages.LOSER_SUBTITLE.getAsString());
+                    TextUtil.sendTitle(team.getMembers(), 3,  Messages.LOSER_TITLE.getAsString(),  Messages.LOSER_SUBTITLE.getAsString());
                     ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_LOST.getAsString());
                 }
-                continue;
-            }
-            if (team.equals(winner)) {
-                TextUtil.sendTitle(team.getMembers(), 2, Messages.ROUND_WIN_TITLE.getAsString().replace("{points}", arena.getTeamPointsFormatted()),  Messages.ROUND_WIN_SUBTITLE.getAsString());
-                ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_WON.getAsString());
             } else {
-                TextUtil.sendTitle(team.getMembers(), 2, Messages.ROUND_LOSE_TITLE.getAsString().replace("{points}", arena.getTeamPointsFormatted()),  Messages.ROUND_LOSE_SUBTITLE.getAsString());
-                ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_LOST.getAsString());
+                if (team.equals(winner)) {
+                    TextUtil.sendTitle(team.getMembers(), 3, Messages.ROUND_WIN_TITLE.getAsString().replace("{points}", arena.getTeamPointsFormatted()),  Messages.ROUND_WIN_SUBTITLE.getAsString());
+                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_WON.getAsString());
+                } else {
+                    TextUtil.sendTitle(team.getMembers(), 3, Messages.ROUND_LOSE_TITLE.getAsString().replace("{points}", arena.getTeamPointsFormatted()),  Messages.ROUND_LOSE_SUBTITLE.getAsString());
+                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_LOST.getAsString());
+                }
             }
         }
     }

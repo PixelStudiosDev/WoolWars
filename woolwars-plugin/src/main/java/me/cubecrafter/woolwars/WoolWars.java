@@ -1,11 +1,9 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.api.WoolWarsAPI;
 import me.cubecrafter.woolwars.api.nms.NMS;
 import me.cubecrafter.woolwars.arena.ArenaManager;
 import me.cubecrafter.woolwars.commands.CommandManager;
-import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.FileManager;
 import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.PlayerDataManager;
@@ -13,7 +11,6 @@ import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.kits.KitManager;
 import me.cubecrafter.woolwars.listeners.*;
 import me.cubecrafter.woolwars.powerup.PowerUpManager;
-import me.cubecrafter.woolwars.utils.Auth;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
@@ -35,7 +32,7 @@ public final class WoolWars extends JavaPlugin {
     private PlayerDataManager playerDataManager;
     private PowerUpManager powerupManager;
     private NMS nms;
-    private WoolWarsAPI api;
+    //private WoolWarsAPI api;
     private final String user = "%%__USER__%%";
 
     @Override
@@ -51,16 +48,11 @@ public final class WoolWars extends JavaPlugin {
         TextUtil.info("Running on: " + getServer().getVersion());
         TextUtil.info("Java Version: " + System.getProperty("java.version"));
         fileManager = new FileManager(this);
-        if (!new Auth(this, Configuration.LICENSE_KEY.getAsString(), "http://142.132.151.133:1452/api/client", "565a2feab733667b66246aab765d03623fab8f1d").verify()) {
-            getServer().getScheduler().cancelTasks(this);
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
         String version = getServer().getClass().getName().split("\\.")[3];
         try {
             Class<?> clazz = Class.forName("me.cubecrafter.woolwars.nms." + version);
             nms = (NMS) clazz.getConstructor(Plugin.class).newInstance(this);
-            TextUtil.info("Support for version " + version + " loaded!");
+            TextUtil.info(version + " support loaded!");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             TextUtil.severe("Your server version (" + version + ") is not supported! Disabling...");
             getServer().getScheduler().cancelTasks(this);
@@ -76,7 +68,7 @@ public final class WoolWars extends JavaPlugin {
         scoreboardHandler = new ScoreboardHandler();
         powerupManager = new PowerUpManager();
         kitManager = new KitManager();
-        Arrays.asList(new InventoryListener(), new GameListener(), new PlayerQuitListener(), new PlayerJoinListener(), new ChatListener())
+        Arrays.asList(new InventoryListener(), new GameListener(), new PlayerQuitListener(), new PlayerJoinListener(this), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
         playerDataManager.forceLoad();
         //api = new API();

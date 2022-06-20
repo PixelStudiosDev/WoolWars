@@ -1,15 +1,19 @@
 package me.cubecrafter.woolwars.menu.menus;
 
 import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.config.Menus;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TeleporterMenu extends Menu {
 
@@ -22,12 +26,12 @@ public class TeleporterMenu extends Menu {
 
     @Override
     public String getTitle() {
-        return "● Teleport Menu";
+        return Menus.TELEPORTER_MENU_TITLE.getAsString();
     }
 
     @Override
     public int getRows() {
-        return 3;
+        return arena.getAlivePlayers().size() == 0 ? 1 : (int) Math.ceil(arena.getAlivePlayers().size() / 9.0);
     }
 
     @Override
@@ -35,7 +39,7 @@ public class TeleporterMenu extends Menu {
         Map<Integer, MenuItem> items = new HashMap<>();
         for (int i = 0; i < arena.getAlivePlayers().size(); i++) {
             Player alive = arena.getAlivePlayers().get(i);
-            items.put(i, new MenuItem(new ItemBuilder("PLAYER_HEAD").setDisplayName(alive.getDisplayName()).setLore(Arrays.asList("&7Left click to teleport!", "&7Right click to spectate!")).setTexture(alive.getDisplayName()).build(), player).addAction(e -> {
+            items.put(i, new MenuItem(generateItem(alive, ItemBuilder.fromConfig(Menus.TELEPORTER_MENU_PLAYER_ITEM.getAsConfigSection()).build()), player).addAction(e -> {
                 closeMenu();
                 player.teleport(alive);
             }, ClickType.LEFT, ClickType.SHIFT_LEFT).addAction(e -> {
@@ -45,6 +49,19 @@ public class TeleporterMenu extends Menu {
             }, ClickType.RIGHT, ClickType.SHIFT_RIGHT));
         }
         return items;
+    }
+
+    private ItemStack generateItem(Player player, ItemStack original) {
+        ItemMeta meta = original.getItemMeta();
+        if (meta.hasDisplayName()) {
+            meta.setDisplayName(meta.getDisplayName().replace("{player}", player.getName()));
+        }
+        if (meta.hasLore()) {
+            meta.setLore(meta.getLore().stream().map(s -> s.replace("{player}", player.getDisplayName())
+                    .replace("{player_health_percentage}", String.valueOf((int) (player.getHealth() / 20 * 100)))).collect(Collectors.toList()));
+        }
+        original.setItemMeta(meta);
+        return new ItemBuilder(original).setTexture(player.getName()).build();
     }
 
     @Override

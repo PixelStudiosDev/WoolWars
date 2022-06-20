@@ -5,6 +5,7 @@ import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XPotion;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.nms.NMS;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
@@ -70,6 +72,7 @@ public class ItemBuilder {
     public ItemBuilder setTexture(String identifier) {
         if (identifier == null) return this;
         ItemMeta meta = item.getItemMeta();
+        if (!(meta instanceof SkullMeta)) return this;
         item.setItemMeta(SkullUtils.applySkin(meta, identifier));
         return this;
     }
@@ -107,11 +110,12 @@ public class ItemBuilder {
 
     public ItemBuilder setUnbreakable(boolean unbreakable) {
         ItemMeta meta = item.getItemMeta();
+        NMS nms = WoolWars.getInstance().getNms();
         if (unbreakable) {
-            meta.spigot().setUnbreakable(true);
+            nms.setUnbreakable(item, true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         } else {
-            meta.spigot().setUnbreakable(false);
+            nms.setUnbreakable(item, false);
             meta.removeItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         }
         item.setItemMeta(meta);

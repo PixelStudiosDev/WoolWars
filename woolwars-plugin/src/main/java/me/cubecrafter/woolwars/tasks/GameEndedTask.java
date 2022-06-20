@@ -1,6 +1,8 @@
 package me.cubecrafter.woolwars.tasks;
 
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.api.nms.NMS;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.powerup.PowerUp;
@@ -42,11 +44,12 @@ public class GameEndedTask extends ArenaTask {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
             player.setFireTicks(0);
             player.setHealth(20);
+            NMS nms = WoolWars.getInstance().getNms();
             for (Player alive : arena.getAlivePlayers()) {
-                alive.hidePlayer(player);
+                nms.hidePlayer(alive, player);
             }
             for (Player dead : arena.getDeadPlayers()) {
-                player.showPlayer(dead);
+                nms.showPlayer(player, dead);
             }
         }
         ItemStack playAgainItem = ItemBuilder.fromConfig(Configuration.PLAY_AGAIN_ITEM.getAsConfigSection()).setTag("playagain-item").build();

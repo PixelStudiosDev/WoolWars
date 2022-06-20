@@ -3,9 +3,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Version: ${project.version}
 # Author: CubeCrafter
-# Issues: TODO
-# Wiki: TODO
-# Discord: TODO
+# Issues: https://github.com/CubeCrafter/WoolWars/issues
+# Wiki: https://cubecrafter.gitbook.io/
+# Discord: https://discord.gg/WzQhrNJkYu
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | ARENAS MENU                              |
@@ -83,14 +83,14 @@ stats-menu:
       lore:
         - "&7{deaths}"
       slot: 24
-    placed-wool-item:
+    wool-placed-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA4ZGY2MGM1MTA3NGVlZjI1NDRmZjM4Y2VhZDllMTY2NzVhZTQyNTE5MTYxMDUxODBlMWY4Y2UxOTdhYjNiYyJ9fX0="
       displayname: "&aWool Placed"
       lore:
         - "&7{wool_placed}"
       slot: 30
-    broken-blocks-item:
+    blocks-broken-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWU0MzUyNjgwZDBiYjI5YjkxMzhhZjc4MzMwMWEzOTFiMzQwOTBjYjQ5NDFkNTJjMDg3Y2E3M2M4MDM2Y2I1MSJ9fX0="
       displayname: "&aBlocks Broken"
@@ -115,10 +115,94 @@ stats-menu:
 # | KITS MENU                                |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 kits-menu:
-  title: "&aKits"
-  rows: 6
+  title: "● Kit Selector"
+  rows: 5
+  filler:
+    enabled: false
+    material: GRAY_STAINED_GLASS_PANE
+    displayname: "&f"
+    slots: []
+  kits:
+    tank:
+      material: IRON_BLOCK
+      displayname: "&aTank"
+      lore:
+        - "&7With the highest base defenses"
+        - "&7and a powerful shield and"
+        - "&7recovery, this kit can control"
+        - "&7middle and dominate the enemy!"
+        - ""
+        - "{kit_status}"
+      slot: 11
+    swordsman:
+      material: STONE_SWORD
+      displayname: "&aSwordsman"
+      lore:
+        - "&7Using their powerful sword and"
+        - "&7swiftness, they can cut through"
+        - "&7any enemies in his way to"
+        - "&7achieve victory."
+        - ""
+        - "{kit_status}"
+      slot: 29
+    golem:
+      material: GOLDEN_CHESTPLATE
+      displayname: "&aGolem"
+      lore:
+        - "&7Powered down, the golem lacks"
+        - "&7all but a hard hitting offense,"
+        - "&7but for a few seconds, the golem"
+        - "&7can become the toughest entity"
+        - "&7around!"
+        - ""
+        - "{kit_status}"
+      slot: 31
+    engineer:
+      material: REDSTONE_BLOCK
+      displayname: "&aEngineer"
+      lore:
+        - "&7A great all purpose class that"
+        - "&7can lock middle for several"
+        - "&7seconds to give your team an"
+        - "&7edge!"
+        - ""
+        - "{kit_status}"
+      slot: 33
+    assault:
+      material: SHEARS
+      displayname: "&aAssault"
+      lore:
+        - "&7With good tools, potions and a"
+        - "&7powerful blast of TNT, secure"
+        - "&7the middle for a few seconds and"
+        - "&7victory is within grasp!"
+        - ""
+        - "{kit_status}"
+      slot: 13
+    archer:
+      material: BOW
+      displayname: "&aArcher"
+      lore:
+        - "&7Low in armor and weak in melee,"
+        - "&7the archer has to use its"
+        - "&7superior mobility to kite its"
+        - "&7marks and its bow to finish the"
+        - "&7fight!"
+        - ""
+        - "{kit_status}"
+      slot: 15
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | TELEPORTER MENU                          |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 teleporter-menu:
-  title: "&aTeleporter"
+  title: "● Teleporter"
+  items:
+    player-item:
+      material: PLAYER_HEAD
+      displayname: "&a{player}"
+      lore:
+        - "&7Health: {player_health_percentage}%"
+        - ""
+        - "&eLeft-Click to teleport!"
+        - "&eRight-Click to spectate!"

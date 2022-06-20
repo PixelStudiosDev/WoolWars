@@ -25,7 +25,7 @@ public class ArenaManager {
             String id = file.getName().replace(".yml", "");
             GameArena arena = new GameArena(id, arenaConfig);
             registerArena(arena);
-            TextUtil.info("GameArena '" + id + "' loaded!");
+            TextUtil.info("Arena '" + id + "' loaded!");
             loaded++;
         }
         TextUtil.info("Loaded " + loaded + " arenas!");

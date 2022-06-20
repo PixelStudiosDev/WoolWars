@@ -18,4 +18,6 @@ public abstract class NMS {
 
     public abstract void hidePlayer(Player player, Player target);
 
+    public abstract void setUnbreakable(ItemStack item, boolean unbreakable);
+
 }

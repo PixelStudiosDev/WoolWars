@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>woolwars-v1_8_R3</artifactId>
+    <artifactId>woolwars-v1_12_R1</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

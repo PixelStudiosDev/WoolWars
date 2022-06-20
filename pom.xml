@@ -15,6 +15,8 @@
         <module>woolwars-plugin</module>
         <module>woolwars-api</module>
         <module>woolwars-v1_8_R3</module>
+        <module>woolwars-v1_12_R1</module>
+        <module>woolwars-common</module>
     </modules>
 
     <properties>

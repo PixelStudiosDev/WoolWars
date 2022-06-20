@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.api.nms.NMS;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
@@ -95,9 +96,9 @@ public class GameListener implements Listener {
                     Player damager = (Player) event.getDamager();
                     GameTeam damagerTeam = arena.getTeamByPlayer(damager);
                     TextUtil.sendMessage(arena.getPlayers(), Messages.KILL_MESSAGE.getAsString()
-                            .replace("{player}", player.getDisplayName())
+                            .replace("{player}", player.getName())
                             .replace("{player_team_color}", playerTeam.getTeamColor().getChatColor().toString())
-                            .replace("{attacker}", damager.getDisplayName())
+                            .replace("{attacker}", damager.getName())
                             .replace("{attacker_team_color}", damagerTeam.getTeamColor().getChatColor().toString()));
                     ArenaUtil.playSound(damager, Configuration.SOUNDS_PLAYER_KILL.getAsString());
                     arena.getRoundTask().addKill(damager);
@@ -151,12 +152,12 @@ public class GameListener implements Listener {
         player.setFireTicks(0);
         player.setHealth(20);
         TextUtil.sendTitle(player, 2,  Messages.DEATH_TITLE.getAsString(), Messages.DEATH_SUBTITLE.getAsString());
-        TextUtil.sendActionBarWhile(player,  Messages.DEATH_SUBTITLE.getAsString(), () -> arena.isDead(player));
+        NMS nms = WoolWars.getInstance().getNms();
         for (Player alive : arena.getAlivePlayers()) {
-            alive.hidePlayer(player);
+            nms.hidePlayer(alive, player);
         }
         for (Player dead : arena.getDeadPlayers()) {
-            player.showPlayer(dead);
+            nms.showPlayer(player, dead);
         }
         ItemStack teleporter = ItemBuilder.fromConfig(Configuration.TELEPORTER_ITEM.getAsConfigSection()).setTag("teleport-item").build();
         player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsConfigSection().getInt("slot"), teleporter);
@@ -331,7 +332,7 @@ public class GameListener implements Listener {
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (arena.getGameState().equals(GameState.PRE_ROUND)) {
-            new KitsMenu(player).openMenu();
+            new KitsMenu(player, arena).openMenu();
         }
         if (!arena.getDeadPlayers().contains(player)) return;
         if (player.getSpectatorTarget() == null) return;
@@ -356,7 +357,7 @@ public class GameListener implements Listener {
         GameArena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color( Messages.CANT_BREAK_BLOCK.getAsString()));
+            TextUtil.sendMessage(player, Messages.CANT_BREAK_BLOCK.getAsString());
         } else if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
             if (arena.isCenterLocked()) {
                 TextUtil.sendMessage(player, "&cCenter is locked!");
@@ -375,7 +376,7 @@ public class GameListener implements Listener {
             arena.getRoundTask().addBrokenBlock(player);
         } else if (!arena.getArenaPlacedBlocks().contains(e.getBlock())) {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color(Messages.CANT_BREAK_BLOCK.getAsString()));
+            TextUtil.sendMessage(player, Messages.CANT_BREAK_BLOCK.getAsString());
         } else {
             arena.getArenaPlacedBlocks().remove(e.getBlock());
             e.getBlock().setType(Material.AIR);
@@ -389,13 +390,13 @@ public class GameListener implements Listener {
         if (arena == null) return;
         if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
+            TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
             return;
         }
         if (!ArenaUtil.isBlockInTeamBase(e.getBlock(), arena)) {
             if (e.getBlockAgainst().getType().toString().contains("LAVA") || e.getBlockAgainst().getType().toString().contains("WATER")) {
                 e.setCancelled(true);
-                player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
+                TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
                 return;
             }
             if (arena.getWoolRegion().isInside(e.getBlock().getLocation())) {
@@ -420,10 +421,10 @@ public class GameListener implements Listener {
                 }
             }
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
+            TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
         } else {
             e.setCancelled(true);
-            player.sendMessage(TextUtil.color(Messages.CANT_PLACE_BLOCK.getAsString()));
+            TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
         }
     }
 

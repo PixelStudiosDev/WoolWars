@@ -3,14 +3,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Version: ${project.version}
 # Author: CubeCrafter
-# Issues: TODO
-# Wiki: TODO
-# Discord: TODO
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# | LICENSE KEY                              |
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-license-key: "PUT-YOUR-LICENSE-KEY-HERE"
+# Issues: https://github.com/CubeCrafter/WoolWars/issues
+# Wiki: https://cubecrafter.gitbook.io/
+# Discord: https://discord.gg/WzQhrNJkYu
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | GAME SETTINGS                            |

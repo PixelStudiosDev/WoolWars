@@ -51,7 +51,7 @@ public class PreRoundTask extends ArenaTask {
             String selected = data.getSelectedKit();
             Kit kit;
             if (selected == null) {
-                kit = ArenaUtil.getKits().stream().filter(Kit::isDefaultKit).findAny().orElse(null);
+                kit = ArenaUtil.getKits().get(0);
                 data.setSelectedKit(kit.getId());
             } else {
                 kit = ArenaUtil.getKit(selected);

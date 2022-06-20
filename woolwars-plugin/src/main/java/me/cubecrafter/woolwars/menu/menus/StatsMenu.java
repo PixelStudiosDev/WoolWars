@@ -36,8 +36,8 @@ public class StatsMenu extends Menu {
         items.put(Menus.STATS_MENU_GAMES_PLAYED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_GAMES_PLAYED_ITEM.getAsConfigSection()).build(), player));
         items.put(Menus.STATS_MENU_KILLS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_KILLS_ITEM.getAsConfigSection()).build(), player));
         items.put(Menus.STATS_MENU_DEATHS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_DEATHS_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_PLACED_WOOL_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_PLACED_WOOL_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_BROKEN_BLOCKS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_BROKEN_BLOCKS_ITEM.getAsConfigSection()).build(), player));
+        items.put(Menus.STATS_MENU_WOOL_PLACED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WOOL_PLACED_ITEM.getAsConfigSection()).build(), player));
+        items.put(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM.getAsConfigSection()).build(), player));
         items.put(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM.getAsConfigSection()).build(), player));
         items.put(Menus.STATS_MENU_CLOSE_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_CLOSE_ITEM.getAsConfigSection()).build(), player)
                 .addAction((e) -> closeMenu()));

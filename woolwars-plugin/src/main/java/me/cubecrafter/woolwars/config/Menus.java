@@ -40,10 +40,10 @@ public enum Menus {
     STATS_MENU_KILLS_ITEM_SLOT("stats-menu.items.kills-item.slot"),
     STATS_MENU_DEATHS_ITEM("stats-menu.items.deaths-item"),
     STATS_MENU_DEATHS_ITEM_SLOT("stats-menu.items.deaths-item.slot"),
-    STATS_MENU_PLACED_WOOL_ITEM("stats-menu.items.placed-wool-item"),
-    STATS_MENU_PLACED_WOOL_ITEM_SLOT("stats-menu.items.placed-wool-item.slot"),
-    STATS_MENU_BROKEN_BLOCKS_ITEM("stats-menu.items.broken-blocks-item"),
-    STATS_MENU_BROKEN_BLOCKS_ITEM_SLOT("stats-menu.items.broken-blocks-item.slot"),
+    STATS_MENU_WOOL_PLACED_ITEM("stats-menu.items.wool-placed-item"),
+    STATS_MENU_WOOL_PLACED_ITEM_SLOT("stats-menu.items.wool-placed-item.slot"),
+    STATS_MENU_BLOCKS_BROKEN_ITEM("stats-menu.items.blocks-broken-item"),
+    STATS_MENU_BLOCKS_BROKEN_ITEM_SLOT("stats-menu.items.blocks-broken-item.slot"),
     STATS_MENU_POWERUPS_COLLECTED_ITEM("stats-menu.items.powerups-collected-item"),
     STATS_MENU_POWERUPS_COLLECTED_ITEM_SLOT("stats-menu.items.powerups-collected-item.slot"),
     STATS_MENU_CLOSE_ITEM("stats-menu.items.close-item"),
@@ -51,7 +51,17 @@ public enum Menus {
 
     // KITS MENU
 
-    ;
+    KITS_MENU_TITLE("kits-menu.title"),
+    KITS_MENU_ROWS("kits-menu.rows"),
+    KITS_MENU_FILLER("kits-menu.filler"),
+    KITS_MENU_FILLER_ENABLED("kits-menu.filler.enabled"),
+    KITS_MENU_FILLER_SLOTS("kits-menu.filler.slots"),
+    KITS_MENU_KITS_SECTION("kits-menu.kits"),
+
+    // TELEPORTER MENU
+
+    TELEPORTER_MENU_TITLE("teleporter-menu.title"),
+    TELEPORTER_MENU_PLAYER_ITEM("teleporter-menu.items.player-item");
 
     private final String path;
 
