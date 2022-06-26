@@ -1,10 +1,10 @@
 package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.api.arena.Arena;
+import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.PlayerScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -50,7 +50,7 @@ public class ScoreboardHandler implements Listener, Runnable {
             scoreboard = PlayerScoreboard.createScoreboard(player);
             scoreboard.setTitle(TextUtil.color(Messages.SCOREBOARD_TITLE.getAsString()));
         }
-        GameArena arena = ArenaUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             switch (arena.getGameState()) {
                 case WAITING:
@@ -82,7 +82,7 @@ public class ScoreboardHandler implements Listener, Runnable {
         }
     }
 
-    private List<String> formatGameScoreboard(List<String> original, GameArena arena) {
+    private List<String> formatGameScoreboard(List<String> original, Arena arena) {
         List<String> formatted = new ArrayList<>();
         for (String line : original) {
             if (!line.contains("{teams}")) {
@@ -90,7 +90,7 @@ public class ScoreboardHandler implements Listener, Runnable {
                 continue;
             }
             String teamFormat = Messages.SCOREBOARD_TEAM_FORMAT.getAsString();
-            for (GameTeam team : arena.getTeams()) {
+            for (Team team : arena.getTeams()) {
                 StringBuilder builder = new StringBuilder();
                 for (int index = 0; index < arena.getWinPoints(); index++) {
                     if (team.getPoints() <= index) {

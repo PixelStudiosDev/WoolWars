@@ -7,7 +7,7 @@
     <parent>
         <artifactId>woolwars-parent</artifactId>
         <groupId>me.cubecrafter</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>woolwars-plugin</artifactId>

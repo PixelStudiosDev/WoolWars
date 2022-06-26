@@ -29,8 +29,6 @@ public enum Configuration {
     JUMP_PADS_BOTTOM_BLOCK("jump-pads.bottom-block"),
     JUMP_PADS_HORIZONTAL_POWER("jump-pads.horizontal-power"),
     JUMP_PADS_VERTICAL_POWER("jump-pads.vertical-power"),
-    JUMP_PADS_PARTICLES_ENABLED("jump-pads.particles.enabled"),
-    JUMP_PADS_PARTICLES_TYPE("jump-pads.particles.type"),
 
     // CHAT SETTINGS
 

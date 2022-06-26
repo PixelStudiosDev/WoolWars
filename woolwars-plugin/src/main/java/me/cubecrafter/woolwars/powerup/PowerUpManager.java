@@ -1,6 +1,7 @@
 package me.cubecrafter.woolwars.powerup;
 
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.powerup.PowerUpData;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;

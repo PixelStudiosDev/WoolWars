@@ -1,7 +1,7 @@
 package me.cubecrafter.woolwars.listeners;
 
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.arena.GameState;
-import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -22,7 +22,7 @@ public class InventoryListener implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR)) return;
         Player player = (Player) e.getWhoClicked();
-        GameArena arena = ArenaUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             if (e.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 e.setCancelled(true);

@@ -7,11 +7,16 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.arena.Cuboid;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.api.events.arena.GameStateChangeEvent;
+import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
+import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.api.nms.NMS;
+import me.cubecrafter.woolwars.api.powerup.PowerUp;
+import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.api.team.TeamColor;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.powerup.PowerUp;
+import me.cubecrafter.woolwars.powerup.GamePowerUp;
 import me.cubecrafter.woolwars.tasks.*;
 import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -35,23 +40,24 @@ import java.util.stream.Collectors;
 @Getter
 public class GameArena implements Arena {
 
+    private final YamlConfiguration config;
     private final String id;
     private final String displayName;
     private final String group;
-    private final Location lobbyLocation;
+    private final Location lobby;
     private final int maxPlayersPerTeam;
     private final int minPlayers;
     private final int winPoints;
     private final List<Player> players = new ArrayList<>();
     private final List<Player> deadPlayers = new ArrayList<>();
-    private final List<Block> arenaPlacedBlocks = new ArrayList<>();
-    private final List<GameTeam> teams = new ArrayList<>();
+    private final List<Block> placedBlocks = new ArrayList<>();
+    private final List<Team> teams = new ArrayList<>();
     private final List<PowerUp> powerUps = new ArrayList<>();
     private final Map<Player, Integer> kills = new HashMap<>();
     private final Map<Player, Integer> deaths = new HashMap<>();
-    private final Map<Player, Integer> placedWool = new HashMap<>();
-    private final Map<Player, Integer> brokenBlocks = new HashMap<>();
-    private final Cuboid woolRegion;
+    private final Map<Player, Integer> woolPlaced = new HashMap<>();
+    private final Map<Player, Integer> blocksBroken = new HashMap<>();
+    private final Cuboid center;
     private final Cuboid arenaRegion;
     private StartingTask startingTask;
     private RoundTask roundTask;
@@ -65,31 +71,32 @@ public class GameArena implements Arena {
 
     public GameArena(String id, YamlConfiguration arenaConfig) {
         this.id = id;
+        this.config = arenaConfig;
         group = arenaConfig.getString("group");
-        lobbyLocation = TextUtil.deserializeLocation(arenaConfig.getString("lobby-location"));
+        lobby = TextUtil.deserializeLocation(arenaConfig.getString("lobby-location"));
         displayName = TextUtil.color(arenaConfig.getString("displayname"));
         maxPlayersPerTeam = arenaConfig.getInt("max-players-per-team");
         minPlayers = arenaConfig.getInt("min-players");
-        winPoints = arenaConfig.getInt("required-points-to-win");
+        winPoints = arenaConfig.getInt("win-points");
         for (String key : arenaConfig.getConfigurationSection("teams").getKeys(false)) {
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
-            Location barrier1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.point1"));
-            Location barrier2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.point2"));
-            Location base1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.point1"));
-            Location base2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.point2"));
+            Location barrier1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.pos1"));
+            Location barrier2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.pos2"));
+            Location base1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.pos1"));
+            Location base2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.pos2"));
             TeamColor color = TeamColor.valueOf(arenaConfig.getString("teams." + key + ".color"));
             GameTeam team = new GameTeam(key, this, spawn, color, new Cuboid(barrier1, barrier2), new Cuboid(base1, base2));
             teams.add(team);
         }
-        Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point1"));
-        Location point2 = TextUtil.deserializeLocation(arenaConfig.getString("block-region.point2"));
-        woolRegion = new Cuboid(point1, point2);
-        Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point1"));
-        Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena-region.point2"));
+        Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("center.pos1"));
+        Location point2 = TextUtil.deserializeLocation(arenaConfig.getString("center.pos2"));
+        center = new Cuboid(point1, point2);
+        Location point3 = TextUtil.deserializeLocation(arenaConfig.getString("arena.pos1"));
+        Location point4 = TextUtil.deserializeLocation(arenaConfig.getString("arena.pos2"));
         arenaRegion = new Cuboid(point3, point4);
-        for (String line : arenaConfig.getStringList("powerup-locations")) {
+        for (String line : arenaConfig.getStringList("powerups")) {
             Location location = TextUtil.deserializeLocation(line);
-            PowerUp powerUp = new PowerUp(location, this);
+            GamePowerUp powerUp = new GamePowerUp(location, this);
             powerUps.add(powerUp);
         }
         killEntities();
@@ -97,6 +104,9 @@ public class GameArena implements Arena {
 
     @Override
     public void addPlayer(Player player) {
+        PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(player, this);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
         if (players.contains(player)) {
             TextUtil.sendMessage(player, Messages.ALREADY_IN_ARENA.getAsString());
             return;
@@ -110,7 +120,7 @@ public class GameArena implements Arena {
             return;
         }
         players.add(player);
-        player.teleport(lobbyLocation);
+        player.teleport(lobby);
         player.setGameMode(GameMode.ADVENTURE);
         player.setFoodLevel(20);
         player.setHealth(20);
@@ -148,8 +158,10 @@ public class GameArena implements Arena {
 
     @Override
     public void removePlayer(Player player, boolean teleportToLobby) {
+        PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(player, this);
+        Bukkit.getPluginManager().callEvent(event);
         players.remove(player);
-        GameTeam playerTeam = getTeamByPlayer(player);
+        GameTeam playerTeam = (GameTeam) getTeamByPlayer(player);
         if (playerTeam != null) {
             PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
             if (scoreboard != null) {
@@ -194,9 +206,10 @@ public class GameArena implements Arena {
         }
     }
 
-    @Override
     public void removeAllPlayers() {
         for (Player player : players) {
+            PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(player, this);
+            Bukkit.getPluginManager().callEvent(event);
             player.getInventory().setArmorContents(null);
             player.getInventory().clear();
             player.setFlying(false);
@@ -222,6 +235,8 @@ public class GameArena implements Arena {
 
     @Override
     public void setGameState(GameState gameState) {
+        GameStateChangeEvent event = new GameStateChangeEvent(this, this.gameState, gameState);
+        Bukkit.getServer().getPluginManager().callEvent(event);
         this.gameState = gameState;
         switch (gameState) {
             case WAITING:
@@ -249,8 +264,9 @@ public class GameArena implements Arena {
     public void restart() {
         cancelTasks();
         removeAllPlayers();
-        getTeams().forEach(GameTeam::reset);
-        resetBlocks();
+        getTeams().forEach(Team::reset);
+        removePlacedBlocks();
+        fillCenter();
         powerUps.forEach(PowerUp::remove);
         setRound(0);
         setTimer(0);
@@ -258,15 +274,14 @@ public class GameArena implements Arena {
         deadPlayers.clear();
         kills.clear();
         deaths.clear();
-        placedWool.clear();
-        brokenBlocks.clear();
+        woolPlaced.clear();
+        blocksBroken.clear();
         setGameState(GameState.WAITING);
     }
 
-    @Override
     public void assignTeams() {
         for (Player player : players) {
-            GameTeam minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size())));
+            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size())));
             minPlayers.addMember(player);
         }
     }
@@ -277,12 +292,12 @@ public class GameArena implements Arena {
     }
 
     @Override
-    public GameTeam getTeamByName(String name) {
+    public Team getTeamByName(String name) {
         return teams.stream().filter(team -> team.getName().equals(name)).findAny().orElse(null);
     }
 
     @Override
-    public GameTeam getTeamByPlayer(Player player) {
+    public Team getTeamByPlayer(Player player) {
         return teams.stream().filter(team -> team.getMembers().contains(player)).findAny().orElse(null);
     }
 
@@ -316,25 +331,49 @@ public class GameArena implements Arena {
     }
 
     @Override
-    public void resetBlocks() {
-        List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
-        arenaPlacedBlocks.forEach(block -> block.setType(Material.AIR));
-        arenaPlacedBlocks.clear();
-        Random random = new Random();
-        woolRegion.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
+    public void removePlacedBlocks() {
+        placedBlocks.forEach(block -> block.setType(Material.AIR));
+        placedBlocks.clear();
     }
 
     @Override
-    public String getTeamPointsFormatted() {
+    public void fillCenter() {
+        List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
+        Random random = new Random();
+        center.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
+    }
+
+    @Override
+    public String getPointsFormatted() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < teams.size(); i++) {
-            GameTeam team = teams.get(i);
+            Team team = teams.get(i);
             if (i > 0) {
                 builder.append(" &7- ");
             }
             builder.append(team.getTeamColor().getChatColor()).append(team.getPoints());
         }
         return TextUtil.color(builder.toString());
+    }
+
+    @Override
+    public int getKills(Player player) {
+        return 0;
+    }
+
+    @Override
+    public int getDeaths(Player player) {
+        return 0;
+    }
+
+    @Override
+    public int getWoolPlaced(Player player) {
+        return 0;
+    }
+
+    @Override
+    public int getBlocksBroken(Player player) {
+        return 0;
     }
 
     @Override
@@ -348,15 +387,16 @@ public class GameArena implements Arena {
     }
 
     @Override
-    public void addPlacedWool(Player player, int number) {
-        placedWool.merge(player, number, Integer::sum);
+    public void addWoolPlaced(Player player, int number) {
+        woolPlaced.merge(player, number, Integer::sum);
     }
 
     @Override
-    public void addBrokenBlocks(Player player, int number) {
-        brokenBlocks.merge(player, number, Integer::sum);
+    public void addBlocksBroken(Player player, int number) {
+        blocksBroken.merge(player, number, Integer::sum);
     }
 
+    @Override
     public void cancelTasks() {
         if (startingTask != null) startingTask.cancel();
         if (preRoundTask != null) preRoundTask.cancel();

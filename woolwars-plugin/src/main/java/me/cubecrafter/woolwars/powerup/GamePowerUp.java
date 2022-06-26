@@ -3,6 +3,8 @@ package me.cubecrafter.woolwars.powerup;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.powerup.PowerUp;
+import me.cubecrafter.woolwars.api.powerup.PowerUpData;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -23,21 +25,22 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
-public class PowerUp {
+public class GamePowerUp implements PowerUp {
 
     private ArmorStand armorStand;
-    private final List<ArmorStand> holoLines = new ArrayList<>();
+    private final List<ArmorStand> hologramLines = new ArrayList<>();
     private final Location location;
     private final GameArena arena;
     private PowerUpData data;
     private int rotation = 0;
     private boolean active = false;
 
-    public PowerUp(Location location, GameArena arena) {
+    public GamePowerUp(Location location, GameArena arena) {
         this.arena = arena;
         this.location = location;
     }
 
+    @Override
     public void use(Player player) {
         remove();
         ArenaUtil.playSound(player, Configuration.SOUNDS_POWERUP_COLLECTED.getAsString());
@@ -92,6 +95,7 @@ public class PowerUp {
         }
     }
 
+    @Override
     public void spawn() {
         data = WoolWars.getInstance().getPowerupManager().getRandom();
         armorStand = spawnArmorStand(null, location);
@@ -105,12 +109,13 @@ public class PowerUp {
         active = true;
     }
 
+    @Override
     public void remove() {
         if (!active) return;
         active = false;
         armorStand.remove();
-        holoLines.forEach(Entity::remove);
-        holoLines.clear();
+        hologramLines.forEach(Entity::remove);
+        hologramLines.clear();
     }
 
     public void rotate() {
@@ -126,7 +131,7 @@ public class PowerUp {
         List<String> reversed = new ArrayList<>(data.getHoloLines());
         Collections.reverse(reversed);
         for (String line : reversed) {
-            holoLines.add(spawnArmorStand(line, location.clone().add(0, offset, 0)));
+            hologramLines.add(spawnArmorStand(line, location.clone().add(0, offset, 0)));
             offset += 0.3;
         }
     }

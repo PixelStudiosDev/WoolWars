@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.menu.menus;
 
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Menus;
 import me.cubecrafter.woolwars.menu.Menu;
@@ -17,9 +18,9 @@ import java.util.stream.Collectors;
 
 public class TeleporterMenu extends Menu {
 
-    private final GameArena arena;
+    private final Arena arena;
 
-    public TeleporterMenu(Player player, GameArena arena) {
+    public TeleporterMenu(Player player, Arena arena) {
         super(player);
         this.arena = arena;
     }

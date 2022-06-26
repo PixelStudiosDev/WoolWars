@@ -26,7 +26,6 @@ public class GameTeam implements Team {
     private final TeamColor teamColor;
     private final Cuboid barrier;
     private final Cuboid base;
-    private final String barrierBlock;
     private int points;
 
     public GameTeam(String name, GameArena arena, Location spawnLocation, TeamColor color, Cuboid barrier, Cuboid base) {
@@ -35,7 +34,6 @@ public class GameTeam implements Team {
         this.spawnLocation = spawnLocation;
         this.teamColor = color;
         this.barrier = barrier;
-        this.barrierBlock = "GLASS";
         this.base = base;
     }
 
@@ -80,14 +78,13 @@ public class GameTeam implements Team {
 
     @Override
     public void spawnBarrier() {
-        barrier.fill(XMaterial.matchXMaterial(barrierBlock).get().parseMaterial());
+        barrier.fill(XMaterial.GLASS.parseMaterial());
     }
 
     @Override
     public void reset() {
         for (Player player : members) {
-            PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
-            scoreboard.removeGamePrefix(this);
+            PlayerScoreboard.getScoreboard(player).removeGamePrefix(this);
         }
         points = 0;
         members.clear();

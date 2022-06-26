@@ -1,18 +1,19 @@
 package me.cubecrafter.woolwars.arena;
 
-import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ArenaManager {
 
-    @Getter private final Map<String, GameArena> arenas = new HashMap<>();
+    private final Map<String, Arena> arenas = new HashMap<>();
 
     public ArenaManager() {
         loadArenas();
@@ -23,7 +24,7 @@ public class ArenaManager {
         for (File file : WoolWars.getInstance().getFileManager().getArenaFiles()) {
             YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
             String id = file.getName().replace(".yml", "");
-            GameArena arena = new GameArena(id, arenaConfig);
+            Arena arena = new GameArena(id, arenaConfig);
             registerArena(arena);
             TextUtil.info("Arena '" + id + "' loaded!");
             loaded++;
@@ -31,20 +32,20 @@ public class ArenaManager {
         TextUtil.info("Loaded " + loaded + " arenas!");
     }
 
-    public void registerArena(GameArena arena) {
+    public void registerArena(Arena arena) {
         arenas.put(arena.getId(), arena);
     }
 
-    public GameArena getArena(String name) {
+    public Arena getArena(String name) {
         return arenas.get(name);
     }
 
-    public void unregisterArena(String id) {
-        arenas.remove(id);
+    public void disableArenas() {
+        getArenas().forEach(Arena::restart);
     }
 
-    public void disableArenas() {
-        ArenaUtil.getArenas().forEach(GameArena::restart);
+    public List<Arena> getArenas() {
+        return new ArrayList<>(arenas.values());
     }
 
 }

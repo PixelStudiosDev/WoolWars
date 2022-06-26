@@ -115,7 +115,7 @@ stats-menu:
 # | KITS MENU                                |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 kits-menu:
-  title: "● Kit Selector"
+  title: "● GameKit Selector"
   rows: 5
   filler:
     enabled: false
@@ -123,6 +123,7 @@ kits-menu:
     displayname: "&f"
     slots: []
   kits:
+    # The name of this section must be the kit id.
     tank:
       material: IRON_BLOCK
       displayname: "&aTank"

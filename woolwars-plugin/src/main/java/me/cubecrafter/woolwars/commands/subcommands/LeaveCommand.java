@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.commands.SubCommand;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -15,7 +16,7 @@ public class LeaveCommand implements SubCommand, CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        GameArena arena = ArenaUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         arena.removePlayer(player, true);
     }

@@ -3,14 +3,16 @@ package me.cubecrafter.woolwars.tasks;
 import com.cryptomorin.xseries.messages.ActionBar;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.api.events.arena.RoundStartEvent;
+import me.cubecrafter.woolwars.api.kits.Kit;
+import me.cubecrafter.woolwars.api.powerup.PowerUp;
+import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.kits.Ability;
-import me.cubecrafter.woolwars.kits.Kit;
-import me.cubecrafter.woolwars.powerup.PowerUp;
-import me.cubecrafter.woolwars.team.GameTeam;
+import me.cubecrafter.woolwars.kits.KitAbility;
+import me.cubecrafter.woolwars.kits.GameKit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -29,9 +31,10 @@ public class PreRoundTask extends ArenaTask {
         arena.setRound(arena.getRound() + 1);
         TextUtil.sendTitle(arena.getPlayers(), 2, Messages.PRE_ROUND_TITLE.getAsString(), Messages.PRE_ROUND_SUBTITLE.getAsString());
         arena.killEntities();
-        arena.resetBlocks();
-        arena.getTeams().forEach(GameTeam::spawnBarrier);
-        arena.getPlayers().forEach(player -> Ability.removeCooldown(player.getUniqueId()));
+        arena.removePlacedBlocks();
+        arena.fillCenter();
+        arena.getTeams().forEach(Team::spawnBarrier);
+        arena.getPlayers().forEach(player -> KitAbility.removeCooldown(player.getUniqueId()));
         for (Player player : arena.getPlayers()) {
             player.setGameMode(GameMode.SURVIVAL);
             player.setFlying(false);
@@ -40,7 +43,7 @@ public class PreRoundTask extends ArenaTask {
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         }
         arena.getDeadPlayers().clear();
-        arena.getTeams().forEach(GameTeam::teleportToSpawn);
+        arena.getTeams().forEach(Team::teleportToSpawn);
         for (Player player : arena.getPlayers()) {
             arena.getPlayers().forEach(player::showPlayer);
         }
@@ -78,13 +81,14 @@ public class PreRoundTask extends ArenaTask {
         });
         TextUtil.sendTitle(arena.getPlayers(), 1, Messages.ROUND_START_TITLE.getAsString(), Messages.ROUND_START_SUBTITLE.getAsString().replace("{round}", String.valueOf(arena.getRound())));
         ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_START.getAsString());
-        arena.getTeams().forEach(GameTeam::removeBarrier);
+        arena.getTeams().forEach(Team::removeBarrier);
         arena.getPowerUps().forEach(PowerUp::spawn);
-        for (Block block : arena.getWoolRegion().getBlocks()) {
+        for (Block block : arena.getCenter().getBlocks()) {
             if (block.hasMetadata("woolwars")) {
                 block.removeMetadata("woolwars", WoolWars.getInstance());
             }
         }
+        RoundStartEvent event = new RoundStartEvent(arena, arena.getRound());
         arena.setGameState(GameState.ACTIVE_ROUND);
     }
 

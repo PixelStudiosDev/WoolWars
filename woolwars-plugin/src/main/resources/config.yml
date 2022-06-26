@@ -10,6 +10,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | GAME SETTINGS                            |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 enable-leave-command-shortcut: true
 starting-countdown: 10
 pre-round-duration: 15
@@ -18,10 +19,8 @@ round-over-duration: 5
 game-end-duration: 10
 disabled-interaction-blocks:
   - CRAFTING_TABLE
-  - HOPPER
   - FURNACE
-placeable-blocks:
-  - COBBLESTONE
+placeable-blocks: []
 disable-fall-damage: true
 items:
   play-again-item:
@@ -47,14 +46,13 @@ jump-pads:
   bottom-block: STONE
   horizontal-power: 0.5
   vertical-power: 1.0
-  particles:
-    enabled: true
-    type: HAPPY_VILLAGER
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | CHAT SETTINGS                            |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 blocked-commands:
+  # Set this to true to make it a whitelist.
   whitelist: false
   commands:
     - spawn
@@ -62,14 +60,15 @@ blocked-commands:
     - fly
 chat-format:
   enabled: true
-  lobby-format: "%vault_prefix%{player}: &7{message}"
-  waiting-lobby-format: "%vault_prefix%{player}: &7{message}"
-  game-format: "{team_color}{team}{player}: &7{message}"
-  spectator-format: "&7[Spect]%vault_prefix%{player}: &7{message}"
+  lobby-format: "{player}: &7{message}"
+  waiting-lobby-format: "{player}: &7{message}"
+  game-format: "{team_color}&l{team_letter} {team_color}{player}: &7{message}"
+  spectator-format: "&7[SPECTATOR] {player}: &7{message}"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | SOUNDS                                   |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 sounds:
   jump-pad: ENTITY_BAT_TAKEOFF
   round-start: BLOCK_ANVIL_LAND
@@ -88,16 +87,19 @@ sounds:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | SCOREBOARD & NAME TAGS SETTINGS          |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 scoreboard:
   enabled: true
-  refresh-interval: 1000
+  # The scoreboard refresh interval in ticks.
+  refresh-interval: 20
 name-tags:
   enabled: true
-  prefix: "{team_color}{team_letter} "
+  prefix: "{team_color}&l{team_letter} {team_color}"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | STORAGE SETTINGS                         |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 mysql:
   enabled: false
   host: localhost

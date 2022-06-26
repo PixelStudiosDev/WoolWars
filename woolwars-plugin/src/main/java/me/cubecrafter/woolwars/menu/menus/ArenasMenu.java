@@ -1,5 +1,6 @@
 package me.cubecrafter.woolwars.menu.menus;
 
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Menus;
 import me.cubecrafter.woolwars.menu.Menu;
@@ -34,7 +35,7 @@ public class ArenasMenu extends Menu {
         }
         Map<Integer, MenuItem> items = new HashMap<>();
         Iterator<Integer> index = Menus.ARENAS_MENU_ARENA_ITEM_SLOTS.getAsIntegerList().iterator();
-        for (GameArena arena : ArenaUtil.getArenas()) {
+        for (Arena arena : ArenaUtil.getArenas()) {
             if (!index.hasNext()) break;
             items.put(index.next(), new MenuItem(ItemBuilder.fromConfig(Menus.ARENAS_MENU_ARENA_ITEM.getAsConfigSection())
                     .setDisplayName(TextUtil.format(Menus.ARENAS_MENU_ARENA_ITEM_DISPLAYNAME.getAsString(), arena, player))

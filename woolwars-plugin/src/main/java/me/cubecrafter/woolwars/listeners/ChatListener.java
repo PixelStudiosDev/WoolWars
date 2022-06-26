@@ -1,10 +1,11 @@
 package me.cubecrafter.woolwars.listeners;
 
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.team.GameTeam;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
@@ -23,18 +24,18 @@ public class ChatListener implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         if (!Configuration.CHAT_FORMAT_ENABLED.getAsBoolean()) return;
         Player player = e.getPlayer();
-        GameArena arena = ArenaUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             if (arena.isAlive(player)) {
                 setRecipients(e, arena.getAlivePlayers());
                 if (arena.getGameState().equals(GameState.STARTING) || arena.getGameState().equals(GameState.WAITING)) {
                     e.setFormat(TextUtil.format(Configuration.WAITING_LOBBY_CHAT_FORMAT.getAsString()
-                            .replace("{player}", player.getDisplayName())
+                            .replace("{player}", player.getName())
                             .replace("{message}", e.getMessage()), player));
                 } else {
-                    GameTeam team = arena.getTeamByPlayer(player);
+                    Team team = arena.getTeamByPlayer(player);
                     e.setFormat(TextUtil.format(Configuration.GAME_CHAT_FORMAT.getAsString()
-                            .replace("{player}", player.getDisplayName())
+                            .replace("{player}", player.getName())
                             .replace("{team_color}", team.getTeamColor().getChatColor().toString())
                             .replace("{team}", team.getName())
                             .replace("{team_letter}", team.getTeamLetter())
@@ -43,13 +44,13 @@ public class ChatListener implements Listener {
             } else {
                 setRecipients(e, arena.getDeadPlayers());
                 e.setFormat(TextUtil.format(Configuration.SPECTATOR_CHAT_FORMAT.getAsString()
-                        .replace("{player}", player.getDisplayName())
+                        .replace("{player}", player.getName())
                         .replace("{message}", e.getMessage()), player));
             }
         } else {
             setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(player)).collect(Collectors.toList()));
             e.setFormat(TextUtil.format(Configuration.LOBBY_CHAT_FORMAT.getAsString()
-                    .replace("{player}", player.getDisplayName())
+                    .replace("{player}", player.getName())
                     .replace("{message}", e.getMessage()), player));
         }
     }

@@ -11,13 +11,13 @@ import java.util.Map;
 
 public class KitManager {
 
-    @Getter private final Map<String, Kit> kits = new HashMap<>();
+    @Getter private final Map<String, GameKit> kits = new HashMap<>();
 
     public KitManager() {
         loadKits();
     }
 
-    public Kit getKit(String id) {
+    public GameKit getKit(String id) {
         return kits.get(id);
     }
 
@@ -26,9 +26,9 @@ public class KitManager {
         for (File kitFile : WoolWars.getInstance().getFileManager().getKitFiles()) {
             String id = kitFile.getName().replace(".yml", "");
             YamlConfiguration kitConfig = YamlConfiguration.loadConfiguration(kitFile);
-            Kit kit = new Kit(id, kitConfig);
+            GameKit kit = new GameKit(id, kitConfig);
             kits.put(id, kit);
-            TextUtil.info("Kit '" + id + "' loaded!");
+            TextUtil.info("GameKit '" + id + "' loaded!");
             loaded++;
         }
         TextUtil.info("Loaded " + loaded + " kits!");

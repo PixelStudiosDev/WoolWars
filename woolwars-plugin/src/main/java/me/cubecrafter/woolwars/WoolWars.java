@@ -1,6 +1,8 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.api.API;
+import me.cubecrafter.woolwars.api.WoolWarsAPI;
 import me.cubecrafter.woolwars.api.nms.NMS;
 import me.cubecrafter.woolwars.arena.ArenaManager;
 import me.cubecrafter.woolwars.commands.CommandManager;
@@ -14,6 +16,7 @@ import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,8 +35,7 @@ public final class WoolWars extends JavaPlugin {
     private PlayerDataManager playerDataManager;
     private PowerUpManager powerupManager;
     private NMS nms;
-    //private WoolWarsAPI api;
-    private final String user = "%%__USER__%%";
+    private WoolWarsAPI api;
 
     @Override
     public void onEnable() {
@@ -68,11 +70,11 @@ public final class WoolWars extends JavaPlugin {
         scoreboardHandler = new ScoreboardHandler();
         powerupManager = new PowerUpManager();
         kitManager = new KitManager();
-        Arrays.asList(new InventoryListener(), new GameListener(), new PlayerQuitListener(), new PlayerJoinListener(this), new ChatListener())
+        Arrays.asList(new InventoryListener(), new ArenaListener(), new WoolListener(), new JoinQuitListener(this), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
         playerDataManager.forceLoad();
-        //api = new API();
-        //getServer().getServicesManager().register(WoolWarsAPI.class, api, this, ServicePriority.Highest);
+        api = new API();
+        getServer().getServicesManager().register(WoolWarsAPI.class, api, this, ServicePriority.Highest);
     }
 
     @Override

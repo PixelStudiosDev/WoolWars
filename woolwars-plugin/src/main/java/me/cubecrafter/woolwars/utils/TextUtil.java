@@ -6,8 +6,8 @@ import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.database.PlayerData;
-import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Messages;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -74,7 +74,7 @@ public class TextUtil {
                 : new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
     }
 
-    public String format(String s, GameArena arena, Player player) {
+    public String format(String s, Arena arena, Player player) {
         s = format(s, player)
                 .replace("{time_formatted}", arena.getTimerFormatted())
                 .replace("{time}", String.valueOf(arena.getTimer()))
@@ -133,7 +133,7 @@ public class TextUtil {
         return parsed;
     }
 
-    public List<String> format(List<String> lines, GameArena arena, Player player) {
+    public List<String> format(List<String> lines, Arena arena, Player player) {
         if (lines == null) return Collections.emptyList();
         List<String> parsed = new ArrayList<>();
         lines.forEach(s -> parsed.add(format(s, arena, player)));

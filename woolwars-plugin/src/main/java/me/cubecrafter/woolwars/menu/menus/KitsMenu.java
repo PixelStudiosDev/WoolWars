@@ -1,15 +1,18 @@
 package me.cubecrafter.woolwars.menu.menus;
 
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.api.events.player.PlayerSelectKitEvent;
+import me.cubecrafter.woolwars.api.kits.Kit;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Menus;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,9 +26,9 @@ import java.util.stream.Collectors;
 public class KitsMenu extends Menu {
 
     private final PlayerData data;
-    private final GameArena arena;
+    private final Arena arena;
 
-    public KitsMenu(Player player, GameArena arena) {
+    public KitsMenu(Player player, Arena arena) {
         super(player);
         this.arena = arena;
         data = ArenaUtil.getPlayerData(player);
@@ -50,8 +53,10 @@ public class KitsMenu extends Menu {
         ConfigurationSection kits = Menus.KITS_MENU_KITS_SECTION.getAsConfigSection();
         for (String id : kits.getKeys(false)) {
             Kit kit = ArenaUtil.getKit(id);
-            items.put(kits.getInt(id + ".slot"), new MenuItem(generateItem(kit, ItemBuilder.fromConfig(kits.getConfigurationSection(id)).build()), player)
-                    .addAction(e -> {
+            items.put(kits.getInt(id + ".slot"), new MenuItem(generateItem(kit, ItemBuilder.fromConfig(kits.getConfigurationSection(id)).build()), player).addAction(e -> {
+                PlayerSelectKitEvent event = new PlayerSelectKitEvent(player, kit, arena);
+                Bukkit.getPluginManager().callEvent(event);
+                if (event.isCancelled()) return;
                 if (data.getSelectedKit().equals(id)) {
                     TextUtil.sendMessage(player,  Messages.KIT_ALREADY_SELECTED.getAsString());
                 } else {
@@ -66,7 +71,7 @@ public class KitsMenu extends Menu {
     private ItemStack generateItem(Kit kit, ItemStack original) {
         ItemMeta meta = original.getItemMeta();
         if (!meta.hasLore()) return new ItemBuilder(original).setGlow(data.getSelectedKit().equals(kit.getId())).build();
-        List<String> newLore = meta.getLore().stream().map(s -> s.replace("{kit_status}", data.getSelectedKit().equals(kit.getId()) ? "&cAlready Selected!" : "&eClick to Select!")).collect(Collectors.toList());
+        List<String> newLore = meta.getLore().stream().map(s -> s.replace("{kit_status}", data.getSelectedKit().equals(kit.getId()) ? Messages.KIT_STATUS_SELECTED.getAsString() : Messages.KIT_STATUS_NOT_SELECTED.getAsString())).collect(Collectors.toList());
         return new ItemBuilder(original).setLore(newLore).setGlow(data.getSelectedKit().equals(kit.getId())).build();
     }
 

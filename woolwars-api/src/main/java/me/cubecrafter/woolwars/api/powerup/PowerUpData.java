@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.powerup;
+package me.cubecrafter.woolwars.api.powerup;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

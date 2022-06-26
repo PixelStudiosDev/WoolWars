@@ -21,6 +21,7 @@ general:
   only-player-command: "{prefix}&cThis command can be executed only by a player!"
   no-permission: "{prefix}&cYou don't have the permission to execute this command!"
   command-blocked: "{prefix}You can't use this command while you are in game!"
+  config-reloaded: "{prefix}&7Config files reloaded!"
 game:
   player-join: "{prefix}&e{player} &7joined the game! &8({current}/{max})"
   player-leave: "{prefix}&e{player} &7left the game!"
@@ -31,11 +32,11 @@ game:
   all-players-dead: "{prefix}&cAll players died! Starting a new round!"
   start-countdown: "{prefix}&7The game starts in &a{seconds} &7seconds!"
   start-message:
-    - "&8&m--------------------------------------------------"
+    - "&a&l----------------------------------------"
     - "<center>&c&lWOOL WARS</center>"
     - "<center>&7Matches are best of &e3</center>"
     - "<center>&7Place your team's color wool in the &acenter &7to win the round!</center>"
-    - "&8&m--------------------------------------------------"
+    - "&a&l----------------------------------------"
   player-death:
     title: "&c&lYOU DIED"
     subtitle: "&7You will respawn at the start of the next round!"
@@ -44,6 +45,12 @@ game:
     void: "{prefix}{player_team_color}{player} &7fell out of the world"
     generic: "{prefix}{player_team_color}{player} &7died"
     kill-message: "{prefix}{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
+  kits:
+    shift-to-select-kit: "&eShift to select a kit!"
+    kit-already-selected: "{prefix}&cYou already have this kit selected!"
+    kit-selected: "{prefix}&7You have selected the &b{displayname} &7kit!"
+    kit-status-selected: "&cAlready Selected!"
+    kit-status-not-selected: "&eClick to Select!"
   round-start:
     title: "&a&lROUND START"
     subtitle: "&bRound {round}"
@@ -52,9 +59,6 @@ game:
   pre-round:
     title: "&e&lPRE ROUND"
     subtitle: "&7Select your kit!"
-    shift-to-select-kit: "&eShift to select a kit!"
-    kit-already-selected: "{prefix}&cYou already have this kit selected!"
-    kit-selected: "{prefix}&7You have selected the &b{displayname} &7kit!"
   round-end:
     winner-team:
       title: "{points}"
@@ -71,10 +75,10 @@ game:
       wool-placed-format: "<center>&7Wool placed: {wool_placed}</center>"
       blocks-broken-format: "<center>&7Blocks broken: {blocks_broken}</center>"
       message:
-        - "&8&m--------------------------------------------------"
+        - "&a&l---------------------------"
         - "<center>&eRound #{round} stats</center>"
         - "{stats}"
-        - "&8&m--------------------------------------------------"
+        - "&a&l---------------------------"
   game-end:
     winner-team:
       title: "&a&lVICTORY"
@@ -88,7 +92,7 @@ game:
       statistic-format: "&7{player} &7- &e{value}"
       none-format: "&cNone"
       message:
-        - "&8&m--------------------------------------------------"
+        - "&a&l--------------------------------------"
         - ""
         - "<center>{team_status}</center>"
         - ""
@@ -96,7 +100,7 @@ game:
         - "<center>&6&lMost Wool Placed &7- {top_wool_placed}</center>"
         - "<center>&c&lMost Blocks Broken &7- {top_blocks_broken}</center>"
         - ""
-        - "&8&m--------------------------------------------------"
+        - "&a&l--------------------------------------"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | SCOREBOARD                               |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

@@ -3,12 +3,13 @@ package me.cubecrafter.woolwars.utils;
 import com.cryptomorin.xseries.XSound;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.api.kits.Kit;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.kits.Kit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -28,20 +29,20 @@ public class ArenaUtil {
         return arena.getTeams().stream().anyMatch(team -> team.getBase().isInside(block.getLocation()));
     }
 
-    public GameArena getArenaByPlayer(Player player) {
+    public Arena getArenaByPlayer(Player player) {
         return getArenas().stream().filter(arena -> arena.getPlayers().contains(player)).findAny().orElse(null);
     }
 
-    public GameArena getArenaById(String name) {
+    public Arena getArenaById(String name) {
         return WoolWars.getInstance().getArenaManager().getArena(name);
     }
 
-    public List<GameArena> getArenasByGroup(String group) {
+    public List<Arena> getArenasByGroup(String group) {
         return getArenas().stream().filter(arena -> arena.getGroup().equals(group)).collect(Collectors.toList());
     }
 
     public List<String> getGroups() {
-        return getArenas().stream().map(GameArena::getGroup).distinct().collect(Collectors.toList());
+        return getArenas().stream().map(Arena::getGroup).distinct().collect(Collectors.toList());
     }
 
     public Kit getKit(String id) {
@@ -60,32 +61,32 @@ public class ArenaUtil {
         return getArenas().stream().anyMatch(arena -> arena.getPlayers().contains(player));
     }
 
-    public List<GameArena> getArenas() {
-        return new ArrayList<>(WoolWars.getInstance().getArenaManager().getArenas().values());
+    public List<Arena> getArenas() {
+        return WoolWars.getInstance().getArenaManager().getArenas();
     }
 
     public List<Kit> getKits() {
         return new ArrayList<>(WoolWars.getInstance().getKitManager().getKits().values());
     }
 
-    public boolean joinRandom(Player player) {
-        List<GameArena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
+    public boolean joinRandomArena(Player player) {
+        List<Arena> available = getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             TextUtil.sendMessage(player, Messages.NO_ARENAS_AVAILABLE.getAsString());
             return false;
         }
-        GameArena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
+        Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
         random.addPlayer(player);
         return true;
     }
 
-    public boolean joinRandomFromGroup(Player player, String group) {
-        List<GameArena> available = getArenasByGroup(group).stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
+    public boolean joinRandomArena(Player player, String group) {
+        List<Arena> available = getArenasByGroup(group).stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).collect(Collectors.toList());
         if (available.isEmpty()) {
             TextUtil.sendMessage(player, Messages.NO_ARENAS_AVAILABLE.getAsString());
             return false;
         }
-        GameArena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
+        Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
         random.addPlayer(player);
         return true;
     }

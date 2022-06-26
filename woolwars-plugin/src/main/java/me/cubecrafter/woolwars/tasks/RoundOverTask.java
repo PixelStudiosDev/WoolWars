@@ -1,9 +1,10 @@
 package me.cubecrafter.woolwars.tasks;
 
+import me.cubecrafter.woolwars.api.powerup.PowerUp;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.config.Configuration;
-import me.cubecrafter.woolwars.powerup.PowerUp;
+import me.cubecrafter.woolwars.powerup.GamePowerUp;
 
 public class RoundOverTask extends ArenaTask {
 

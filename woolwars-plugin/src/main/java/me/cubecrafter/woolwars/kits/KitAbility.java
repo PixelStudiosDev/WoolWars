@@ -2,8 +2,11 @@ package me.cubecrafter.woolwars.kits;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.GameArena;
+import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.api.arena.GameState;
+import me.cubecrafter.woolwars.api.events.player.PlayerUseAbilityEvent;
+import me.cubecrafter.woolwars.api.kits.Ability;
+import me.cubecrafter.woolwars.api.kits.Kit;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
@@ -22,21 +25,27 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-public class Ability {
+public class KitAbility implements Ability {
 
     private final static List<UUID> cooldown = new ArrayList<>();
 
+    public static void removeCooldown(UUID uuid) {
+        cooldown.remove(uuid);
+    }
+
     private final String name;
+    private final Kit kit;
     private final AbilityType abilityType;
     private final ItemStack item;
-    private final int slot;
+    private final int itemSlot;
     private final List<PotionEffect> effects = new ArrayList<>();
 
-    public Ability(YamlConfiguration kitConfig) {
+    public KitAbility(Kit kit, YamlConfiguration kitConfig) {
+        this.kit = kit;
         name = kitConfig.getString("ability.displayname");
         abilityType = AbilityType.valueOf(kitConfig.getString("ability.type").toUpperCase());
         item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("ability.item")).setTag("ability-item").build();
-        slot = kitConfig.getInt("ability.item.slot");
+        itemSlot = kitConfig.getInt("ability.item.slot");
         if (abilityType.equals(AbilityType.EFFECT)) {
             for (String effect : kitConfig.getStringList("ability.effects")) {
                 effects.add(TextUtil.getEffect(effect));
@@ -44,8 +53,11 @@ public class Ability {
         }
     }
 
-    public void use(Player player) {
-        GameArena arena = ArenaUtil.getArenaByPlayer(player);
+    @Override
+    public void use(Player player, Arena arena) {
+        PlayerUseAbilityEvent event = new PlayerUseAbilityEvent(player, this, arena);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
         if (!arena.getGameState().equals(GameState.ACTIVE_ROUND)) {
             player.sendMessage(TextUtil.color("&cYou can't use your ability yet!"));
             return;
@@ -105,18 +117,6 @@ public class Ability {
                 break;
         }
         TextUtil.sendMessage(player, "&aYou used your keystone ability: " + name);
-    }
-
-    public static void removeCooldown(UUID uuid) {
-        cooldown.remove(uuid);
-    }
-
-    private enum AbilityType {
-        EFFECT,
-        KNOCKBACK_TNT,
-        STEP_BACK,
-        GOLDEN_SHELL,
-        HACK
     }
 
 }

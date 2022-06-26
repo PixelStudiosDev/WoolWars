@@ -21,7 +21,7 @@ public class CommandManager implements TabExecutor {
     private final Set<SubCommand> subCommands = new HashSet<>();
 
     public CommandManager(WoolWars plugin) {
-        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new ArenasCommand(), new ForceStartCommand(), new ReloadCommand(), new StatsCommand()));
+        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new ArenasCommand(), new ForceStartCommand(), new ReloadCommand(), new StatsCommand(), new VersionCommand()));
         PluginCommand command = plugin.getCommand("woolwars");
         command.setExecutor(this);
         command.setTabCompleter(this);
@@ -35,20 +35,20 @@ public class CommandManager implements TabExecutor {
         if (args.length > 0) {
             SubCommand cmd = subCommands.stream().filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
-                sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString()));
+                sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
                 return true;
             }
             if (cmd.isPlayerOnly() && !(sender instanceof Player)) {
-                sender.sendMessage(TextUtil.color(Messages.ONLY_PLAYER_COMMAND.getAsString()));
+                sender.sendMessage(TextUtil.color(Messages.ONLY_PLAYER_COMMAND.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
                 return true;
             }
             if (!sender.hasPermission(cmd.getPermission())) {
-                sender.sendMessage(TextUtil.color(Messages.NO_PERMISSION.getAsString()));
+                sender.sendMessage(TextUtil.color(Messages.NO_PERMISSION.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
                 return true;
             }
             cmd.execute(sender, args);
         } else {
-            sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString()));
+            sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
         }
         return true;
     }

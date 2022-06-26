@@ -150,12 +150,12 @@ public class ItemBuilder {
         if (section.contains("amount")) builder.setAmount(section.getInt("amount"));
         if (section.contains("effect")) {
             String[] split = section.getString("effect").split(",");
-            builder.addPotionEffect(split[0], Integer.parseInt(split.length < 2 ? "10" : split[1]), Integer.parseInt(split.length < 3 ? "1" : split[2]));
+            builder.addPotionEffect(split[0], Integer.parseInt(split.length < 2 ? "10" : split[1]), Integer.parseInt(split.length < 3 ? "0" : split[2]));
         }
         if (section.contains("enchantments")) {
             for (String enchantment : section.getStringList("enchantments")) {
                 String[] split = enchantment.split(",");
-                builder.addEnchantment(split[0], Integer.parseInt(split[1]));
+                builder.addEnchantment(split[0], Integer.parseInt(split.length < 2 ? "1" : split[1]));
             }
         }
         return builder;
