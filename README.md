@@ -1,2 +1,2 @@
-# WoolWars
-A fun and unique minigame to play with your friends!
+![](https://i.imgur.com/G6LbYrS.png)
+![](https://i.imgur.com/EtoRfU9.png)
