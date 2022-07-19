@@ -14,6 +14,7 @@ import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class RoundTask extends ArenaTask {
 
     private BukkitTask rotatePowerUpsTask;
-    private final Map<Team, Integer> placedWool = new HashMap<>();
+    private final Map<Team, List<Block>> placedWool = new HashMap<>();
     private final Map<Player, Integer> roundKills = new HashMap<>();
     private final Map<Player, Integer> roundPlacedWool = new HashMap<>();
     private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
@@ -42,8 +43,8 @@ public class RoundTask extends ArenaTask {
 
     @Override
     public void onEnd() {
-        Map.Entry<Team, Integer> bestTeam = placedWool.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
-        if (placedWool.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
+        Map.Entry<Team, List<Block>> bestTeam = placedWool.entrySet().stream().max(Comparator.comparing(entry -> entry.getValue().size())).orElse(null);
+        if (bestTeam == null || placedWool.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), bestTeam.getValue())).count() > 1) {
             sendRoundEndMessages(null, true, false);
             arena.setGameState(GameState.ROUND_OVER);
             RoundEndEvent event = new RoundEndEvent(arena, true, null, Collections.emptyList());
@@ -52,11 +53,7 @@ public class RoundTask extends ArenaTask {
             Team winner = bestTeam.getKey();
             winner.addPoint();
             if (winner.getPoints() == arena.getWinPoints()) {
-                addWinsLossesStats(winner);
-                sendRoundEndMessages(winner, false, true);
-                arena.setGameState(GameState.GAME_ENDED);
-                GameEndEvent event = new GameEndEvent(arena, winner, arena.getTeams().stream().filter(t -> !t.equals(winner)).collect(Collectors.toList()));
-                Bukkit.getPluginManager().callEvent(event);
+                setWinner(winner);
             } else {
                 sendRoundEndMessages(winner, false, false);
                 arena.setGameState(GameState.ROUND_OVER);
@@ -82,33 +79,26 @@ public class RoundTask extends ArenaTask {
     @Override
     public void onStart() {
         rotatePowerUpsTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
-        for (Team team : arena.getTeams()) {
-            placedWool.put(team, 0);
+    }
+
+    public void addPlacedWool(Team team, Block block) {
+        if (!placedWool.containsKey(team)) {
+            placedWool.put(team, new ArrayList<>());
         }
+        placedWool.get(team).add(block);
     }
 
-    public void addPlacedWool(Team team) {
-        if (team == null) return;
-        placedWool.merge(team, 1, Integer::sum);
-    }
-
-    public void removePlacedWool(Team team) {
-        if (placedWool.get(team) == null) return;
-        placedWool.put(team, placedWool.get(team) - 1);
-        if (placedWool.get(team) == 0) placedWool.remove(team);
+    public void removePlacedWool(Team team, Block block) {
+        placedWool.get(team).remove(block);
     }
 
     public void checkWinners() {
-        for (Map.Entry<Team, Integer> entry : placedWool.entrySet()) {
-            if (entry.getValue() < arena.getCenter().getTotalBlocks()) continue;
+        for (Map.Entry<Team, List<Block>> entry : placedWool.entrySet()) {
+            if (entry.getValue().size() < arena.getCenter().getTotalBlocks()) continue;
             Team team = entry.getKey();
             team.addPoint();
             if (team.getPoints() == arena.getWinPoints()) {
-                addWinsLossesStats(team);
-                sendRoundEndMessages(team, false, true);
-                arena.setGameState(GameState.GAME_ENDED);
-                GameEndEvent event = new GameEndEvent(arena, team, arena.getTeams().stream().filter(t -> !t.equals(team)).collect(Collectors.toList()));
-                Bukkit.getPluginManager().callEvent(event);
+                setWinner(team);
                 return;
             } else {
                 sendRoundEndMessages(team, false, false);
@@ -122,33 +112,23 @@ public class RoundTask extends ArenaTask {
         }
     }
 
+    private void setWinner(Team team) {
+        addWinsLossesStats(team);
+        sendRoundEndMessages(team, false, true);
+        arena.setGameState(GameState.GAME_ENDED);
+        GameEndEvent event = new GameEndEvent(arena, team, arena.getTeams().stream().filter(t -> !t.equals(team)).collect(Collectors.toList()));
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
     private void sendRoundEndMessages(Team winner, boolean draw, boolean lastRound) {
         if (lastRound) {
-            String statsFormat = Messages.END_GAME_STATS_FORMAT.getAsString();
-            String topKillsFormat;
-            Map.Entry<Player, Integer> killsEntry = roundKills.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
-            if (killsEntry == null) topKillsFormat = Messages.NONE_FORMAT.getAsString(); else {
-                topKillsFormat = statsFormat.replace("{player}", killsEntry.getKey().getName()).replace("{value}", String.valueOf(killsEntry.getValue()));
-            }
-            String topPlacedWoolFormat;
-            Map.Entry<Player, Integer> placedWoolEntry = roundPlacedWool.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
-            if (placedWoolEntry == null) topPlacedWoolFormat = Messages.NONE_FORMAT.getAsString(); else {
-                topPlacedWoolFormat = statsFormat.replace("{player}", placedWoolEntry.getKey().getName()).replace("{value}", String.valueOf(placedWoolEntry.getValue()));
-            }
-            String topBrokenBlocksFormat;
-            Map.Entry<Player, Integer> brokenBlocksEntry = roundBrokenBlocks.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
-            if (brokenBlocksEntry == null) topBrokenBlocksFormat = Messages.NONE_FORMAT.getAsString(); else {
-                topBrokenBlocksFormat = statsFormat.replace("{player}", brokenBlocksEntry.getKey().getName()).replace("{value}", String.valueOf(brokenBlocksEntry.getValue()));
-            }
             for (Team team : arena.getTeams()) {
                 List<String> messages = Messages.END_GAME_MESSAGE.getAsStringList();
                 messages.replaceAll(s -> s.replace("{team_status}", team.equals(winner) ? Messages.TEAM_WON_FORMAT.getAsString() : Messages.TEAM_LOST_FORMAT.getAsString())
-                        .replace("{top_kills}", topKillsFormat)
-                        .replace("{top_blocks_broken}", topBrokenBlocksFormat)
-                        .replace("{top_wool_placed}", topPlacedWoolFormat));
-                for (String message : messages) {
-                    TextUtil.sendMessage(team.getMembers(), message);
-                }
+                        .replace("{top_kills}", formatStatistic(roundKills))
+                        .replace("{top_blocks_broken}", formatStatistic(roundBrokenBlocks))
+                        .replace("{top_wool_placed}", formatStatistic(roundPlacedWool)));
+                messages.forEach(message -> TextUtil.sendMessage(team.getMembers(), message));
             }
         } else {
             for (Player player : arena.getPlayers()) {
@@ -176,7 +156,7 @@ public class RoundTask extends ArenaTask {
             }
         }
         if (draw) {
-            TextUtil.sendTitle(arena.getPlayers(), 3, Messages.ROUND_DRAW_TITLE.getAsString(), Messages.ROUND_DRAW_SUBTITLE.getAsString());
+            TextUtil.sendTitle(arena.getPlayers(), 3, Messages.ROUND_DRAW_TITLE.getAsString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_DRAW_SUBTITLE.getAsString());
             ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_DRAW.getAsString());
             return;
         }
@@ -198,6 +178,16 @@ public class RoundTask extends ArenaTask {
                     ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_LOST.getAsString());
                 }
             }
+        }
+    }
+
+    private String formatStatistic(Map<Player, Integer> statistic) {
+        String format = Messages.END_GAME_STATS_FORMAT.getAsString();
+        Map.Entry<Player, Integer> entry = statistic.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
+        if (entry == null) {
+             return Messages.NONE_FORMAT.getAsString();
+        } else {
+            return format.replace("{player}", entry.getKey().getName()).replace("{value}", String.valueOf(entry.getValue()));
         }
     }
 

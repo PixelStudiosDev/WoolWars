@@ -7,7 +7,9 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.Arena;
+import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.database.PlayerData;
+import me.cubecrafter.woolwars.api.team.TeamColor;
 import me.cubecrafter.woolwars.config.Messages;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -19,6 +21,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,9 +40,8 @@ public class TextUtil {
 
     public List<String> color(List<String> lines) {
         if (lines == null) return Collections.emptyList();
-        List<String> color = new ArrayList<>();
-        lines.forEach(s -> color.add(color(s)));
-        return color;
+        lines.replaceAll(TextUtil::color);
+        return lines;
     }
 
     public TextComponent buildTextComponent(String msg, String hover, String click, ClickEvent.Action clickAction){
@@ -63,7 +65,7 @@ public class TextUtil {
         StringBuilder builder = new StringBuilder();
         builder.append(location.getWorld().getName()).append(",").append(location.getX()).append(",").append(location.getY()).append(",").append(location.getZ());
         if (location.getPitch() != 0 || location.getYaw() != 0) {
-            builder.append(",").append(location.getPitch()).append(",").append(location.getYaw());
+            builder.append(",").append(location.getYaw()).append(",").append(location.getPitch());
         }
         return builder.toString();
     }
@@ -82,7 +84,7 @@ public class TextUtil {
                 .replace("{displayname}", arena.getDisplayName())
                 .replace("{round}", String.valueOf(arena.getRound()))
                 .replace("{group}", arena.getGroup())
-                .replace("{state}", arena.getGameState().getName())
+                .replace("{state}", getStateName(arena.getGameState()))
                 .replace("{win_points}", String.valueOf(arena.getWinPoints()))
                 .replace("{players}", String.valueOf(arena.getPlayers().size()))
                 .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
@@ -121,23 +123,20 @@ public class TextUtil {
 
     public List<String> format(List<String> lines, Player player) {
         if (lines == null) return Collections.emptyList();
-        List<String> parsed = new ArrayList<>();
-        lines.forEach(s -> parsed.add(format(s, player)));
-        return parsed;
+        lines.replaceAll(s -> format(s, player));
+        return lines;
     }
 
     public List<String> format(List<String> lines) {
         if (lines == null) return Collections.emptyList();
-        List<String> parsed = new ArrayList<>();
-        lines.forEach(s -> parsed.add(format(s)));
-        return parsed;
+        lines.replaceAll(TextUtil::format);
+        return lines;
     }
 
     public List<String> format(List<String> lines, Arena arena, Player player) {
         if (lines == null) return Collections.emptyList();
-        List<String> parsed = new ArrayList<>();
-        lines.forEach(s -> parsed.add(format(s, arena, player)));
-        return parsed;
+        lines.replaceAll(s -> format(s, arena, player));
+        return lines;
     }
 
     public void sendMessage(Player player, String message) {
@@ -217,6 +216,24 @@ public class TextUtil {
             compensated += spaceLength;
         }
         return sb + message;
+    }
+
+    public String getStateName(GameState state) {
+        switch (state) {
+            case WAITING:
+                return Messages.GAME_STATE_WAITING.getAsString();
+            case STARTING:
+                return Messages.GAME_STATE_STARTING.getAsString();
+            case PRE_ROUND:
+                return Messages.GAME_STATE_PRE_ROUND.getAsString();
+            case ACTIVE_ROUND:
+                return Messages.GAME_STATE_ACTIVE_ROUND.getAsString();
+            case ROUND_OVER:
+                return Messages.GAME_STATE_ROUND_OVER.getAsString();
+            case GAME_ENDED:
+                return Messages.GAME_STATE_GAME_ENDED.getAsString();
+        }
+        return null;
     }
 
 }

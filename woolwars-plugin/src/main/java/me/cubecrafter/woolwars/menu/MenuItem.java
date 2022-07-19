@@ -20,9 +20,9 @@ public class MenuItem {
     private final Map<Consumer<InventoryClickEvent>, ClickType[]> actions = new HashMap<>();
     private static final ClickType[] defaultClickTypes = new ClickType[]{ClickType.LEFT, ClickType.RIGHT, ClickType.SHIFT_LEFT, ClickType.SHIFT_RIGHT};
 
-    public MenuItem(ItemStack item, Player viewing) {
+    public MenuItem(ItemStack item, Player viewer) {
         this.item = item;
-        this.player = viewing;
+        this.player = viewer;
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName()) {
             if (player != null) {

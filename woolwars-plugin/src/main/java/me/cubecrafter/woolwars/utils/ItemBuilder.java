@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import java.util.Map;
 public class ItemBuilder {
 
     private ItemStack item;
-    private Player viewingPlayer;
     private boolean legacySplashPotion = false;
 
     public ItemBuilder(String material) {
@@ -52,6 +52,13 @@ public class ItemBuilder {
     public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = item.getItemMeta();
         meta.setLore(TextUtil.color(lore));
+        item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setLore(String... lore) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(TextUtil.color(Arrays.asList(lore)));
         item.setItemMeta(meta);
         return this;
     }

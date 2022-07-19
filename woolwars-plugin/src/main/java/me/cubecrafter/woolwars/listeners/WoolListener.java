@@ -10,12 +10,15 @@ import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.List;
 
 public class WoolListener implements Listener {
 
@@ -33,13 +36,8 @@ public class WoolListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if (e.getBlock().hasMetadata("woolwars")) {
-                if (!e.getBlock().getMetadata("woolwars").isEmpty()) {
-                    String teamName = e.getBlock().getMetadata("woolwars").get(0).asString();
-                    Team team = arena.getTeamByName(teamName);
-                    arena.getRoundTask().removePlacedWool(team);
-                    e.getBlock().removeMetadata("woolwars", WoolWars.getInstance());
-                }
+            for (List<Block> blocks : arena.getRoundTask().getPlacedWool().values()) {
+                blocks.remove(e.getBlock());
             }
             e.getBlock().setType(Material.AIR);
             arena.getRoundTask().addBrokenBlock(player);
@@ -77,7 +75,7 @@ public class WoolListener implements Listener {
                 if (e.getBlock().getType().toString().endsWith("WOOL")) {
                     Team team = arena.getTeamByPlayer(player);
                     e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
-                    arena.getRoundTask().addPlacedWool(team);
+                    arena.getRoundTask().addPlacedWool(team, e.getBlock());
                     arena.getRoundTask().addPlacedWool(player);
                     arena.getRoundTask().checkWinners();
                 }
@@ -89,12 +87,9 @@ public class WoolListener implements Listener {
                     return;
                 }
             }
-            e.setCancelled(true);
-            TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
-        } else {
-            e.setCancelled(true);
-            TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
         }
+        e.setCancelled(true);
+        TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
     }
 
 }

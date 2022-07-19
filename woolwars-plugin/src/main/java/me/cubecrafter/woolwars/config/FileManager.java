@@ -32,7 +32,7 @@ public class FileManager {
     }
 
     private void createFiles() {
-        new File(plugin.getDataFolder(), "arenas").mkdirs();
+        getArenasDir().mkdirs();
         if (new File(plugin.getDataFolder(), "kits").mkdirs()) {
             List<String> defaultKits = Arrays.asList("archer", "assault", "engineer", "golem", "swordsman", "tank");
             defaultKits.forEach(kit -> plugin.saveResource("kits/" + kit + ".yml", false));
@@ -75,11 +75,15 @@ public class FileManager {
     }
 
     public File[] getArenaFiles() {
-        return new File(plugin.getDataFolder(), "arenas").listFiles((dir, name) -> name.endsWith(".yml"));
+        return getArenasDir().listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
     public File[] getKitFiles() {
         return new File(plugin.getDataFolder(), "kits").listFiles((dir, name) -> name.endsWith(".yml"));
+    }
+
+    public static File getArenasDir() {
+        return new File(WoolWars.getInstance().getDataFolder(), "arenas");
     }
 
 }

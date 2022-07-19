@@ -7,7 +7,7 @@
     <groupId>me.cubecrafter</groupId>
     <artifactId>woolwars-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <name>WoolWars</name>
     <description>A fun and unique minigame to play with your friends!</description>

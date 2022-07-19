@@ -7,6 +7,7 @@ import me.cubecrafter.woolwars.api.arena.GameState;
 import me.cubecrafter.woolwars.api.database.PlayerData;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.api.nms.NMS;
+import me.cubecrafter.woolwars.api.powerup.PowerUp;
 import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.arena.GameArena;
 import me.cubecrafter.woolwars.config.Configuration;
@@ -18,6 +19,8 @@ import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -304,6 +307,60 @@ public class ArenaListener implements Listener {
         if (arena == null) return;
         if (arena.getGameState().equals(GameState.ACTIVE_ROUND)) return;
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e) {
+        if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockZ() == e.getTo().getBlockZ() && e.getFrom().getBlockY() == e.getTo().getBlockY()) return;
+        Player player = e.getPlayer();
+        if (!ArenaUtil.isPlaying(player)) return;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (!arena.getArenaRegion().isInside(e.getTo())) {
+            if (arena.isDead(player)) {
+                player.teleport(arena.getLobby());
+                ArenaUtil.playSound(player, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
+            } else {
+                switch (arena.getGameState()) {
+                    case ACTIVE_ROUND:
+                        handleDeath(player, arena);
+                        break;
+                    case WAITING:
+                    case STARTING:
+                    case ROUND_OVER:
+                    case GAME_ENDED:
+                        player.teleport(arena.getLobby());
+                        ArenaUtil.playSound(player, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
+                        break;
+                    case PRE_ROUND:
+                        player.teleport(arena.getTeamByPlayer(player).getSpawnLocation());
+                        ArenaUtil.playSound(player, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
+                        break;
+                }
+            }
+        }
+        if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
+            if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
+                player.teleport(arena.getLobby());
+                ArenaUtil.playSound(player, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
+            }
+        } else if (arena.getGameState().equals(GameState.ACTIVE_ROUND) && !arena.getDeadPlayers().contains(player)) {
+            Block top = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+            Block bottom = top.getRelative(BlockFace.DOWN);
+            if (top.getType().equals(XMaterial.matchXMaterial(Configuration.JUMP_PADS_TOP_BLOCK.getAsString()).get().parseMaterial())
+                    && bottom.getType().equals(XMaterial.matchXMaterial(Configuration.JUMP_PADS_BOTTOM_BLOCK.getAsString()).get().parseMaterial())) {
+                player.setVelocity(player.getLocation().getDirection().normalize().multiply(Configuration.JUMP_PADS_HORIZONTAL_POWER.getAsDouble()).setY(Configuration.JUMP_PADS_VERTICAL_POWER.getAsDouble()));
+                ArenaUtil.playSound(player, Configuration.SOUNDS_JUMP_PAD.getAsString());
+            }
+            for (PowerUp powerUp : arena.getPowerUps()) {
+                if (!powerUp.isActive()) continue;
+                double distance = player.getLocation().distance(powerUp.getLocation());
+                if (distance <= 1) {
+                    powerUp.use(player);
+                    PlayerData data = ArenaUtil.getPlayerData(player);
+                    data.setPowerUpsCollected(data.getPowerUpsCollected() + 1);
+                }
+            }
+        }
     }
 
 }

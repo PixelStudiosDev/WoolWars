@@ -13,7 +13,6 @@ public abstract class ArenaTask {
     public ArenaTask(GameArena arena) {
         this.arena = arena;
         arena.setTimer(getDuration());
-        onStart();
         task = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), () -> {
             if (arena.getTimer() == 0) {
                 onEnd();
@@ -23,6 +22,7 @@ public abstract class ArenaTask {
                 arena.setTimer(arena.getTimer() - 1);
             }
         }, 0, 20L);
+        onStart();
     }
 
     public void cancel() {

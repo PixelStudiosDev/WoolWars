@@ -14,6 +14,7 @@ import me.cubecrafter.woolwars.api.nms.NMS;
 import me.cubecrafter.woolwars.api.powerup.PowerUp;
 import me.cubecrafter.woolwars.api.team.Team;
 import me.cubecrafter.woolwars.api.team.TeamColor;
+import me.cubecrafter.woolwars.arena.setup.SetupSession;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.powerup.GamePowerUp;
@@ -79,13 +80,14 @@ public class GameArena implements Arena {
         minPlayers = arenaConfig.getInt("min-players");
         winPoints = arenaConfig.getInt("win-points");
         for (String key : arenaConfig.getConfigurationSection("teams").getKeys(false)) {
+            TeamColor color = TeamColor.valueOf(key.toUpperCase());
+            String name = arenaConfig.getString("teams." + key + ".name");
             Location spawn = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".spawn-location"));
             Location barrier1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.pos1"));
             Location barrier2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".barrier.pos2"));
             Location base1 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.pos1"));
             Location base2 = TextUtil.deserializeLocation(arenaConfig.getString("teams." + key + ".base.pos2"));
-            TeamColor color = TeamColor.valueOf(arenaConfig.getString("teams." + key + ".color"));
-            GameTeam team = new GameTeam(key, this, spawn, color, new Cuboid(barrier1, barrier2), new Cuboid(base1, base2));
+            GameTeam team = new GameTeam(name, this, spawn, color, new Cuboid(barrier1, barrier2), new Cuboid(base1, base2));
             teams.add(team);
         }
         Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("center.pos1"));
@@ -107,6 +109,10 @@ public class GameArena implements Arena {
         PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
+        if (SetupSession.isActive(player)) {
+            TextUtil.sendMessage(player, "{prefix}&cYou can't join an arena while you are in setup mode!");
+            return;
+        }
         if (players.contains(player)) {
             TextUtil.sendMessage(player, Messages.ALREADY_IN_ARENA.getAsString());
             return;

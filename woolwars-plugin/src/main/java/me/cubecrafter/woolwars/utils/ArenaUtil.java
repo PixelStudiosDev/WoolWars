@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 public class ArenaUtil {
 
     public void teleportToLobby(Player player) {
+        if (Configuration.LOBBY_LOCATION.getAsString().equals("")) {
+            TextUtil.sendMessage(player, "{prefix}&cThe lobby location is not set! Set it using /woolwars setlobby");
+            return;
+        }
         player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
     }
 

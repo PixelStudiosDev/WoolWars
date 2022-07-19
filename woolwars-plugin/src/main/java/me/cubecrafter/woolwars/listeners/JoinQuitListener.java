@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.arena.Arena;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

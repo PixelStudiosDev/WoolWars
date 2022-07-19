@@ -21,7 +21,15 @@ public class CommandManager implements TabExecutor {
     private final Set<SubCommand> subCommands = new HashSet<>();
 
     public CommandManager(WoolWars plugin) {
-        subCommands.addAll(Arrays.asList(new HelpCommand(), new JoinCommand(), new LeaveCommand(), new ArenasCommand(), new ForceStartCommand(), new ReloadCommand(), new StatsCommand(), new VersionCommand()));
+        subCommands.add(new JoinCommand());
+        subCommands.add(new LeaveCommand());
+        subCommands.add(new ArenasCommand());
+        subCommands.add(new ForceStartCommand());
+        subCommands.add(new ReloadCommand());
+        subCommands.add(new StatsCommand());
+        subCommands.add(new VersionCommand());
+        subCommands.add(new SetLobbyCommand());
+        subCommands.add(new SetupCommand());
         PluginCommand command = plugin.getCommand("woolwars");
         command.setExecutor(this);
         command.setTabCompleter(this);
