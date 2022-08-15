@@ -25,6 +25,6 @@ repositories {
 ```
 ```groovy
 dependencies {
-    implementation 'com.github.CubeCrafter:WoolWars:Tag'
+    compileOnly 'com.github.CubeCrafter:WoolWars:Tag'
 }
 ```
