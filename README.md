@@ -15,6 +15,7 @@
     <groupId>com.github.CubeCrafter</groupId>
     <artifactId>WoolWars</artifactId>
     <version>Tag</version>
+    <scope>provided</scope>
 </dependency>
 ```
 # Gradle
