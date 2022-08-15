@@ -1,4 +1,30 @@
-## NOTE: No support will be given to self-compiled builds
-## Buy the plugin on Polymart: [Link](https://polymart.org/resource/wool-wars.2551)
-![](https://i.imgur.com/G6LbYrS.png)
-![](https://i.imgur.com/EtoRfU9.png)
+### NOTE: No support will be given to self-compiled builds
+### Buy the plugin on Polymart: [Link](https://polymart.org/resource/wool-wars.2551)
+
+# Maven
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+```xml
+<dependency>
+    <groupId>com.github.CubeCrafter</groupId>
+    <artifactId>WoolWars</artifactId>
+    <version>Tag</version>
+</dependency>
+```
+# Gradle
+```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+```
+```groovy
+dependencies {
+    implementation 'com.github.CubeCrafter:WoolWars:Tag'
+}
+```
