@@ -1,0 +1,127 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | WOOLWARS CONFIGURATION FILE              |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Version: ${project.version}
+# Author: CubeCrafter
+# Issues: https://github.com/CubeCrafter/WoolWars/issues
+# Wiki: https://cubecrafter.gitbook.io/
+# Discord: https://discord.gg/ehjkwp5Fn4
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | GAME SETTINGS                            |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+enable-leave-command-shortcut: true
+starting-countdown: 10
+pre-round-duration: 15
+active-round-duration: 60
+round-over-duration: 5
+game-end-duration: 10
+disabled-interaction-blocks:
+  - CRAFTING_TABLE
+  - FURNACE
+placeable-blocks: []
+disable-fall-damage: true
+items:
+  play-again-item:
+    material: PAPER
+    displayname: "&bPlay Again &7(Right-Click)"
+    lore:
+      - "&7Right-Click to join a new game!"
+    slot: 7
+  leave-item:
+    material: RED_BED
+    displayname: "&cReturn to Lobby &7(Right-Click)"
+    lose:
+      - "&7Right-Click to return to the lobby!"
+    slot: 8
+  teleporter-item:
+    material: COMPASS
+    displayname: "&aTeleporter &7(Right-Click)"
+    lore:
+      - "&7Right-Click to open!"
+    slot: 0
+jump-pads:
+  top-block: SLIME_BLOCK
+  bottom-block: STONE
+  horizontal-power: 0.5
+  vertical-power: 1.0
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | CHAT SETTINGS                            |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+blocked-commands:
+  # Set this to true to make it a whitelist.
+  whitelist: false
+  commands:
+    - spawn
+    - msg
+    - fly
+chat-format:
+  enabled: true
+  lobby-format: "{player}: &7{message}"
+  waiting-lobby-format: "{player}: &7{message}"
+  game-format: "{team_color}&l{team_letter} {team_color}{player}: &7{message}"
+  spectator-format: "&7[SPECTATOR] {player}: &7{message}"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | REWARDS                                  |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+# Available placeholders: {player}, {uuid}
+reward-commands:
+  enabled: false
+  round-win:
+    - "eco give {player} 100"
+  round-lose:
+    - "broadcast {player} has lost the round!"
+  match-win: []
+  match-lose: []
+  kill: []
+  death: []
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | SOUNDS                                   |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+sounds:
+  jump-pad: ENTITY_BAT_TAKEOFF
+  round-start: BLOCK_ANVIL_LAND
+  round-won: ENTITY_PLAYER_LEVELUP
+  round-lost: GHAST_MOAN
+  teleport-to-base: ENTITY_ENDERMAN_TELEPORT
+  game-won: ENTITY_PLAYER_LEVELUP
+  game-lost: GHAST_MOAN
+  powerup-collected: ENTITY_EXPERIENCE_ORB_PICKUP
+  player-death: GHAST_MOAN
+  player-kill: ENTITY_EXPERIENCE_ORB_PICKUP
+  countdown: ENTITY_CHICKEN_EGG
+  player-joined: ENTITY_CHICKEN_EGG
+  player-left: ENTITY_CHICKEN_EGG
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | SCOREBOARD & NAME TAGS SETTINGS          |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+scoreboard:
+  enabled: true
+  # The scoreboard refresh interval in ticks.
+  refresh-interval: 20
+name-tags:
+  enabled: true
+  prefix: "{team_color}&l{team_letter} {team_color}"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# | STORAGE SETTINGS                         |
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+mysql:
+  enabled: false
+  host: localhost
+  port: 3306
+  database: woolwars
+  username: "username"
+  password: "password"
+  use-ssl: false
+lobby-location: ""
