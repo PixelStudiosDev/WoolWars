@@ -1,5 +1,5 @@
 ### NOTE: No support will be given to self-compiled builds
-### Buy the plugin on Polymart: [Link](https://polymart.org/resource/wool-wars.2551)
+### Buy the plugin on Polymart: [Link](https://polymart.org/r/2551)
 
 # Maven
 ```xml
