@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/jitpack/v/github/cubecrafter/woolwars?color=success&style=for-the-badge">
 </p>
 <p align="center">
-  <img src="https://img.shields.io/github/license/cubecrafter/woolwars?color=blue&style=for-the-badge">
+  <a href="https://cubecrafter.github.io"><img src="https://img.shields.io/static/v1?label=DOCS&message=CUBECRAFTER.GITHUB.IO&color=blue&style=for-the-badge"></a>
   <img src="https://img.shields.io/github/issues/cubecrafter/woolwars?color=blue&style=for-the-badge">
   <img src="https://img.shields.io/codefactor/grade/github/CubeCrafter/WoolWars?color=blue&style=for-the-badge">
   <a href="https://discord.gg/ehjkwp5Fn4"><img src="https://img.shields.io/discord/821278914965405698?color=blue&label=DISCORD&style=for-the-badge"></a>
