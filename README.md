@@ -51,31 +51,4 @@ dependencies {
 }
 ```
 
-## Events and Methods
-```
-GameEndEvent
-GameStartEvent
-GameStateChangeEvent
-RoundEndEvent
-RoundStartEvent
-PlayerCollectPowerUpEvent
-PlayerJoinArenaEvent
-PlayerLeaveArenaEvent
-PlayerKillEvent
-PlayerSelectKitEvent
-PlayerUseAbilityEvent
-```
-```
-WoolWarsAPI#getLobbyLocation()
-WoolWarsAPI#getArenas()
-WoolWarsAPI#getArenaByPlayer(Player)
-WoolWarsAPI#getArenaById(String)
-WoolWarsAPI#getArenasByGroup(String)
-WoolWarsAPI#getGroups()
-WoolWarsAPI#getKitById(String)
-WoolWarsAPI#getKits()
-WoolWarsAPI#getPlayerData(Player)
-WoolWarsAPI#isPlaying(Player)
-WoolWarsAPI#joinRandomArena(Player)
-WoolWarsAPI#joinRandomArena(Player, String)
-```
+> Learn more [Here](https://cubecrafter.github.io/wool-wars/developer-api)
