@@ -69,7 +69,8 @@ public enum Configuration {
 
     // SCOREBOARD & NAME TAGS SETTINGS
 
-    SCOREBOARD_ENABLED("scoreboard.enabled"),
+    SCOREBOARD_LOBBY_ENABLED("scoreboard.lobby-enabled"),
+    SCOREBOARD_GAME_ENABLED("scoreboard.game-enabled"),
     SCOREBOARD_REFRESH_INTERVAL("scoreboard.refresh-interval"),
     NAME_TAGS_ENABLED("name-tags.enabled"),
     NAME_TAGS_PREFIX("name-tags.prefix"),

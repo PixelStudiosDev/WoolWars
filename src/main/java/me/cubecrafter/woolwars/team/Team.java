@@ -48,8 +48,9 @@ public class Team {
     }
 
     public void applyNameTags() {
+        if (!Configuration.NAME_TAGS_ENABLED.getAsBoolean()) return;
         for (Player player : getMembers()) {
-            PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
+            PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
             scoreboard.setGamePrefix(this);
         }
     }
@@ -72,8 +73,10 @@ public class Team {
     }
 
     public void reset() {
-        for (Player player : members) {
-            PlayerScoreboard.getScoreboard(player).removeGamePrefix(this);
+        if (Configuration.NAME_TAGS_ENABLED.getAsBoolean()) {
+            for (Player player : members) {
+                PlayerScoreboard.getOrCreate(player).removeGamePrefix(this);
+            }
         }
         points = 0;
         members.clear();

@@ -105,7 +105,8 @@ sounds:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 scoreboard:
-  enabled: true
+  lobby-enabled: true
+  game-enabled: true
   # The scoreboard refresh interval in ticks.
   refresh-interval: 20
 name-tags:

@@ -3,11 +3,11 @@ package me.cubecrafter.woolwars.arena;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
-import me.cubecrafter.woolwars.tasks.GameEndTask;
-import me.cubecrafter.woolwars.tasks.PreRoundTask;
-import me.cubecrafter.woolwars.tasks.RoundOverTask;
-import me.cubecrafter.woolwars.tasks.RoundTask;
-import me.cubecrafter.woolwars.tasks.StartingTask;
+import me.cubecrafter.woolwars.arena.tasks.GameEndTask;
+import me.cubecrafter.woolwars.arena.tasks.PreRoundTask;
+import me.cubecrafter.woolwars.arena.tasks.RoundOverTask;
+import me.cubecrafter.woolwars.arena.tasks.RoundTask;
+import me.cubecrafter.woolwars.arena.tasks.StartingTask;
 import me.cubecrafter.woolwars.api.events.arena.GameStateChangeEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
@@ -172,7 +172,7 @@ public class Arena {
         players.remove(player);
         Team playerTeam = (Team) getTeamByPlayer(player);
         if (playerTeam != null) {
-            PlayerScoreboard scoreboard = PlayerScoreboard.getScoreboard(player);
+            PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
             if (scoreboard != null) {
                 scoreboard.removeGamePrefix(playerTeam);
             }

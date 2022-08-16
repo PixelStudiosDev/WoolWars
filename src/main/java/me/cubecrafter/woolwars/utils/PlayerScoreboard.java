@@ -19,16 +19,12 @@ public class PlayerScoreboard {
 
     private static final Map<UUID, PlayerScoreboard> scoreboards = new HashMap<>();
 
-    public static boolean hasScoreboard(Player player) {
-        return scoreboards.containsKey(player.getUniqueId());
-    }
-
-    public static PlayerScoreboard createScoreboard(Player player) {
-        return new PlayerScoreboard(player);
-    }
-
-    public static PlayerScoreboard getScoreboard(Player player) {
-        return scoreboards.get(player.getUniqueId());
+    public static PlayerScoreboard getOrCreate(Player player) {
+        if (scoreboards.containsKey(player.getUniqueId())) {
+            return scoreboards.get(player.getUniqueId());
+        } else {
+            return new PlayerScoreboard(player);
+        }
     }
 
     public static void removeScoreboard(Player player) {
@@ -36,15 +32,14 @@ public class PlayerScoreboard {
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
-    private final Scoreboard scoreboard;
-    private final Objective sidebar;
     private final Player player;
+    private final Scoreboard scoreboard;
+    private Objective sidebar;
 
     private PlayerScoreboard(Player player) {
         this.player = player;
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         sidebar = scoreboard.registerNewObjective("woolwars", "dummy");
-        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
         for (int i = 1; i <= 15; i++) {
             org.bukkit.scoreboard.Team team = scoreboard.registerNewTeam("line_" + i);
             team.addEntry(generateEntry(i));
@@ -59,9 +54,8 @@ public class PlayerScoreboard {
     }
 
     public void setGamePrefix(Team team) {
-        if (!Configuration.NAME_TAGS_ENABLED.getAsBoolean()) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerScoreboard sidebar = getScoreboard(player);
+            PlayerScoreboard sidebar = getOrCreate(player);
             sidebar.setGamePrefixInternal(this.player, team);
         }
     }
@@ -84,9 +78,8 @@ public class PlayerScoreboard {
     }
 
     public void removeGamePrefix(Team team) {
-        if (!Configuration.NAME_TAGS_ENABLED.getAsBoolean()) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerScoreboard sidebar = getScoreboard(player);
+            PlayerScoreboard sidebar = getOrCreate(player);
             if (sidebar == null) continue;
             sidebar.removeGamePrefixInternal(this.player, team);
         }
@@ -142,14 +135,25 @@ public class PlayerScoreboard {
     }
 
     private String getFirstSplit(String text) {
-        return text.length() > 16 ? text.substring(0, 16) : text;
+        String split = text.length() > 16 ? text.substring(0, 16) : text;
+        return split.endsWith("§") ? split.substring(0, split.length() - 1) : split;
     }
 
     private String getSecondSplit(String text) {
         if (text.length() > 32) {
             text = text.substring(0, 32);
         }
-        return text.length() > 16 ? text.substring(16) : "";
+        boolean previousCode = text.length() > 16 && text.charAt(15) == '§';
+        String split = text.length() > 16 ? text.substring(16) : "";
+        return previousCode ? split.length() == 16 ? "§" + split.substring(0, split.length() - 1) : "§" + split : split;
+    }
+
+    public void hide() {
+        scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+    }
+
+    public void show() {
+        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
 }

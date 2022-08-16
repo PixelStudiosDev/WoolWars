@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.tasks;
+package me.cubecrafter.woolwars.arena.tasks;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;

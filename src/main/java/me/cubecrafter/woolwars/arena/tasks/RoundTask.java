@@ -1,4 +1,4 @@
-package me.cubecrafter.woolwars.tasks;
+package me.cubecrafter.woolwars.arena.tasks;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;

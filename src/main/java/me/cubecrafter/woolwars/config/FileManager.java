@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,19 +36,27 @@ public class FileManager {
         getArenasDir().mkdirs();
         if (new File(plugin.getDataFolder(), "kits").mkdirs()) {
             List<String> defaultKits = Arrays.asList("archer", "assault", "engineer", "golem", "swordsman", "tank");
-            defaultKits.forEach(kit -> plugin.saveResource("kits/" + kit + ".yml", false));
+            defaultKits.forEach(kit -> saveResource("kits/" + kit + ".yml", new File(plugin.getDataFolder(), "kits/" + kit + ".yml")));
         }
         if (!configFile.exists()) {
-            plugin.saveResource("config.yml", false);
+            saveResource("config.yml", configFile);
         }
         if (!messagesFile.exists()) {
-            plugin.saveResource("messages.yml", false);
+            saveResource("messages.yml", messagesFile);
         }
         if (!powerUpsFile.exists()) {
-            plugin.saveResource("powerups.yml", false);
+            saveResource("powerups.yml", powerUpsFile);
         }
         if (!menusFile.exists()) {
-            plugin.saveResource("menus.yml", false);
+            saveResource("menus.yml", menusFile);
+        }
+    }
+
+    private void saveResource(String name, File destination) {
+        try {
+            Files.copy(plugin.getResource(name), destination.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

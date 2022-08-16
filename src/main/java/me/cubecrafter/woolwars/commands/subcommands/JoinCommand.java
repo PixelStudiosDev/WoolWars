@@ -23,6 +23,8 @@ public class JoinCommand implements SubCommand {
             arena.addPlayer((Player) sender);
         } else if (ArenaUtil.getGroups().contains(args[1])) {
             ArenaUtil.joinRandomArena((Player) sender, args[1]);
+        } else if (args[1].equalsIgnoreCase("random")) {
+            ArenaUtil.joinRandomArena((Player) sender);
         } else {
             TextUtil.sendMessage((Player) sender, Messages.ARENA_NOT_FOUND.getAsString());
         }
@@ -34,6 +36,7 @@ public class JoinCommand implements SubCommand {
         List<String> completions = new ArrayList<>();
         completions.addAll(ArenaUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).map(Arena::getId).collect(Collectors.toList()));
         completions.addAll(ArenaUtil.getGroups());
+        completions.add("random");
         return completions;
     }
 
