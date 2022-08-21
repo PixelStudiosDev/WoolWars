@@ -6,7 +6,7 @@
 
     <groupId>me.cubecrafter</groupId>
     <artifactId>WoolWars</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <name>WoolWars</name>

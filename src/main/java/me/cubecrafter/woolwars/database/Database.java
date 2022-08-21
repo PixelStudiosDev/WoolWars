@@ -54,6 +54,7 @@ public class Database {
             try (Connection connection = pool.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, uuid.toString());
                 ResultSet resultSet = preparedStatement.executeQuery();
+                resultSet.next();
                 data.setWins(resultSet.getInt("wins"));
                 data.setLosses(resultSet.getInt("losses"));
                 data.setGamesPlayed(resultSet.getInt("games_played"));
