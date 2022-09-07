@@ -87,16 +87,16 @@ reward-commands:
 
 sounds:
   jump-pad: ENTITY_BAT_TAKEOFF
-  round-start: BLOCK_ANVIL_LAND
-  round-won: ENTITY_PLAYER_LEVELUP
+  round-start: BLOCK_NOTE_PLING
+  round-won: FIREWORK_LAUNCH
   round-lost: GHAST_MOAN
-  teleport-to-base: ENTITY_ENDERMAN_TELEPORT
+  teleport-to-base: BLOCK_NOTE_PLING
   game-won: ENTITY_PLAYER_LEVELUP
   game-lost: GHAST_MOAN
   powerup-collected: ENTITY_EXPERIENCE_ORB_PICKUP
   player-death: GHAST_MOAN
   player-kill: ENTITY_EXPERIENCE_ORB_PICKUP
-  countdown: ENTITY_CHICKEN_EGG
+  countdown: BLOCK_NOTE_HAT
   player-joined: ENTITY_CHICKEN_EGG
   player-left: ENTITY_CHICKEN_EGG
 

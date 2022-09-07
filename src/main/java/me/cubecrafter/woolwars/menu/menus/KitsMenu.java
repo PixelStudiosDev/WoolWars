@@ -46,10 +46,10 @@ public class KitsMenu extends Menu {
     @Override
     public Map<Integer, MenuItem> getItems() {
         if (Menus.KITS_MENU_FILLER_ENABLED.getAsBoolean()) {
-            addFiller(ItemBuilder.fromConfig(Menus.KITS_MENU_FILLER.getAsConfigSection()).build(), Menus.KITS_MENU_FILLER_SLOTS.getAsIntegerList());
+            addFiller(ItemBuilder.fromConfig(Menus.KITS_MENU_FILLER.getAsSection()).build(), Menus.KITS_MENU_FILLER_SLOTS.getAsIntegerList());
         }
         Map<Integer, MenuItem> items = new HashMap<>();
-        ConfigurationSection kits = Menus.KITS_MENU_KITS_SECTION.getAsConfigSection();
+        ConfigurationSection kits = Menus.KITS_MENU_KITS_SECTION.getAsSection();
         for (String id : kits.getKeys(false)) {
             Kit kit = ArenaUtil.getKit(id);
             items.put(kits.getInt(id + ".slot"), new MenuItem(generateItem(kit, ItemBuilder.fromConfig(kits.getConfigurationSection(id)).build()), player).addAction(e -> {

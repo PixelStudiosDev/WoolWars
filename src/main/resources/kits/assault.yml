@@ -1,9 +1,13 @@
 displayname: "Assault"
 armor:
-  helmet: false
-  chestplate: false
-  leggings: true
-  boots: true
+  helmet:
+    material: LEATHER_HELMET
+  chestplate:
+    material: LEATHER_CHESTPLATE
+  leggings:
+    material: LEATHER_LEGGINGS
+  boots:
+    material: LEATHER_BOOTS
 items:
   item-1:
     material: WOODEN_SWORD
@@ -32,19 +36,5 @@ items:
     amount: 64
     slot: 6    
 ability:
-  displayname: "&6&lKNOCKBACK TNT"
   type: KNOCKBACK_TNT
-  item:
-    material: BLAZE_POWDER
-    glow: true
-    displayname: "&eKeystone Ability: &6&lKNOCKBACK TNT"
-    lore:
-    - "&7Place a TNT that doesn't deal"
-    - "&7damage, but deals massive"
-    - "&7knockback to enemies."
-    - ""
-    - "&6Press &e&lRight Click &6to activate"
-    - ""
-    - "&7You can only use your keystone"
-    - "&7ability &c&lONCE &7per round."
-    slot: 8
+  slot: 8

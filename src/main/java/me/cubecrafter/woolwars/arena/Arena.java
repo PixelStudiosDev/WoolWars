@@ -20,10 +20,13 @@ import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.PlayerScoreboard;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.VersionUtil;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -109,21 +112,19 @@ public class Arena {
         world.setGameRuleValue("doFireTick", "false");
         world.setGameRuleValue("announceAdvancements", "false");
         world.setGameRuleValue("doWeatherCycle", "false");
+        world.setFullTime(6000);
     }
 
     public void addPlayer(Player player) {
-        PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(player, this);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
         if (SetupSession.isActive(player)) {
-            TextUtil.sendMessage(player, "{prefix}&cYou can't join an arena while you are in setup mode!");
+            TextUtil.sendMessage(player, Messages.ALREADY_IN_SETUP_MODE.getAsString());
             return;
         }
-        if (players.contains(player)) {
+        if (ArenaUtil.getArenaByPlayer(player) != null) {
             TextUtil.sendMessage(player, Messages.ALREADY_IN_ARENA.getAsString());
             return;
         }
-        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING)) {
+        if (gameState != GameState.WAITING && gameState != GameState.STARTING) {
             TextUtil.sendMessage(player, Messages.GAME_ALREADY_STARTED.getAsString());
             return;
         }
@@ -131,6 +132,9 @@ public class Arena {
             TextUtil.sendMessage(player, Messages.ARENA_FULL.getAsString());
             return;
         }
+        PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(player, this);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
         players.add(player);
         player.teleport(lobby);
         player.setGameMode(GameMode.ADVENTURE);
@@ -150,45 +154,42 @@ public class Arena {
                 VersionUtil.hidePlayer(online, player);
             }
         }
-        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsConfigSection()).setTag("leave-item").build();
-        player.getInventory().setItem(Configuration.LEAVE_ITEM.getAsConfigSection().getInt("slot"), leaveItem);
+        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsSection()).setTag("leave-item").build();
+        player.getInventory().setItem(Configuration.LEAVE_ITEM.getAsSection().getInt("slot"), leaveItem);
         TextUtil.sendMessage(players, Messages.PLAYER_JOIN_ARENA.getAsString()
                 .replace("{player}", player.getName())
                 .replace("{current}", String.valueOf(players.size()))
                 .replace("{max}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
         ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_JOINED.getAsString());
-        if (gameState.equals(GameState.WAITING) && getPlayers().size() >= getMinPlayers()) {
+        if (gameState == GameState.WAITING && getPlayers().size() >= getMinPlayers()) {
             setGameState(GameState.STARTING);
         }
     }
 
     public void forceStart() {
-        if (gameState.equals(GameState.WAITING)) setGameState(GameState.STARTING);
+        if (gameState == GameState.WAITING) setGameState(GameState.STARTING);
     }
 
     public void removePlayer(Player player, boolean teleportToLobby) {
         PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
         players.remove(player);
-        Team playerTeam = (Team) getTeamByPlayer(player);
+        Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
-            PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
-            if (scoreboard != null) {
-                scoreboard.removeGamePrefix(playerTeam);
-            }
             playerTeam.removeMember(player);
         }
         player.getInventory().setArmorContents(null);
         player.getInventory().clear();
         player.setFlying(false);
         player.setAllowFlight(false);
+        player.setFireTicks(0);
         player.setFoodLevel(20);
         player.setHealth(20);
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         if (teleportToLobby) ArenaUtil.teleportToLobby(player);
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (players.contains(online)) {
+            if (ArenaUtil.isPlaying(online)) {
                 VersionUtil.hidePlayer(player, online);
                 VersionUtil.hidePlayer(online, player);
             } else {
@@ -200,15 +201,15 @@ public class Arena {
                 .replace("{player}", player.getDisplayName())
                 .replace("{current}", String.valueOf(players.size()))
                 .replace("{max}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam())));
-        if (gameState.equals(GameState.WAITING) || gameState.equals(GameState.STARTING)) {
+        if (gameState == GameState.WAITING || gameState == GameState.STARTING) {
             ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_LEFT.getAsString());
         }
-        if (gameState.equals(GameState.STARTING) && getPlayers().size() < getMinPlayers()) {
+        if (gameState == GameState.STARTING && getPlayers().size() < getMinPlayers()) {
             cancelTasks();
             TextUtil.sendMessage(players, Messages.START_CANCELLED.getAsString());
             setGameState(GameState.WAITING);
         }
-        if (!gameState.equals(GameState.WAITING) && !gameState.equals(GameState.STARTING) && !gameState.equals(GameState.GAME_ENDED) && teams.stream().filter(team -> team.getMembers().size() == 0).count() > teams.size() - 2) {
+        if (gameState != GameState.WAITING && gameState != GameState.STARTING && gameState != GameState.GAME_ENDED && teams.stream().filter(team -> team.getMembers().isEmpty()).count() > teams.size() - 2) {
             cancelTasks();
             setGameState(GameState.GAME_ENDED);
         }
@@ -222,12 +223,13 @@ public class Arena {
             player.getInventory().clear();
             player.setFlying(false);
             player.setAllowFlight(false);
+            player.setFireTicks(0);
             player.setFoodLevel(20);
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             for (Player online : Bukkit.getOnlinePlayers()) {
-                if (players.contains(online)) {
+                if (ArenaUtil.isPlaying(online) && !players.contains(online)) {
                     VersionUtil.hidePlayer(player, online);
                     VersionUtil.hidePlayer(online, player);
                 } else {
@@ -295,10 +297,6 @@ public class Arena {
         return players.stream().filter(player -> !deadPlayers.contains(player)).collect(Collectors.toList());
     }
 
-    public Team getTeamByName(String name) {
-        return teams.stream().filter(team -> team.getName().equals(name)).findAny().orElse(null);
-    }
-
     public Team getTeamByPlayer(Player player) {
         return teams.stream().filter(team -> team.getMembers().contains(player)).findAny().orElse(null);
     }
@@ -317,7 +315,7 @@ public class Arena {
 
     public String getTimerFormatted() {
         int minutes = (timer / 60) % 60;
-        int seconds = (timer) % 60;
+        int seconds = timer % 60;
         return (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 

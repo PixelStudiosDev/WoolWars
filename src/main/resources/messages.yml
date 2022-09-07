@@ -10,16 +10,17 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | MESSAGES                                 |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-prefix: "&cWoolWars &8» "
+prefix: "&8[&cWoolWars&8] "
 general:
   arena-not-found: "{prefix}&cThere are no groups or arenas called like this!"
   no-arenas-available: "{prefix}&cThere are no arenas available!"
-  already-in-arena: "{prefix}&cYou are already in this arena!"
+  already-in-arena: "{prefix}&cYou are already in an arena!"
+  already-in-setup-mode: "{prefix}&cYou can't join an arena while you are in setup mode!"
   game-already-started: "{prefix}&cThe game is already started!"
   arena-full: "{prefix}&cThis game is full!"
   unknown-command: "{prefix}&cUnknown command!"
   only-player-command: "{prefix}&cThis command can be executed only by a player!"
-  no-permission: "{prefix}&cYou don't have the permission to execute this command!"
+  no-permission: "{prefix}&cYou don't have the permission to do this!"
   command-blocked: "{prefix}You can't use this command while you are in game!"
   config-reloaded: "{prefix}&7Config files reloaded!"
 game:
@@ -28,6 +29,7 @@ game:
   start-cancelled: "{prefix}&cWe don't have enough players! Start cancelled!"
   cant-break-block: "{prefix}&cYou can't break this block!"
   cant-place-block: "{prefix}&cYou can't place blocks here!"
+  center-locked: "{prefix}&cCenter is locked!"
   round-time-left-countdown: "{prefix}&c{seconds} &7seconds left in the round!"
   all-players-dead: "{prefix}&cAll players died! Starting a new round!"
   start-countdown: "{prefix}&7The game starts in &a{seconds} &7seconds!"
@@ -51,11 +53,14 @@ game:
     kit-selected: "{prefix}&7You have selected the &b{displayname} &7kit!"
     kit-status-selected: "&cAlready Selected!"
     kit-status-not-selected: "&eClick to Select!"
+    ability-cant-use: "{prefix}&cYou can't use your ability yet!"
+    ability-already-used: "{prefix}&cYou have already used your ability!"
+    ability-use: "{prefix}&aYou used your keystone ability: {name}"
   round-start:
     title: "&a&lROUND START"
     subtitle: "&bRound {round}"
-    countdown-title: "&c{seconds}"
-    countdown-subtitle: "&7Get Ready!"
+    countdown-title: "{seconds}"
+    countdown-subtitle: "&6Get Ready!"
   pre-round:
     title: "&e&lPRE ROUND"
     subtitle: "&7Select your kit!"

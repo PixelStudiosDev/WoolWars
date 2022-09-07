@@ -27,7 +27,6 @@ public class CommandManager implements TabExecutor {
         subCommands.add(new ForceStartCommand());
         subCommands.add(new ReloadCommand());
         subCommands.add(new StatsCommand());
-        subCommands.add(new VersionCommand());
         subCommands.add(new SetLobbyCommand());
         subCommands.add(new SetupCommand());
         PluginCommand command = plugin.getCommand("woolwars");

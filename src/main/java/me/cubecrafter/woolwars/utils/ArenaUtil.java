@@ -69,7 +69,7 @@ public class ArenaUtil {
     }
 
     public List<Kit> getKits() {
-        return new ArrayList<>(WoolWars.getInstance().getKitManager().getKits().values());
+        return new ArrayList<>(WoolWars.getInstance().getKitManager().getKits());
     }
 
     public boolean joinRandomArena(Player player) {

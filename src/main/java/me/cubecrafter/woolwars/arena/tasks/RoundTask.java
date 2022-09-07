@@ -18,7 +18,13 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -31,7 +37,7 @@ public class RoundTask extends ArenaTask {
     private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
 
     public RoundTask(Arena arena) {
-        super(arena);
+        super(arena, Configuration.ACTIVE_ROUND_DURATION.getAsInt());
     }
 
     @Override
@@ -61,7 +67,6 @@ public class RoundTask extends ArenaTask {
                 Bukkit.getPluginManager().callEvent(event);
             }
         }
-        rotatePowerUpsTask.cancel();
         addRoundStats();
     }
 
@@ -69,11 +74,6 @@ public class RoundTask extends ArenaTask {
         roundKills.forEach(arena::addKills);
         roundBrokenBlocks.forEach(arena::addBlocksBroken);
         roundPlacedWool.forEach(arena::addWoolPlaced);
-    }
-
-    @Override
-    public int getDuration() {
-        return Configuration.ACTIVE_ROUND_DURATION.getAsInt();
     }
 
     @Override
@@ -88,8 +88,8 @@ public class RoundTask extends ArenaTask {
         placedWool.get(team).add(block);
     }
 
-    public void removePlacedWool(Team team, Block block) {
-        placedWool.get(team).remove(block);
+    public void removePlacedWool(Block block) {
+        placedWool.values().forEach(blocks -> blocks.remove(block));
     }
 
     public void checkWinners() {
@@ -107,7 +107,6 @@ public class RoundTask extends ArenaTask {
                 Bukkit.getPluginManager().callEvent(event);
             }
             addRoundStats();
-            rotatePowerUpsTask.cancel();
             cancel();
         }
     }
@@ -223,6 +222,12 @@ public class RoundTask extends ArenaTask {
         roundBrokenBlocks.merge(player, 1, Integer::sum);
         PlayerData data = ArenaUtil.getPlayerData(player);
         data.setBlocksBroken(data.getBlocksBroken() + 1);
+    }
+
+    @Override
+    public void cancel() {
+        super.cancel();
+        rotatePowerUpsTask.cancel();
     }
 
 }

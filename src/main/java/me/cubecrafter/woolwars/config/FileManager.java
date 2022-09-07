@@ -18,10 +18,12 @@ public class FileManager {
     private final File messagesFile;
     private final File powerUpsFile;
     private final File menusFile;
+    private final File abilitiesFile;
     @Getter private YamlConfiguration config;
     @Getter private YamlConfiguration messages;
     @Getter private YamlConfiguration powerUps;
     @Getter private YamlConfiguration menus;
+    @Getter private YamlConfiguration abilities;
 
     public FileManager(WoolWars plugin) {
         this.plugin = plugin;
@@ -29,27 +31,21 @@ public class FileManager {
         messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         powerUpsFile = new File(plugin.getDataFolder(), "powerups.yml");
         menusFile = new File(plugin.getDataFolder(), "menus.yml");
-        reload();
+        abilitiesFile = new File(plugin.getDataFolder(), "abilities.yml");
+        load();
     }
 
     private void createFiles() {
         getArenasDir().mkdirs();
         if (new File(plugin.getDataFolder(), "kits").mkdirs()) {
-            List<String> defaultKits = Arrays.asList("archer", "assault", "engineer", "golem", "swordsman", "tank");
-            defaultKits.forEach(kit -> saveResource("kits/" + kit + ".yml", new File(plugin.getDataFolder(), "kits/" + kit + ".yml")));
+            List<String> kits = Arrays.asList("archer", "assault", "engineer", "golem", "swordsman", "tank");
+            kits.forEach(kit -> saveResource("kits/" + kit + ".yml", new File(plugin.getDataFolder(), "kits/" + kit + ".yml")));
         }
-        if (!configFile.exists()) {
-            saveResource("config.yml", configFile);
-        }
-        if (!messagesFile.exists()) {
-            saveResource("messages.yml", messagesFile);
-        }
-        if (!powerUpsFile.exists()) {
-            saveResource("powerups.yml", powerUpsFile);
-        }
-        if (!menusFile.exists()) {
-            saveResource("menus.yml", menusFile);
-        }
+        if (!configFile.exists()) saveResource("config.yml", configFile);
+        if (!messagesFile.exists()) saveResource("messages.yml", messagesFile);
+        if (!powerUpsFile.exists()) saveResource("powerups.yml", powerUpsFile);
+        if (!menusFile.exists()) saveResource("menus.yml", menusFile);
+        if (!abilitiesFile.exists()) saveResource("abilities.yml", abilitiesFile);
     }
 
     private void saveResource(String name, File destination) {
@@ -66,12 +62,13 @@ public class FileManager {
             messages.save(messagesFile);
             powerUps.save(powerUpsFile);
             menus.save(menusFile);
+            abilities.save(abilitiesFile);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    public void reload() {
+    public void load() {
         createFiles();
         config = YamlConfiguration.loadConfiguration(configFile);
         TextUtil.info("File 'config.yml' loaded!");
@@ -81,6 +78,8 @@ public class FileManager {
         TextUtil.info("File 'powerups.yml' loaded!");
         menus = YamlConfiguration.loadConfiguration(menusFile);
         TextUtil.info("File 'menus.yml' loaded!");
+        abilities = YamlConfiguration.loadConfiguration(abilitiesFile);
+        TextUtil.info("File 'abilities.yml' loaded!");
     }
 
     public File[] getArenaFiles() {

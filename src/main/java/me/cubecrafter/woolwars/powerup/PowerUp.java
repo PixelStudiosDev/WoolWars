@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.powerup;
 
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Configuration;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@RequiredArgsConstructor
 public class PowerUp {
 
     private ArmorStand armorStand;
@@ -32,11 +34,6 @@ public class PowerUp {
     private PowerUpData data;
     private int rotation = 0;
     private boolean active = false;
-
-    public PowerUp(Location location, Arena arena) {
-        this.arena = arena;
-        this.location = location;
-    }
 
     public void use(Player player) {
         remove();

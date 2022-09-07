@@ -112,7 +112,7 @@ public enum Configuration {
         return TextUtil.deserializeLocation(getAsString());
     }
 
-    public ConfigurationSection getAsConfigSection() {
+    public ConfigurationSection getAsSection() {
         return WoolWars.getInstance().getFileManager().getConfig().getConfigurationSection(path);
     }
 

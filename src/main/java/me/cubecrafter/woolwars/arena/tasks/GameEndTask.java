@@ -15,21 +15,15 @@ import org.bukkit.potion.PotionEffectType;
 public class GameEndTask extends ArenaTask {
 
     public GameEndTask(Arena arena) {
-        super(arena);
+        super(arena, Configuration.GAME_END_DURATION.getAsInt());
     }
 
     @Override
-    public void execute() {
-    }
+    public void execute() {}
 
     @Override
     public void onEnd() {
         arena.restart();
-    }
-
-    @Override
-    public int getDuration() {
-        return Configuration.GAME_END_DURATION.getAsInt();
     }
 
     @Override
@@ -50,8 +44,8 @@ public class GameEndTask extends ArenaTask {
                 VersionUtil.showPlayer(player, dead);
             }
         }
-        ItemStack playAgainItem = ItemBuilder.fromConfig(Configuration.PLAY_AGAIN_ITEM.getAsConfigSection()).setTag("playagain-item").build();
-        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsConfigSection()).setTag("leave-item").build();
+        ItemStack playAgainItem = ItemBuilder.fromConfig(Configuration.PLAY_AGAIN_ITEM.getAsSection()).setTag("playagain-item").build();
+        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsSection()).setTag("leave-item").build();
         for (Player player : arena.getPlayers()) {
             player.getInventory().setItem(7, playAgainItem);
             player.getInventory().setItem(8, leaveItem);

@@ -1,12 +1,13 @@
 package me.cubecrafter.woolwars.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
-import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.config.Abilities;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
+import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.menu.menus.KitsMenu;
 import me.cubecrafter.woolwars.menu.menus.TeleporterMenu;
 import me.cubecrafter.woolwars.powerup.PowerUp;
@@ -26,19 +27,14 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -48,15 +44,15 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent e) {
         if (ArenaUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInside(e.getLocation()))) {
-            if (e.getEntity().getType().equals(EntityType.ARMOR_STAND)) return;
+            if (e.getEntityType() == EntityType.ARMOR_STAND) return;
             e.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onExplosion(EntityExplodeEvent e) {
+    public void onEntityExplode(EntityExplodeEvent e) {
         if (ArenaUtil.getArenas().stream().anyMatch(arena -> arena.getArenaRegion().isInsideWithMarge(e.getLocation(), 10))) {
-            e.blockList().clear();
+            e.setCancelled(true);
         }
     }
 
@@ -80,29 +76,30 @@ public class ArenaListener implements Listener {
             e.setCancelled(true);
             return;
         }
-        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
-            player.setFireTicks(0);
+        if (arena.getGameState() != GameState.ACTIVE_ROUND || arena.getDeadPlayers().contains(player)) {
+            if (e.getCause() == EntityDamageEvent.DamageCause.FIRE || e.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK) {
+                player.setFireTicks(0);
+            }
             e.setCancelled(true);
             return;
         }
         if (e instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-            if (event.getDamager() instanceof TNTPrimed) {
-                TNTPrimed tnt = (TNTPrimed) event.getDamager();
+            EntityDamageByEntityEvent damageByEntityEvent = (EntityDamageByEntityEvent) e;
+            if (damageByEntityEvent.getDamager() instanceof TNTPrimed) {
+                TNTPrimed tnt = (TNTPrimed) damageByEntityEvent.getDamager();
                 if (tnt.hasMetadata("woolwars")) {
-                    player.setVelocity(player.getLocation().toVector().subtract(tnt.getLocation().toVector()).normalize().multiply(1.5));
+                    player.setVelocity(player.getLocation().toVector().subtract(tnt.getLocation().toVector()).normalize().multiply(Abilities.KNOCKBACK_TNT.getAsSection().getDouble("knockback-power")));
                     e.setCancelled(true);
                     return;
                 }
-            } else if (event.getDamager() instanceof Player) {
-                Player damager = (Player) event.getDamager();
+            } else if (damageByEntityEvent.getDamager() instanceof Player) {
+                Player damager = (Player) damageByEntityEvent.getDamager();
                 if (arena.getDeadPlayers().contains(damager) || arena.isTeammate(player, damager)) {
                     e.setCancelled(true);
                     return;
                 }
-            } else if (event.getDamager() instanceof Projectile) {
-                Projectile projectile = (Projectile) event.getDamager();
-                projectile.remove();
+            } else if (damageByEntityEvent.getDamager() instanceof Projectile) {
+                Projectile projectile = (Projectile) damageByEntityEvent.getDamager();
                 if (projectile.getShooter() instanceof Player) {
                     Player damager = (Player) projectile.getShooter();
                     if (arena.isTeammate(player, damager)) {
@@ -195,12 +192,11 @@ public class ArenaListener implements Listener {
         for (Player dead : arena.getDeadPlayers()) {
             VersionUtil.showPlayer(player, dead);
         }
-        ItemStack teleporter = ItemBuilder.fromConfig(Configuration.TELEPORTER_ITEM.getAsConfigSection()).setTag("teleport-item").build();
-        player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsConfigSection().getInt("slot"), teleporter);
+        ItemStack teleporter = ItemBuilder.fromConfig(Configuration.TELEPORTER_ITEM.getAsSection()).setTag("teleport-item").build();
+        player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsSection().getInt("slot"), teleporter);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 0, false, false));
-        if (arena.getAlivePlayers().size() == 0) {
+        if (arena.getAlivePlayers().isEmpty()) {
             TextUtil.sendMessage(arena.getPlayers(),  Messages.ALL_PLAYERS_DEAD.getAsString());
-            arena.getRoundTask().getRotatePowerUpsTask().cancel();
             arena.getRoundTask().cancel();
             arena.setGameState(GameState.ROUND_OVER);
         }
@@ -211,7 +207,7 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             for (String material : Configuration.DISABLE_INTERACTION_BLOCKS.getAsStringList()) {
                 if (e.getClickedBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
                     e.setCancelled(true);
@@ -226,7 +222,7 @@ public class ArenaListener implements Listener {
                 return;
             }
         }
-        if (!e.getAction().equals(Action.RIGHT_CLICK_AIR) && !e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         String tag = ItemBuilder.getTag(e.getItem());
         if (tag == null) return;
         switch (tag) {
@@ -245,7 +241,7 @@ public class ArenaListener implements Listener {
             case "playagain-item":
                 e.setCancelled(true);
                 if (!player.hasPermission("woolwars.playagain")) {
-                    TextUtil.sendMessage(player, "&cYou don't have the permission to play again!");
+                    TextUtil.sendMessage(player, Messages.NO_PERMISSION.getAsString());
                     break;
                 }
                 arena.removePlayer(player, false);
@@ -258,15 +254,14 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (ArenaUtil.getArenaByPlayer(e.getPlayer()) != null) {
+        if (ArenaUtil.isPlaying(e.getPlayer())) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onFoodChange(FoodLevelChangeEvent e) {
-        Player player = (Player) e.getEntity();
-        if (ArenaUtil.isPlaying(player)) {
+        if (ArenaUtil.isPlaying((Player) e.getEntity())) {
             e.setCancelled(true);
         }
     }
@@ -277,7 +272,7 @@ public class ArenaListener implements Listener {
         Player player = (Player) e.getEntity();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND)) {
+        if (arena.getGameState() != GameState.ACTIVE_ROUND) {
             e.setCancelled(true);
         }
     }
@@ -301,7 +296,7 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (arena.getGameState().equals(GameState.PRE_ROUND)) {
+        if (arena.getGameState() == GameState.PRE_ROUND) {
             new KitsMenu(player, arena).openMenu();
         }
         if (!arena.getDeadPlayers().contains(player)) return;
@@ -316,8 +311,9 @@ public class ArenaListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (arena.getGameState().equals(GameState.ACTIVE_ROUND)) return;
-        e.setCancelled(true);
+        if (arena.getGameState() != GameState.ACTIVE_ROUND) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -349,12 +345,12 @@ public class ArenaListener implements Listener {
                 }
             }
         }
-        if (arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)) {
+        if (arena.getGameState() == GameState.WAITING || arena.getGameState() == GameState.STARTING) {
             if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
                 player.teleport(arena.getLobby());
                 ArenaUtil.playSound(player, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
             }
-        } else if (arena.getGameState().equals(GameState.ACTIVE_ROUND) && !arena.getDeadPlayers().contains(player)) {
+        } else if (arena.getGameState() == GameState.ACTIVE_ROUND && !arena.getDeadPlayers().contains(player)) {
             Block top = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
             Block bottom = top.getRelative(BlockFace.DOWN);
             if (top.getType().equals(XMaterial.matchXMaterial(Configuration.JUMP_PADS_TOP_BLOCK.getAsString()).get().parseMaterial())
@@ -372,6 +368,11 @@ public class ArenaListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onWeatherChange(WeatherChangeEvent e) {
+        e.setCancelled(true);
     }
 
 }

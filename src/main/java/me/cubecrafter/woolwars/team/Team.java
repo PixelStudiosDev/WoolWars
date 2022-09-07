@@ -2,6 +2,7 @@ package me.cubecrafter.woolwars.team;
 
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@RequiredArgsConstructor
 public class Team {
 
     private final List<Player> members = new ArrayList<>();
@@ -26,20 +28,15 @@ public class Team {
     private final Cuboid base;
     private int points;
 
-    public Team(String name, Arena arena, Location spawnLocation, TeamColor color, Cuboid barrier, Cuboid base) {
-        this.name = name;
-        this.arena = arena;
-        this.spawnLocation = spawnLocation;
-        this.teamColor = color;
-        this.barrier = barrier;
-        this.base = base;
-    }
-
     public void addMember(Player player) {
         members.add(player);
     }
 
     public void removeMember(Player player) {
+        PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
+        if (scoreboard != null) {
+            scoreboard.removeGamePrefix(this);
+        }
         members.remove(player);
     }
 

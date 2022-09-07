@@ -28,18 +28,18 @@ public class StatsMenu extends Menu {
     @Override
     public Map<Integer, MenuItem> getItems() {
         if (Menus.STATS_MENU_FILLER_ENABLED.getAsBoolean()) {
-            addFiller(ItemBuilder.fromConfig(Menus.STATS_MENU_FILLER.getAsConfigSection()).build(), Menus.STATS_MENU_FILLER_SLOTS.getAsIntegerList());
+            addFiller(ItemBuilder.fromConfig(Menus.STATS_MENU_FILLER.getAsSection()).build(), Menus.STATS_MENU_FILLER_SLOTS.getAsIntegerList());
         }
         Map<Integer, MenuItem> items = new HashMap<>();
-        items.put(Menus.STATS_MENU_WINS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WINS_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_LOSSES_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_LOSSES_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_GAMES_PLAYED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_GAMES_PLAYED_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_KILLS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_KILLS_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_DEATHS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_DEATHS_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_WOOL_PLACED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WOOL_PLACED_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM.getAsConfigSection()).build(), player));
-        items.put(Menus.STATS_MENU_CLOSE_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_CLOSE_ITEM.getAsConfigSection()).build(), player)
+        items.put(Menus.STATS_MENU_WINS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WINS_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_LOSSES_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_LOSSES_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_GAMES_PLAYED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_GAMES_PLAYED_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_KILLS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_KILLS_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_DEATHS_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_DEATHS_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_WOOL_PLACED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WOOL_PLACED_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_CLOSE_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_CLOSE_ITEM.getAsSection()).build(), player)
                 .addAction((e) -> closeMenu()));
         return items;
     }

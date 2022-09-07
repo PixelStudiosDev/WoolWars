@@ -1,9 +1,13 @@
 displayname: "Archer"
 armor:
-  helmet: true
-  chestplate: false
-  leggings: false
-  boots: true
+  helmet:
+    material: LEATHER_HELMET
+  chestplate:
+    material: LEATHER_CHESTPLATE
+  leggings:
+    material: LEATHER_LEGGINGS
+  boots:
+    material: LEATHER_BOOTS
 items:
   item-1:
     material: BOW
@@ -26,17 +30,5 @@ items:
     amount: 32
     slot: 5
 ability:
-  displayname: "&6&lSTEP BACK"
   type: STEP_BACK
-  item:
-    material: BLAZE_POWDER
-    glow: true
-    displayname: "&eKeystone Ability: &6&lSTEP BACK"
-    lore:
-    - "&7Push yourself back instantly!"
-    - ""
-    - "&6Press &e&lRight Click &6to activate"
-    - ""
-    - "&7You can only use your keystone"
-    - "&7ability &c&lONCE &7per round."
-    slot: 8
+  slot: 8

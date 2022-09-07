@@ -8,21 +8,15 @@ import me.cubecrafter.woolwars.powerup.PowerUp;
 public class RoundOverTask extends ArenaTask {
 
     public RoundOverTask(Arena arena) {
-        super(arena);
+        super(arena, Configuration.ROUND_OVER_DURATION.getAsInt());
     }
 
     @Override
-    public void execute() {
-    }
+    public void execute() {}
 
     @Override
     public void onEnd() {
         arena.setGameState(GameState.PRE_ROUND);
-    }
-
-    @Override
-    public int getDuration() {
-        return Configuration.ROUND_OVER_DURATION.getAsInt();
     }
 
     @Override

@@ -2,8 +2,6 @@ package me.cubecrafter.woolwars.config;
 
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -14,6 +12,7 @@ public enum Messages {
     ARENA_NOT_FOUND("general.arena-not-found"),
     NO_ARENAS_AVAILABLE("general.no-arenas-available"),
     ALREADY_IN_ARENA("general.already-in-arena"),
+    ALREADY_IN_SETUP_MODE("general.already-in-setup-mode"),
     GAME_ALREADY_STARTED("general.game-already-started"),
     ARENA_FULL("general.arena-full"),
     PLAYER_JOIN_ARENA("game.player-join"),
@@ -24,6 +23,7 @@ public enum Messages {
     NO_PERMISSION("general.no-permission"),
     CANT_BREAK_BLOCK("game.cant-break-block"),
     CANT_PLACE_BLOCK("game.cant-place-block"),
+    CENTER_LOCKED("game.center-locked"),
     COMMAND_BLOCKED("general.command-blocked"),
     DEATH_TITLE("game.player-death.title"),
     DEATH_SUBTITLE("game.player-death.subtitle"),
@@ -37,6 +37,9 @@ public enum Messages {
     KIT_SELECTED("game.kits.kit-selected"),
     KIT_STATUS_SELECTED("game.kits.kit-status-selected"),
     KIT_STATUS_NOT_SELECTED("game.kits.kit-status-not-selected"),
+    ABILITY_CANT_USE("game.kits.ability-cant-use"),
+    ABILITY_ALREADY_USED("game.kits.ability-already-used"),
+    ABILITY_USE("game.kits.ability-use"),
     TIME_LEFT_COUNTDOWN("game.round-time-left-countdown"),
     TEAM_WON_FORMAT("game.game-end.stats-message.team-winner-format"),
     TEAM_LOST_FORMAT("game.game-end.stats-message.team-loser-format"),
@@ -88,19 +91,6 @@ public enum Messages {
 
     public List<String> getAsStringList() {
         return WoolWars.getInstance().getFileManager().getMessages().getStringList(path);
-    }
-
-    public void send(Player player) {
-        if (WoolWars.getInstance().getFileManager().getMessages().isString(path)) {
-            TextUtil.sendMessage(player, WoolWars.getInstance().getFileManager().getMessages().getString(path));
-        } else if (WoolWars.getInstance().getFileManager().getMessages().isList(path)) {
-            List<String> list = WoolWars.getInstance().getFileManager().getMessages().getStringList(path);
-            list.forEach(s -> TextUtil.sendMessage(player, s));
-        }
-    }
-
-    public void send(List<Player> players) {
-        players.forEach(this::send);
     }
 
 }

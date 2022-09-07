@@ -13,14 +13,16 @@ import java.util.Map;
 public class ArenaManager {
 
     private final Map<String, Arena> arenas = new HashMap<>();
+    private final WoolWars plugin;
 
-    public ArenaManager() {
+    public ArenaManager(WoolWars plugin) {
+        this.plugin = plugin;
         loadArenas();
     }
 
     private void loadArenas() {
         int loaded = 0;
-        for (File file : WoolWars.getInstance().getFileManager().getArenaFiles()) {
+        for (File file : plugin.getFileManager().getArenaFiles()) {
             registerArena(getArenaFromFile(file));
             loaded++;
         }

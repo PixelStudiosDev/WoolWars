@@ -13,13 +13,11 @@ import org.bukkit.Bukkit;
 public class StartingTask extends ArenaTask {
 
     public StartingTask(Arena arena) {
-        super(arena);
+        super(arena, Configuration.STARTING_COUNTDOWN.getAsInt());
     }
 
     @Override
-    public void onStart() {
-
-    }
+    public void onStart() {}
 
     @Override
     public void execute() {
@@ -33,15 +31,10 @@ public class StartingTask extends ArenaTask {
     public void onEnd() {
         GameStartEvent event = new GameStartEvent(arena);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        Messages.GAME_START_MESSAGE.send(arena.getPlayers());
+        TextUtil.sendMessage(arena.getPlayers(), Messages.GAME_START_MESSAGE.getAsStringList());
         arena.assignTeams();
         arena.getTeams().forEach(Team::applyNameTags);
         arena.setGameState(GameState.PRE_ROUND);
-    }
-
-    @Override
-    public int getDuration() {
-        return Configuration.STARTING_COUNTDOWN.getAsInt();
     }
 
 }

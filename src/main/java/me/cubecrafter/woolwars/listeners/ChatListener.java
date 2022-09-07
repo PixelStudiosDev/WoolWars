@@ -47,7 +47,7 @@ public class ChatListener implements Listener {
                         .replace("{message}", e.getMessage()), player));
             }
         } else {
-            setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(player)).collect(Collectors.toList()));
+            setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(p)).collect(Collectors.toList()));
             e.setFormat(TextUtil.format(Configuration.LOBBY_CHAT_FORMAT.getAsString()
                     .replace("{player}", player.getName())
                     .replace("{message}", e.getMessage()), player));

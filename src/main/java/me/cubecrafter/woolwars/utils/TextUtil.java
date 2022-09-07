@@ -7,7 +7,6 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.database.PlayerData;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -25,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 @UtilityClass
 public class TextUtil {
@@ -41,8 +39,8 @@ public class TextUtil {
         return lines;
     }
 
-    public TextComponent buildTextComponent(String msg, String hover, String click, ClickEvent.Action clickAction){
-        TextComponent component = new TextComponent(color(msg));
+    public TextComponent buildTextComponent(String text, String hover, String click, ClickEvent.Action clickAction){
+        TextComponent component = new TextComponent(color(text));
         if (hover != null) {
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(color(hover)).create()));
         }
@@ -81,7 +79,7 @@ public class TextUtil {
                 .replace("{displayname}", arena.getDisplayName())
                 .replace("{round}", String.valueOf(arena.getRound()))
                 .replace("{group}", arena.getGroup())
-                .replace("{state}", getStateName(arena.getGameState()))
+                .replace("{state}", arena.getGameState().getName())
                 .replace("{win_points}", String.valueOf(arena.getWinPoints()))
                 .replace("{players}", String.valueOf(arena.getPlayers().size()))
                 .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
@@ -152,6 +150,10 @@ public class TextUtil {
         players.forEach(player -> sendMessage(player, message));
     }
 
+    public void sendMessage(List<Player> players, List<String> messages) {
+        players.forEach(player -> sendMessage(player, messages));
+    }
+
     public void sendTitle(Player player, int seconds, String title, String subtitle) {
         Titles.sendTitle(player, 0, seconds * 20, 0, format(title, player), format(subtitle, player));
     }
@@ -168,10 +170,6 @@ public class TextUtil {
         players.forEach(player -> sendActionBar(player, message));
     }
 
-    public void sendActionBarWhile(Player player, String message, Callable<Boolean> condition) {
-        ActionBar.sendActionBarWhile(WoolWars.getInstance(), player, format(message, player), condition);
-    }
-
     public String getCurrentDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
         return formatter.format(LocalDateTime.now());
@@ -182,7 +180,7 @@ public class TextUtil {
         PotionEffectType type = XPotion.matchXPotion(effect[0]).get().getPotionEffectType();
         int duration = Integer.parseInt(effect[1]) * 20;
         int amplifier = Integer.parseInt(effect[2]);
-        return new PotionEffect(type, duration, amplifier, false, false);
+        return new PotionEffect(type, duration, amplifier);
     }
 
     public String getCenteredMessage(String message) {
@@ -213,24 +211,6 @@ public class TextUtil {
             compensated += spaceLength;
         }
         return sb + message;
-    }
-
-    public String getStateName(GameState state) {
-        switch (state) {
-            case WAITING:
-                return Messages.GAME_STATE_WAITING.getAsString();
-            case STARTING:
-                return Messages.GAME_STATE_STARTING.getAsString();
-            case PRE_ROUND:
-                return Messages.GAME_STATE_PRE_ROUND.getAsString();
-            case ACTIVE_ROUND:
-                return Messages.GAME_STATE_ACTIVE_ROUND.getAsString();
-            case ROUND_OVER:
-                return Messages.GAME_STATE_ROUND_OVER.getAsString();
-            case GAME_ENDED:
-                return Messages.GAME_STATE_GAME_ENDED.getAsString();
-        }
-        return null;
     }
 
 }

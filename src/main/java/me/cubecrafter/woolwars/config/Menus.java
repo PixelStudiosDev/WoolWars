@@ -85,7 +85,7 @@ public enum Menus {
         return WoolWars.getInstance().getFileManager().getMenus().getBoolean(path);
     }
 
-    public ConfigurationSection getAsConfigSection() {
+    public ConfigurationSection getAsSection() {
         return WoolWars.getInstance().getFileManager().getMenus().getConfigurationSection(path);
     }
 

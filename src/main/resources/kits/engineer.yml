@@ -1,9 +1,13 @@
 displayname: "Engineer"
 armor:
-  helmet: true
-  chestplate: true
-  leggings: true
-  boots: true
+  helmet:
+    material: LEATHER_HELMET
+  chestplate:
+    material: LEATHER_CHESTPLATE
+  leggings:
+    material: LEATHER_LEGGINGS
+  boots:
+    material: LEATHER_BOOTS
 items:
   item-1:
     material: STONE_SWORD
@@ -30,19 +34,5 @@ items:
     amount: 64
     slot: 6    
 ability:
-  displayname: "&6&lHACK"
   type: HACK
-  item:
-    material: BLAZE_POWDER
-    glow: true
-    displayname: "&eKeystone Ability: &6&lHACK"  
-    lore: 
-    - "&7Disable players from placing or"
-    - "&7breaking middle blocks for 5"
-    - "&7seconds."
-    - ""
-    - "&6Press &e&lRight Click &6to activate"
-    - ""
-    - "&7You can only use your keystone"
-    - "&7ability &c&lONCE &7per round."
-    slot: 8
+  slot: 8

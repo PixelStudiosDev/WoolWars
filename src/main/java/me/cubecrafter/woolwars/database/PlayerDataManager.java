@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class PlayerDataManager implements Listener {
 
-    private final Database database = WoolWars.getInstance().getSQLDatabase();
+    private final Database database = WoolWars.getInstance().getStorage();
 
     public PlayerDataManager() {
         WoolWars.getInstance().getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());

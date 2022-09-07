@@ -9,7 +9,13 @@ import me.cubecrafter.woolwars.database.Database;
 import me.cubecrafter.woolwars.database.PlayerDataManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.kits.KitManager;
-import me.cubecrafter.woolwars.listeners.*;
+import me.cubecrafter.woolwars.listeners.ArenaListener;
+import me.cubecrafter.woolwars.listeners.ChatListener;
+import me.cubecrafter.woolwars.listeners.InventoryListener;
+import me.cubecrafter.woolwars.listeners.JoinQuitListener;
+import me.cubecrafter.woolwars.listeners.RewardsListener;
+import me.cubecrafter.woolwars.listeners.ScoreboardHandler;
+import me.cubecrafter.woolwars.listeners.WoolListener;
 import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bstats.bukkit.Metrics;
@@ -24,7 +30,7 @@ public final class WoolWars extends JavaPlugin {
     private ArenaManager arenaManager;
     private FileManager fileManager;
     private CommandManager commandManager;
-    private Database SQLDatabase;
+    private Database storage;
     private KitManager kitManager;
     private ScoreboardHandler scoreboardHandler;
     private PlayerDataManager playerDataManager;
@@ -43,20 +49,17 @@ public final class WoolWars extends JavaPlugin {
         TextUtil.info("Running on: " + getServer().getVersion());
         TextUtil.info("Java Version: " + System.getProperty("java.version"));
         fileManager = new FileManager(this);
-        registerHooks();
-        SQLDatabase = new Database();
-        arenaManager = new ArenaManager();
+        storage = new Database();
+        arenaManager = new ArenaManager(this);
         commandManager = new CommandManager(this);
         playerDataManager = new PlayerDataManager();
         scoreboardHandler = new ScoreboardHandler();
         powerupManager = new PowerUpManager();
-        kitManager = new KitManager();
-        Arrays.asList(new InventoryListener(),
-                        new ArenaListener(),
-                        new WoolListener(),
-                        new JoinQuitListener(this),
-                        new ChatListener())
+        kitManager = new KitManager(this);
+        kitManager.load();
+        Arrays.asList(new InventoryListener(), new ArenaListener(), new WoolListener(), new JoinQuitListener(this), new ChatListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
+        registerHooks();
         if (Configuration.REWARD_COMMANDS_ENABLED.getAsBoolean()) {
             getServer().getPluginManager().registerEvents(new RewardsListener(), this);
         }
@@ -67,7 +70,7 @@ public final class WoolWars extends JavaPlugin {
     @Override
     public void onDisable() {
         playerDataManager.forceSave();
-        SQLDatabase.close();
+        storage.close();
         arenaManager.disableArenas();
         scoreboardHandler.disable();
         getServer().getScheduler().cancelTasks(this);

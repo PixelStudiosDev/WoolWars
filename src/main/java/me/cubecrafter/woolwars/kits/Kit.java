@@ -1,16 +1,21 @@
 package me.cubecrafter.woolwars.kits;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.Messages;
+import me.cubecrafter.woolwars.kits.ability.Ability;
 import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -18,21 +23,26 @@ public class Kit {
 
     private final String id;
     private final String displayName;
-    private final boolean helmetEnabled, chestplateEnabled, leggingsEnabled, bootsEnabled;
+    private final ItemStack[] armor = new ItemStack[4];
     private final Map<Integer, ItemStack> contents = new HashMap<>();
     private final Ability ability;
+    private final int abilitySlot;
 
     public Kit(String id, YamlConfiguration kitConfig) {
         this.id = id;
         this.displayName = TextUtil.color(kitConfig.getString("displayname"));
-        this.helmetEnabled = kitConfig.getBoolean("armor.helmet");
-        this.chestplateEnabled = kitConfig.getBoolean("armor.chestplate");
-        this.leggingsEnabled = kitConfig.getBoolean("armor.leggings");
-        this.bootsEnabled = kitConfig.getBoolean("armor.boots");
-        this.ability = new Ability(this, kitConfig);
+        this.ability = WoolWars.getInstance().getKitManager().getAbility(kitConfig.getString("ability.type"));
+        this.abilitySlot = kitConfig.getInt("ability.slot");
         for (String section : kitConfig.getConfigurationSection("items").getKeys(false)) {
             ItemStack item = ItemBuilder.fromConfig(kitConfig.getConfigurationSection("items." + section)).setUnbreakable(true).build();
             contents.put(kitConfig.getInt("items." + section + ".slot"), item);
+        }
+        List<String> armorParts = Arrays.asList("boots", "leggings", "chestplate", "helmet");
+        for (int i = 0; i < armorParts.size(); i++) {
+            String part = armorParts.get(i);
+            ConfigurationSection section = kitConfig.getConfigurationSection("armor." + part);
+            if (section == null) continue;
+            armor[i] = ItemBuilder.fromConfig(section).setUnbreakable(true).build();
         }
     }
 
@@ -41,10 +51,14 @@ public class Kit {
         player.getInventory().setArmorContents(null);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         TextUtil.sendMessage(player, Messages.KIT_SELECTED.getAsString().replace("{displayname}", displayName));
-        if (helmetEnabled) player.getInventory().setHelmet(new ItemBuilder("LEATHER_HELMET").setColor(team.getTeamColor().getColor()).build());
-        if (chestplateEnabled) player.getInventory().setChestplate(new ItemBuilder("LEATHER_CHESTPLATE").setColor(team.getTeamColor().getColor()).build());
-        if (leggingsEnabled) player.getInventory().setLeggings(new ItemBuilder("LEATHER_LEGGINGS").setColor(team.getTeamColor().getColor()).build());
-        if (bootsEnabled) player.getInventory().setBoots(new ItemBuilder("LEATHER_BOOTS").setColor(team.getTeamColor().getColor()).build());
+        for (int i = 0; i < armor.length; i++) {
+            if (armor[i] == null) continue;
+            ItemStack original = armor[i];
+            if (original.getType().toString().startsWith("LEATHER_")) {
+                original = new ItemBuilder(original).setColor(team.getTeamColor().getColor()).build();
+            }
+            player.getInventory().setItem(36 + i, original);
+        }
         for (Map.Entry<Integer, ItemStack> entry : contents.entrySet()) {
             if (entry.getValue().getType().toString().contains("WOOL")) {
                 ItemStack oldWool = entry.getValue();
@@ -55,7 +69,7 @@ public class Kit {
                 player.getInventory().setItem(entry.getKey(), entry.getValue());
             }
         }
-        player.getInventory().setItem(ability.getItemSlot(), ability.getItem());
+        player.getInventory().setItem(abilitySlot, ability.getItem());
     }
 
 }

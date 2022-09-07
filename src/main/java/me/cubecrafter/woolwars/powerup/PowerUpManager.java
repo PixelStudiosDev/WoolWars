@@ -9,18 +9,17 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PowerUpManager {
 
     private final List<PowerUpData> powerUps = new ArrayList<>();
-    private final Random random = new Random();
 
     public PowerUpManager() {
-        loadPowerups();
+        loadPowerUps();
     }
 
-    private void loadPowerups() {
+    private void loadPowerUps() {
         YamlConfiguration config = WoolWars.getInstance().getFileManager().getPowerUps();
         int loaded = 0;
         for (String id : config.getKeys(false)) {
@@ -49,11 +48,11 @@ public class PowerUpManager {
 
     public void reload() {
         powerUps.clear();
-        loadPowerups();
+        loadPowerUps();
     }
 
     public PowerUpData getRandom() {
-        return powerUps.get(random.nextInt(powerUps.size()));
+        return powerUps.get(ThreadLocalRandom.current().nextInt(powerUps.size()));
     }
 
 }

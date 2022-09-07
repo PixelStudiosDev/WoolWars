@@ -1,9 +1,8 @@
 package me.cubecrafter.woolwars.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
-import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.Team;
@@ -16,9 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.List;
 
 public class WoolListener implements Listener {
 
@@ -26,27 +22,26 @@ public class WoolListener implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
         if (!ArenaUtil.isPlaying(player)) return;
+        Block block = e.getBlock();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || arena.getDeadPlayers().contains(player)) {
             e.setCancelled(true);
             TextUtil.sendMessage(player, Messages.CANT_BREAK_BLOCK.getAsString());
-        } else if (arena.getCenter().isInside(e.getBlock().getLocation())) {
+        } else if (arena.getCenter().isInside(block.getLocation())) {
             if (arena.isCenterLocked()) {
-                TextUtil.sendMessage(player, "&cCenter is locked!");
+                TextUtil.sendMessage(player, Messages.CENTER_LOCKED.getAsString());
                 e.setCancelled(true);
                 return;
             }
-            for (List<Block> blocks : arena.getRoundTask().getPlacedWool().values()) {
-                blocks.remove(e.getBlock());
-            }
-            e.getBlock().setType(Material.AIR);
+            arena.getRoundTask().removePlacedWool(block);
+            block.setType(Material.AIR);
             arena.getRoundTask().addBrokenBlock(player);
-        } else if (!arena.getPlacedBlocks().contains(e.getBlock())) {
+        } else if (!arena.getPlacedBlocks().contains(block)) {
             e.setCancelled(true);
             TextUtil.sendMessage(player, Messages.CANT_BREAK_BLOCK.getAsString());
         } else {
-            arena.getPlacedBlocks().remove(e.getBlock());
-            e.getBlock().setType(Material.AIR);
+            arena.getPlacedBlocks().remove(block);
+            block.setType(Material.AIR);
         }
     }
 
@@ -55,26 +50,26 @@ public class WoolListener implements Listener {
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(e.getBlock().getLocation())) {
+        Block block = e.getBlock();
+        if (!arena.getGameState().equals(GameState.ACTIVE_ROUND) || !arena.getArenaRegion().isInside(block.getLocation())) {
             e.setCancelled(true);
             TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
             return;
         }
-        if (!ArenaUtil.isBlockInTeamBase(e.getBlock(), arena)) {
-            if (e.getBlockAgainst().getType().toString().contains("LAVA") || e.getBlockAgainst().getType().toString().contains("WATER")) {
+        if (!ArenaUtil.isBlockInTeamBase(block, arena)) {
+            if (block.getType().toString().contains("LAVA") || block.getType().toString().contains("WATER")) {
                 e.setCancelled(true);
                 TextUtil.sendMessage(player, Messages.CANT_PLACE_BLOCK.getAsString());
                 return;
             }
             if (arena.getCenter().isInside(e.getBlock().getLocation())) {
                 if (arena.isCenterLocked()) {
-                    TextUtil.sendMessage(player, "&cCenter is locked!");
+                    TextUtil.sendMessage(player, Messages.CENTER_LOCKED.getAsString());
                     e.setCancelled(true);
                     return;
                 }
-                if (e.getBlock().getType().toString().endsWith("WOOL")) {
+                if (block.getType().toString().endsWith("WOOL")) {
                     Team team = arena.getTeamByPlayer(player);
-                    e.getBlock().setMetadata("woolwars", new FixedMetadataValue(WoolWars.getInstance(), team.getName()));
                     arena.getRoundTask().addPlacedWool(team, e.getBlock());
                     arena.getRoundTask().addPlacedWool(player);
                     arena.getRoundTask().checkWinners();
@@ -82,8 +77,8 @@ public class WoolListener implements Listener {
                 return;
             }
             for (String material : Configuration.PLACEABLE_BLOCKS.getAsStringList()) {
-                if (e.getBlock().getType().equals(XMaterial.matchXMaterial(material).get().parseMaterial())) {
-                    arena.getPlacedBlocks().add(e.getBlock());
+                if (block.getType() == XMaterial.matchXMaterial(material).get().parseMaterial()) {
+                    arena.getPlacedBlocks().add(block);
                     return;
                 }
             }

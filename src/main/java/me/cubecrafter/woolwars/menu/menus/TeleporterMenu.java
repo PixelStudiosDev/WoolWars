@@ -39,7 +39,7 @@ public class TeleporterMenu extends Menu {
         Map<Integer, MenuItem> items = new HashMap<>();
         for (int i = 0; i < arena.getAlivePlayers().size(); i++) {
             Player alive = arena.getAlivePlayers().get(i);
-            items.put(i, new MenuItem(generateItem(alive, ItemBuilder.fromConfig(Menus.TELEPORTER_MENU_PLAYER_ITEM.getAsConfigSection()).build()), player).addAction(e -> {
+            items.put(i, new MenuItem(generateItem(alive, ItemBuilder.fromConfig(Menus.TELEPORTER_MENU_PLAYER_ITEM.getAsSection()).build()), player).addAction(e -> {
                 closeMenu();
                 player.teleport(alive);
             }, ClickType.LEFT, ClickType.SHIFT_LEFT).addAction(e -> {

@@ -5,7 +5,6 @@ import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XPotion;
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -30,9 +29,9 @@ public class ItemBuilder {
         if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
             legacySplashPotion = true;
             item = XMaterial.POTION.parseItem();
-            return;
+        } else {
+            item = XMaterial.matchXMaterial(material).get().parseItem();
         }
-        item = XMaterial.matchXMaterial(material).get().parseItem();
     }
 
     public ItemBuilder(ItemStack item) {
@@ -61,20 +60,16 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setGlow(boolean glow) {
-        ItemMeta meta = item.getItemMeta();
         if (glow) {
+            ItemMeta meta = item.getItemMeta();
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        } else {
-            meta.removeEnchant(Enchantment.DURABILITY);
-            meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
         }
-        item.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder setTexture(String identifier) {
-        if (identifier == null) return this;
         ItemMeta meta = item.getItemMeta();
         if (!(meta instanceof SkullMeta)) return this;
         item.setItemMeta(SkullUtils.applySkin(meta, identifier));

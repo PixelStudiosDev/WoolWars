@@ -8,7 +8,6 @@ import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.kits.Ability;
 import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.powerup.PowerUp;
@@ -19,12 +18,14 @@ import me.cubecrafter.woolwars.utils.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class PreRoundTask extends ArenaTask {
 
     public PreRoundTask(Arena arena) {
-        super(arena);
+        super(arena, Configuration.PRE_ROUND_DURATION.getAsInt());
     }
 
     @Override
@@ -35,7 +36,7 @@ public class PreRoundTask extends ArenaTask {
         arena.removePlacedBlocks();
         arena.fillCenter();
         arena.getTeams().forEach(Team::spawnBarrier);
-        arena.getPlayers().forEach(player -> Ability.removeCooldown(player.getUniqueId()));
+        arena.getPlayers().forEach(player -> WoolWars.getInstance().getKitManager().removeCooldown(player));
         for (Player player : arena.getPlayers()) {
             player.setGameMode(GameMode.SURVIVAL);
             player.setFlying(false);
@@ -68,35 +69,30 @@ public class PreRoundTask extends ArenaTask {
     @Override
     public void execute() {
         if (arena.getTimer() <= 3) {
-            TextUtil.sendTitle(arena.getPlayers(), 1, Messages.ROUND_START_COUNTDOWN_TITLE.getAsString().replace("{seconds}", String.valueOf(arena.getTimer())), Messages.ROUND_START_COUNTDOWN_SUBTITLE.getAsString());
+            String[] numbers = new String[] {"&c❶", "&6❷", "&a❸"};
+            TextUtil.sendTitle(arena.getPlayers(), 1, Messages.ROUND_START_COUNTDOWN_TITLE.getAsString().replace("{seconds}", numbers[arena.getTimer() - 1]), Messages.ROUND_START_COUNTDOWN_SUBTITLE.getAsString());
             ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_COUNTDOWN.getAsString());
         }
     }
 
     @Override
     public void onEnd() {
-        arena.getPlayers().forEach(player -> {
-            if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof Menu) {
-                player.closeInventory();
-            }
-        });
+        arena.getPlayers().forEach(HumanEntity::closeInventory);
         TextUtil.sendTitle(arena.getPlayers(), 1, Messages.ROUND_START_TITLE.getAsString(), Messages.ROUND_START_SUBTITLE.getAsString().replace("{round}", String.valueOf(arena.getRound())));
-        ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_START.getAsString());
+        new BukkitRunnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_START.getAsString());
+                i++;
+                if (i == 3) cancel();
+            }
+        }.runTaskTimer(WoolWars.getInstance(), 0, 3L);
         arena.getTeams().forEach(Team::removeBarrier);
         arena.getPowerUps().forEach(PowerUp::spawn);
-        for (Block block : arena.getCenter().getBlocks()) {
-            if (block.hasMetadata("woolwars")) {
-                block.removeMetadata("woolwars", WoolWars.getInstance());
-            }
-        }
         RoundStartEvent event = new RoundStartEvent(arena, arena.getRound());
         Bukkit.getPluginManager().callEvent(event);
         arena.setGameState(GameState.ACTIVE_ROUND);
-    }
-
-    @Override
-    public int getDuration() {
-        return Configuration.PRE_ROUND_DURATION.getAsInt();
     }
 
 }
