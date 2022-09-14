@@ -6,6 +6,7 @@ description: A fun and unique minigame to play with your friends!
 softdepend:
   - PlaceholderAPI
   - Multiverse-Core
+  - Spigot-Party-API-PAF
 commands:
   woolwars:
     description: Main plugin command

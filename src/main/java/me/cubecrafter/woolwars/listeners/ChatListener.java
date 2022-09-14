@@ -46,29 +46,29 @@ public class ChatListener implements Listener {
             if (arena.isAlive(player)) {
                 setRecipients(e, arena.getAlivePlayers());
                 if (arena.getGameState().equals(GameState.STARTING) || arena.getGameState().equals(GameState.WAITING)) {
-                    e.setFormat(TextUtil.format(Configuration.WAITING_LOBBY_CHAT_FORMAT.getAsString()
+                    e.setFormat(TextUtil.format(player, Configuration.WAITING_LOBBY_CHAT_FORMAT.getAsString()
                             .replace("{player}", player.getName())
-                            .replace("{message}", e.getMessage()), player));
+                            .replace("{message}", e.getMessage())));
                 } else {
                     Team team = arena.getTeamByPlayer(player);
-                    e.setFormat(TextUtil.format(Configuration.GAME_CHAT_FORMAT.getAsString()
+                    e.setFormat(TextUtil.format(player, Configuration.GAME_CHAT_FORMAT.getAsString()
                             .replace("{player}", player.getName())
                             .replace("{team_color}", team.getTeamColor().getChatColor().toString())
                             .replace("{team}", team.getName())
                             .replace("{team_letter}", team.getTeamLetter())
-                            .replace("{message}", e.getMessage()), player));
+                            .replace("{message}", e.getMessage())));
                 }
             } else {
                 setRecipients(e, arena.getDeadPlayers());
-                e.setFormat(TextUtil.format(Configuration.SPECTATOR_CHAT_FORMAT.getAsString()
+                e.setFormat(TextUtil.format(player, Configuration.SPECTATOR_CHAT_FORMAT.getAsString()
                         .replace("{player}", player.getName())
-                        .replace("{message}", e.getMessage()), player));
+                        .replace("{message}", e.getMessage())));
             }
         } else {
             setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(p)).collect(Collectors.toList()));
-            e.setFormat(TextUtil.format(Configuration.LOBBY_CHAT_FORMAT.getAsString()
+            e.setFormat(TextUtil.format(player, Configuration.LOBBY_CHAT_FORMAT.getAsString()
                     .replace("{player}", player.getName())
-                    .replace("{message}", e.getMessage()), player));
+                    .replace("{message}", e.getMessage())));
         }
     }
 

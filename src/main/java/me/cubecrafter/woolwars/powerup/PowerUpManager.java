@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class PowerUpManager {
 
-    private final List<PowerUpData> powerUps = new ArrayList<>();
+    private final List<PowerUpType> powerUps = new ArrayList<>();
 
     public PowerUpManager() {
         loadPowerUps();
@@ -57,7 +57,7 @@ public class PowerUpManager {
                     effects.add(created);
                 }
             }
-            PowerUpData data = new PowerUpData(displayedItem, holoLines, items, effects);
+            PowerUpType data = new PowerUpType(displayedItem, holoLines, items, effects);
             powerUps.add(data);
             loaded++;
         }
@@ -69,7 +69,7 @@ public class PowerUpManager {
         loadPowerUps();
     }
 
-    public PowerUpData getRandom() {
+    public PowerUpType getRandom() {
         return powerUps.get(ThreadLocalRandom.current().nextInt(powerUps.size()));
     }
 

@@ -39,7 +39,7 @@ public class StartingTask extends ArenaTask {
 
     @Override
     public void execute() {
-        if (arena.getTimer() % 5 == 0 || arena.getTimer() <= 3) {
+        if (arena.getTimer() % 10 == 0 || arena.getTimer() <= 5) {
             TextUtil.sendMessage(arena.getPlayers(), Messages.GAME_START_COUNTDOWN.getAsString().replace("{seconds}", String.valueOf(arena.getTimer())));
             ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_COUNTDOWN.getAsString());
         }

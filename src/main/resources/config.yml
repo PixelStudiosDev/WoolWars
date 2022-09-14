@@ -19,6 +19,7 @@ round-over-duration: 5
 game-end-duration: 10
 disabled-interaction-blocks:
   - CRAFTING_TABLE
+  - WORKBENCH
   - FURNACE
 placeable-blocks: []
 disable-fall-damage: true
@@ -94,8 +95,7 @@ sounds:
   game-won: ENTITY_PLAYER_LEVELUP
   game-lost: GHAST_MOAN
   powerup-collected: ENTITY_EXPERIENCE_ORB_PICKUP
-  player-death: GHAST_MOAN
-  player-kill: ENTITY_EXPERIENCE_ORB_PICKUP
+  player-death: ENTITY_EXPERIENCE_ORB_PICKUP
   countdown: BLOCK_NOTE_HAT
   player-joined: ENTITY_CHICKEN_EGG
   player-left: ENTITY_CHICKEN_EGG

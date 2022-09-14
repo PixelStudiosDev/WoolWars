@@ -38,7 +38,7 @@ public class JoinCommand implements SubCommand {
         if (args.length < 2) return;
         Arena arena = ArenaUtil.getArenaById(args[1]);
         if (arena != null) {
-            arena.addPlayer((Player) sender);
+            arena.addPlayer((Player) sender, true);
         } else if (ArenaUtil.getGroups().contains(args[1])) {
             ArenaUtil.joinRandomArena((Player) sender, args[1]);
         } else if (args[1].equalsIgnoreCase("random")) {

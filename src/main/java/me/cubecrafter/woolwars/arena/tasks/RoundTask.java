@@ -60,7 +60,7 @@ public class RoundTask extends ArenaTask {
 
     @Override
     public void execute() {
-        if ((arena.getTimer() <= 30 && arena.getTimer() % 10 == 0) || arena.getTimer() <= 5) {
+        if ((arena.getTimer() == 10 || arena.getTimer() <= 5)) {
             TextUtil.sendMessage(arena.getPlayers(),  Messages.TIME_LEFT_COUNTDOWN.getAsString().replace("{seconds}", String.valueOf(arena.getTimer())));
         }
     }
@@ -117,7 +117,6 @@ public class RoundTask extends ArenaTask {
             team.addPoint();
             if (team.getPoints() == arena.getWinPoints()) {
                 setWinner(team);
-                return;
             } else {
                 sendRoundEndMessages(team, false, false);
                 arena.setGameState(GameState.ROUND_OVER);
@@ -130,7 +129,7 @@ public class RoundTask extends ArenaTask {
     }
 
     private void setWinner(Team team) {
-        addWinsLossesStats(team);
+        addGameStats(team);
         sendRoundEndMessages(team, false, true);
         arena.setGameState(GameState.GAME_ENDED);
         GameEndEvent event = new GameEndEvent(arena, team, arena.getTeams().stream().filter(t -> !t.equals(team)).collect(Collectors.toList()));
@@ -208,7 +207,7 @@ public class RoundTask extends ArenaTask {
         }
     }
 
-    private void addWinsLossesStats(Team winner) {
+    private void addGameStats(Team winner) {
         for (Team team : arena.getTeams()) {
             if (team.equals(winner)) {
                 for (Player player : team.getMembers()) {

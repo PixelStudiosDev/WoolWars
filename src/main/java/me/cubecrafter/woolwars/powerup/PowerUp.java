@@ -49,7 +49,7 @@ public class PowerUp {
     private final List<ArmorStand> hologramLines = new ArrayList<>();
     private final Location location;
     private final Arena arena;
-    private PowerUpData data;
+    private PowerUpType data;
     private int rotation = 0;
     private boolean active = false;
 

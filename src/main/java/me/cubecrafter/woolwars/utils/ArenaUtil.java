@@ -27,8 +27,12 @@ import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.kits.Kit;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -97,7 +101,7 @@ public class ArenaUtil {
             return false;
         }
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
-        random.addPlayer(player);
+        random.addPlayer(player, true);
         return true;
     }
 
@@ -108,7 +112,7 @@ public class ArenaUtil {
             return false;
         }
         Arena random = available.stream().max(Comparator.comparing(arena -> arena.getPlayers().size())).orElse(available.get(0));
-        random.addPlayer(player);
+        random.addPlayer(player, true);
         return true;
     }
 
@@ -118,6 +122,37 @@ public class ArenaUtil {
 
     public void playSound(List<Player> players, String sound) {
         players.forEach(player -> playSound(player, sound));
+    }
+
+    public void handleDeath(Player player, Arena arena) {
+        ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_PLAYER_DEATH.getAsString());
+        arena.addDeaths(player, 1);
+        PlayerData data = ArenaUtil.getPlayerData(player);
+        data.setDeaths(data.getDeaths() + 1);
+        arena.getDeadPlayers().add(player);
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setAllowFlight(true);
+        player.setFlying(true);
+        player.getInventory().setArmorContents(null);
+        player.getInventory().clear();
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+        player.setFireTicks(0);
+        player.setHealth(20);
+        TextUtil.sendTitle(player, 2,  Messages.DEATH_TITLE.getAsString(), Messages.DEATH_SUBTITLE.getAsString());
+        for (Player alive : arena.getAlivePlayers()) {
+            VersionUtil.hidePlayer(alive, player);
+        }
+        for (Player dead : arena.getDeadPlayers()) {
+            VersionUtil.showPlayer(player, dead);
+        }
+        ItemStack teleporter = ItemBuilder.fromConfig(Configuration.TELEPORTER_ITEM.getAsSection()).setTag("teleport-item").build();
+        player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsSection().getInt("slot"), teleporter);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 0, false, false));
+        if (arena.getAlivePlayers().isEmpty()) {
+            TextUtil.sendMessage(arena.getPlayers(),  Messages.ALL_PLAYERS_DEAD.getAsString());
+            arena.getRoundTask().cancel();
+            arena.setGameState(GameState.ROUND_OVER);
+        }
     }
 
 }

@@ -55,11 +55,11 @@ public class ArenasMenu extends Menu {
         for (Arena arena : ArenaUtil.getArenas()) {
             if (!index.hasNext()) break;
             items.put(index.next(), new MenuItem(ItemBuilder.fromConfig(Menus.ARENAS_MENU_ARENA_ITEM.getAsSection())
-                    .setDisplayName(TextUtil.format(Menus.ARENAS_MENU_ARENA_ITEM_DISPLAYNAME.getAsString(), arena, player))
-                    .setLore(TextUtil.format(Menus.ARENAS_MENU_ARENA_ITEM_LORE.getAsStringList(), arena, player)).build(), player)
+                    .setDisplayName(TextUtil.format(player, Menus.ARENAS_MENU_ARENA_ITEM_DISPLAYNAME.getAsString(), arena))
+                    .setLore(TextUtil.format(player, Menus.ARENAS_MENU_ARENA_ITEM_LORE.getAsStringList(), arena)).build(), player)
                     .addAction(e -> {
                         closeMenu();
-                        arena.addPlayer(player);
+                        arena.addPlayer(player, true);
                     }));
             }
         items.put(Menus.ARENAS_MENU_CLOSE_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.ARENAS_MENU_CLOSE_ITEM.getAsSection()).build(), player)

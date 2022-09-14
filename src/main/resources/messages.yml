@@ -23,6 +23,11 @@ general:
   no-permission: "{prefix}&cYou don't have the permission to do this!"
   command-blocked: "{prefix}You can't use this command while you are in game!"
   config-reloaded: "{prefix}&7Config files reloaded!"
+party:
+  not-leader: "{prefix}&cYou must be the party leader to join an arena!"
+  too-big: "{prefix}&cYour party is too big to join this arena!"
+  offline-members: "{prefix}&cAll of your party members must be in the server to join an arena!"
+  members-in-arena: "{prefix}&cSome of your party members are already in an arena!"
 game:
   player-join: "{prefix}&e{player} &7joined the game! &8({current}/{max})"
   player-leave: "{prefix}&e{player} &7left the game!"

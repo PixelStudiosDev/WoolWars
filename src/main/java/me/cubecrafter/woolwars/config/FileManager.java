@@ -25,9 +25,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FileManager {
 
@@ -98,6 +102,27 @@ public class FileManager {
         TextUtil.info("File 'menus.yml' loaded!");
         abilities = YamlConfiguration.loadConfiguration(abilitiesFile);
         TextUtil.info("File 'abilities.yml' loaded!");
+        updateConfigs();
+    }
+
+    public void updateConfigs() {
+        Map<YamlConfiguration, File> configurations = new HashMap<>();
+        configurations.put(config, configFile);
+        configurations.put(messages, messagesFile);
+        configurations.put(menus, menusFile);
+        boolean update = false;
+        for (Map.Entry<YamlConfiguration, File> entry : configurations.entrySet()) {
+            YamlConfiguration configuration = entry.getKey();
+            File file = entry.getValue();
+            InputStream inputStream = plugin.getResource(file.getName());
+            YamlConfiguration updated = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
+            for (String key : updated.getKeys(true)) {
+                if (configuration.contains(key)) continue;
+                configuration.set(key, updated.get(key));
+                update = true;
+            }
+        }
+        if (update) save();
     }
 
     public File[] getArenaFiles() {

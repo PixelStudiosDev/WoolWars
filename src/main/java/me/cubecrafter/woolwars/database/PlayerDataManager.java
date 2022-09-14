@@ -32,10 +32,11 @@ import java.util.UUID;
 
 public class PlayerDataManager implements Listener {
 
-    private final Database database = WoolWars.getInstance().getStorage();
+    private final Database database;
 
-    public PlayerDataManager() {
-        WoolWars.getInstance().getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
+    public PlayerDataManager(WoolWars plugin) {
+        database = plugin.getStorage();
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     private final Map<UUID, PlayerData> playerData = new HashMap<>();
@@ -45,26 +46,27 @@ public class PlayerDataManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerLoginEvent e) {
+    public void onLogin(PlayerLoginEvent e) {
+        if (e.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
         Player player = e.getPlayer();
         PlayerData data = database.getPlayerData(player.getUniqueId());
         playerData.put(player.getUniqueId(), data);
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
+    public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         database.savePlayerDataAsync(getPlayerData(player));
         playerData.remove(player.getUniqueId());
     }
 
-    public void forceSave() {
+    public void save() {
         for (PlayerData data : playerData.values()) {
             database.savePlayerData(data);
         }
     }
 
-    public void forceLoad() {
+    public void load() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerData data = database.getPlayerData(player.getUniqueId());
             playerData.put(player.getUniqueId(), data);

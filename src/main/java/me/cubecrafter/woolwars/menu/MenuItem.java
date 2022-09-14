@@ -43,18 +43,10 @@ public class MenuItem {
         this.player = viewer;
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName()) {
-            if (player != null) {
-                meta.setDisplayName(TextUtil.format(meta.getDisplayName(), player));
-            } else {
-                meta.setDisplayName(TextUtil.format(meta.getDisplayName()));
-            }
+            meta.setDisplayName(TextUtil.format(player, meta.getDisplayName()));
         }
         if (meta.hasLore()) {
-            if (player != null) {
-                meta.setLore(TextUtil.format(meta.getLore(), player));
-            } else {
-                meta.setLore(TextUtil.format(meta.getLore()));
-            }
+            meta.setLore(TextUtil.format(player, meta.getLore()));
         }
         item.setItemMeta(meta);
     }

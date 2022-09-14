@@ -21,6 +21,7 @@ package me.cubecrafter.woolwars.arena;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.tasks.GameEndTask;
 import me.cubecrafter.woolwars.arena.tasks.PreRoundTask;
 import me.cubecrafter.woolwars.arena.tasks.RoundOverTask;
@@ -29,6 +30,8 @@ import me.cubecrafter.woolwars.arena.tasks.StartingTask;
 import me.cubecrafter.woolwars.api.events.arena.GameStateChangeEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
+import me.cubecrafter.woolwars.party.Party;
+import me.cubecrafter.woolwars.party.provider.PartyProvider;
 import me.cubecrafter.woolwars.team.TeamColor;
 import me.cubecrafter.woolwars.arena.setup.SetupSession;
 import me.cubecrafter.woolwars.config.Configuration;
@@ -52,13 +55,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Getter
@@ -71,6 +69,7 @@ public class Arena {
     private final Location lobby;
     private final int maxPlayersPerTeam;
     private final int minPlayers;
+    private final int maxPlayers;
     private final int winPoints;
     private final List<Player> players = new ArrayList<>();
     private final List<Player> deadPlayers = new ArrayList<>();
@@ -113,6 +112,7 @@ public class Arena {
             Team team = new Team(name, this, spawn, color, new Cuboid(barrier1, barrier2), new Cuboid(base1, base2));
             teams.add(team);
         }
+        maxPlayers = teams.size() * maxPlayersPerTeam;
         Location point1 = TextUtil.deserializeLocation(arenaConfig.getString("center.pos1"));
         Location point2 = TextUtil.deserializeLocation(arenaConfig.getString("center.pos2"));
         center = new Cuboid(point1, point2);
@@ -133,7 +133,7 @@ public class Arena {
         world.setFullTime(6000);
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(Player player, boolean partyCheck) {
         if (SetupSession.isActive(player)) {
             TextUtil.sendMessage(player, Messages.ALREADY_IN_SETUP_MODE.getAsString());
             return;
@@ -146,9 +146,32 @@ public class Arena {
             TextUtil.sendMessage(player, Messages.GAME_ALREADY_STARTED.getAsString());
             return;
         }
-        if (players.size() >= maxPlayersPerTeam * teams.size()) {
+        if (players.size() >= maxPlayers) {
             TextUtil.sendMessage(player, Messages.ARENA_FULL.getAsString());
             return;
+        }
+        PartyProvider partyProvider = WoolWars.getInstance().getPartyProvider();
+        if (partyCheck && partyProvider.hasParty(player)) {
+            Party party = partyProvider.getParty(player);
+            if (!party.isLeader(player)) {
+                TextUtil.sendMessage(player, Messages.PARTY_NOT_LEADER.getAsString());
+                return;
+            }
+            if (party.getSize() > maxPlayers - players.size() || (maxPlayersPerTeam > 1 && party.getSize() > maxPlayersPerTeam)) {
+                TextUtil.sendMessage(player, Messages.PARTY_TOO_BIG.getAsString());
+                return;
+            }
+            if (party.getOnlineMembers().size() != party.getSize() - 1) {
+                TextUtil.sendMessage(player, Messages.PARTY_OFFLINE_MEMBERS.getAsString());
+                return;
+            }
+            if (party.getOnlineMembers().stream().anyMatch(member -> ArenaUtil.getArenaByPlayer(member) != null)) {
+                TextUtil.sendMessage(player, Messages.PARTY_MEMBERS_IN_ARENA.getAsString());
+                return;
+            }
+            for (Player member : party.getOnlineMembers()) {
+                addPlayer(member, false);
+            }
         }
         PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
@@ -177,7 +200,7 @@ public class Arena {
         TextUtil.sendMessage(players, Messages.PLAYER_JOIN_ARENA.getAsString()
                 .replace("{player}", player.getName())
                 .replace("{current}", String.valueOf(players.size()))
-                .replace("{max}", String.valueOf(getTeams().size() * maxPlayersPerTeam)));
+                .replace("{max}", String.valueOf(maxPlayers)));
         ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_JOINED.getAsString());
         if (gameState == GameState.WAITING && getPlayers().size() >= getMinPlayers()) {
             setGameState(GameState.STARTING);
@@ -191,6 +214,16 @@ public class Arena {
     public void removePlayer(Player player, boolean teleportToLobby) {
         PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
+        PartyProvider partyProvider = WoolWars.getInstance().getPartyProvider();
+        if (partyProvider.hasParty(player) && (gameState == GameState.STARTING || gameState == GameState.WAITING || gameState == GameState.GAME_ENDED)) {
+            Party party = partyProvider.getParty(player);
+            if (party.isLeader(player)) {
+                for (Player member : party.getOnlineMembers()) {
+                    if (!players.contains(member)) continue;
+                    removePlayer(member, teleportToLobby);
+                }
+            }
+        }
         players.remove(player);
         Team playerTeam = getTeamByPlayer(player);
         if (playerTeam != null) {
@@ -218,7 +251,7 @@ public class Arena {
         TextUtil.sendMessage(players, Messages.PLAYER_LEAVE_ARENA.getAsString()
                 .replace("{player}", player.getDisplayName())
                 .replace("{current}", String.valueOf(players.size()))
-                .replace("{max}", String.valueOf(getTeams().size()*getMaxPlayersPerTeam())));
+                .replace("{max}", String.valueOf(maxPlayers)));
         if (gameState == GameState.WAITING || gameState == GameState.STARTING) {
             ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_LEFT.getAsString());
         }
@@ -305,9 +338,38 @@ public class Arena {
     }
 
     public void assignTeams() {
-        for (Player player : players) {
-            Team minPlayers = getTeams().stream().min(Comparator.comparing(team -> team.getMembers().size())).orElse(teams.get(new Random().nextInt(teams.size())));
-            minPlayers.addMember(player);
+        if (maxPlayersPerTeam > 1) {
+            PartyProvider partyProvider = WoolWars.getInstance().getPartyProvider();
+            List<Player> noParty = new ArrayList<>();
+            List<Party> parties = new ArrayList<>();
+            for (Player player : players) {
+                if (partyProvider.hasParty(player)) {
+                    Party party = partyProvider.getParty(player);
+                    if (!parties.contains(party)) parties.add(party);
+                } else {
+                    noParty.add(player);
+                }
+            }
+            parties.sort(Comparator.comparingInt(Party::getSize).reversed());
+            for (Party party : parties) {
+                for (Team team : teams) {
+                    if (party.getSize() > maxPlayersPerTeam - team.getMembers().size()) continue;
+                    team.addMember(party.getLeader());
+                    for (Player player : party.getOnlineMembers()) {
+                        if (!players.contains(player)) continue;
+                        team.addMember(player);
+                    }
+                }
+            }
+            for (Player player : noParty) {
+                Team minPlayers = teams.stream().min(Comparator.comparingInt(team -> team.getMembers().size())).orElse(teams.get(ThreadLocalRandom.current().nextInt(teams.size())));
+                minPlayers.addMember(player);
+            }
+        } else {
+            for (Player player : players) {
+                Team minPlayers = teams.stream().min(Comparator.comparingInt(team -> team.getMembers().size())).orElse(teams.get(ThreadLocalRandom.current().nextInt(teams.size())));
+                minPlayers.addMember(player);
+            }
         }
     }
 
@@ -339,7 +401,8 @@ public class Arena {
 
     public void killEntities() {
         for (Entity entity : arenaRegion.getWorld().getEntities()) {
-            if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.ARMOR_STAND) || entity.getType().equals(EntityType.PAINTING) || entity.getType().equals(EntityType.PLAYER)) continue;
+            EntityType type = entity.getType();
+            if (type == EntityType.ITEM_FRAME || type == EntityType.ARMOR_STAND || type == EntityType.PAINTING || type == EntityType.PLAYER) continue;
             if (arenaRegion.isInside(entity.getLocation())) entity.remove();
         }
     }
@@ -351,8 +414,7 @@ public class Arena {
 
     public void fillCenter() {
         List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
-        Random random = new Random();
-        center.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(random.nextInt(defaultBlocks.size()))).get().parseMaterial()));
+        center.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(ThreadLocalRandom.current().nextInt(defaultBlocks.size()))).get().parseMaterial()));
     }
 
     public String getPointsFormatted() {
@@ -360,7 +422,7 @@ public class Arena {
         for (int i = 0; i < teams.size(); i++) {
             Team team = teams.get(i);
             if (i > 0) {
-                builder.append(" &7- ");
+                builder.append(" &f- ");
             }
             builder.append(team.getTeamColor().getChatColor()).append(team.getPoints());
         }

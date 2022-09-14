@@ -20,6 +20,7 @@ package me.cubecrafter.woolwars.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.database.PlayerData;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.entity.Player;
@@ -48,8 +49,15 @@ public class PlaceholderHook extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, String params) {
+        String[] args = params.split("_");
+        if (args[0].equals("count")) {
+            if (args[1].equals("total")) {
+                return String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum());
+            }
+            return String.valueOf(ArenaUtil.getArenasByGroup(args[1]).stream().mapToInt(arena -> arena.getPlayers().size()).sum());
+        }
         if (player == null) return null;
-        PlayerData data = WoolWars.getInstance().getPlayerDataManager().getPlayerData(player);
+        PlayerData data = ArenaUtil.getPlayerData(player);
         switch (params) {
             case "wins":
                 return String.valueOf(data.getWins());
@@ -69,13 +77,51 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return String.valueOf(data.getPowerUpsCollected());
             case "selected_kit":
                 return data.getSelectedKit();
+            case "kdr":
+                if (data.getDeaths() == 0) return data.getKills() + ".00";
+                return String.format("%.2f", (double) data.getKills() / data.getDeaths());
         }
-        String[] args = params.split("_");
-        if (args[0].equals("count")) {
-            if (args[1].equals("total")) {
-                return String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum());
-            }
-            return String.valueOf(ArenaUtil.getArenasByGroup(args[1]).stream().mapToInt(arena -> arena.getPlayers().size()).sum());
+        if (!params.startsWith("arena_")) return null;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return null;
+        switch (params.substring(6)) {
+            case "id":
+                return arena.getId();
+            case "displayname":
+                return arena.getDisplayName();
+            case "group":
+                return arena.getGroup();
+            case "round":
+                return String.valueOf(arena.getRound());
+            case "time":
+                return String.valueOf(arena.getTimer());
+            case "time_formatted":
+                return arena.getTimerFormatted();
+            case "state":
+                return arena.getGameState().getName();
+            case "win_points":
+                return String.valueOf(arena.getWinPoints());
+            case "players":
+                return String.valueOf(arena.getPlayers().size());
+            case "max_players":
+                return String.valueOf(arena.getMaxPlayers());
+            case "kills":
+                return String.valueOf(arena.getKills().getOrDefault(player, 0));
+            case "deaths":
+                return String.valueOf(arena.getDeaths().getOrDefault(player, 0));
+            case "wool_placed":
+                return String.valueOf(arena.getWoolPlaced().getOrDefault(player, 0));
+            case "blocks_broken":
+                return String.valueOf(arena.getBlocksBroken().getOrDefault(player, 0));
+            case "round_kills":
+                if (arena.getRoundTask() == null) return "0";
+                return String.valueOf(arena.getRoundTask().getRoundKills().getOrDefault(player, 0));
+            case "round_wool_placed":
+                if (arena.getRoundTask() == null) return "0";
+                return String.valueOf(arena.getRoundTask().getRoundPlacedWool().getOrDefault(player, 0));
+            case "round_blocks_broken":
+                if (arena.getRoundTask() == null) return "0";
+                return String.valueOf(arena.getRoundTask().getRoundBrokenBlocks().getOrDefault(player, 0));
         }
         return null;
     }

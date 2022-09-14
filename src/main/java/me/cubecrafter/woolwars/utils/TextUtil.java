@@ -27,10 +27,6 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.database.PlayerData;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -57,21 +53,8 @@ public class TextUtil {
         return lines;
     }
 
-    public TextComponent buildTextComponent(String text, String hover, String click, ClickEvent.Action clickAction){
-        TextComponent component = new TextComponent(color(text));
-        if (hover != null) {
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(color(hover)).create()));
-        }
-        component.setClickEvent(new ClickEvent(clickAction, click));
-        return component;
-    }
-
     public void info(String msg) {
-        WoolWars.getInstance().getLogger().info(msg);
-    }
-
-    public void severe(String msg) {
-        WoolWars.getInstance().getLogger().severe(msg);
+        Bukkit.getLogger().info(msg);
     }
 
     public String serializeLocation(Location location) {
@@ -89,40 +72,23 @@ public class TextUtil {
                 : new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
     }
 
-    public String format(String s, Arena arena, Player player) {
-        s = format(s, player)
-                .replace("{time_formatted}", arena.getTimerFormatted())
-                .replace("{time}", String.valueOf(arena.getTimer()))
-                .replace("{id}", arena.getId())
-                .replace("{displayname}", arena.getDisplayName())
-                .replace("{round}", String.valueOf(arena.getRound()))
-                .replace("{group}", arena.getGroup())
-                .replace("{state}", arena.getGameState().getName())
-                .replace("{win_points}", String.valueOf(arena.getWinPoints()))
-                .replace("{players}", String.valueOf(arena.getPlayers().size()))
-                .replace("{max_players}", String.valueOf(arena.getMaxPlayersPerTeam() * arena.getTeams().size()));
-        return s;
+    public String parsePlaceholders(Player player, String text) {
+        if (WoolWars.getInstance().isPAPIEnabled()) {
+            text = PlaceholderAPI.setPlaceholders(player, text);
+        }
+        return text;
     }
 
-    public String format(String s) {
-        if (WoolWars.getInstance().isPAPIEnabled()) {
-            s = PlaceholderAPI.setPlaceholders(null, s);
-        }
-        s = s.replace("{date}", TextUtil.getCurrentDate());
+    public String format(Player player, String text) {
+        text = parsePlaceholders(player, text);
+        text = text.replace("{date}", getCurrentDate()).replace("{prefix}", Messages.PREFIX.getAsString());
         for (String group : ArenaUtil.getGroups()) {
-            s = s.replace("{count_" + group + "}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
+            text = text.replace("{count_" + group + "}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
                     .replace("{count_total}", String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
         }
-        return color(s);
-    }
-
-    public String format(String s, Player player) {
-        if (WoolWars.getInstance().isPAPIEnabled()) {
-            s = PlaceholderAPI.setPlaceholders(player, s);
-        }
-        PlayerData data = ArenaUtil.getPlayerData(player);
-        if (data != null) {
-            s = s.replace("{wins}", String.valueOf(data.getWins()))
+        if (player != null && player.isOnline()) {
+            PlayerData data = ArenaUtil.getPlayerData(player);
+            text = text.replace("{wins}", String.valueOf(data.getWins()))
                     .replace("{losses}", String.valueOf(data.getLosses()))
                     .replace("{games_played}", String.valueOf(data.getGamesPlayed()))
                     .replace("{kills}", String.valueOf(data.getKills()))
@@ -131,33 +97,42 @@ public class TextUtil {
                     .replace("{blocks_broken}", String.valueOf(data.getBlocksBroken()))
                     .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()));
         }
-        return format(s);
+        return color(text);
     }
 
-    public List<String> format(List<String> lines, Player player) {
+    public String format(Player player, String text, Arena arena) {
+        text = format(player, text);
+        text = text.replace("{time_formatted}", arena.getTimerFormatted())
+                .replace("{time}", String.valueOf(arena.getTimer()))
+                .replace("{id}", arena.getId())
+                .replace("{displayname}", arena.getDisplayName())
+                .replace("{round}", String.valueOf(arena.getRound()))
+                .replace("{group}", arena.getGroup())
+                .replace("{state}", arena.getGameState().getName())
+                .replace("{win_points}", String.valueOf(arena.getWinPoints()))
+                .replace("{players}", String.valueOf(arena.getPlayers().size()))
+                .replace("{max_players}", String.valueOf(arena.getMaxPlayers()));
+        return text;
+    }
+
+    public List<String> format(Player player, List<String> lines) {
         if (lines == null) return Collections.emptyList();
-        lines.replaceAll(s -> format(s, player));
+        lines.replaceAll(line -> format(player, line));
         return lines;
     }
 
-    public List<String> format(List<String> lines) {
+    public List<String> format(Player player, List<String> lines, Arena arena) {
         if (lines == null) return Collections.emptyList();
-        lines.replaceAll(TextUtil::format);
-        return lines;
-    }
-
-    public List<String> format(List<String> lines, Arena arena, Player player) {
-        if (lines == null) return Collections.emptyList();
-        lines.replaceAll(s -> format(s, arena, player));
+        lines.replaceAll(line -> format(player, line, arena));
         return lines;
     }
 
     public void sendMessage(Player player, String message) {
-        message = message.replace("{prefix}", Messages.PREFIX.getAsString());
+        message = format(player, message);
         if (message.startsWith("<center>") && message.endsWith("</center>")) {
             message = getCenteredMessage(message);
         }
-        player.sendMessage(format(message, player));
+        player.sendMessage(message);
     }
 
     public void sendMessage(Player player, List<String> messages) {
@@ -173,7 +148,7 @@ public class TextUtil {
     }
 
     public void sendTitle(Player player, int seconds, String title, String subtitle) {
-        Titles.sendTitle(player, 0, seconds * 20, 0, format(title, player), format(subtitle, player));
+        Titles.sendTitle(player, 0, seconds * 20, 0, format(player, title), format(player, subtitle));
     }
 
     public void sendTitle(List<Player> players, int seconds, String title, String subtitle) {
@@ -181,7 +156,7 @@ public class TextUtil {
     }
 
     public void sendActionBar(Player player, String message) {
-        ActionBar.sendActionBar(player, format(message, player));
+        ActionBar.sendActionBar(player, format(player, message));
     }
 
     public void sendActionBar(List<Player> players, String message) {
@@ -229,6 +204,20 @@ public class TextUtil {
             compensated += spaceLength;
         }
         return sb + message;
+    }
+
+    public boolean matchMaterial(String material, String other) {
+        boolean anyPrefix = material.startsWith("*");
+        boolean anySuffix = material.endsWith("*");
+        if (anyPrefix && anySuffix) {
+            return other.contains(material.substring(1, material.length() - 1));
+        } else if (anyPrefix) {
+            return other.endsWith(material.substring(1));
+        } else if (anySuffix) {
+            return other.startsWith(material.substring(0, material.length() - 1));
+        } else {
+            return other.equals(material);
+        }
     }
 
 }

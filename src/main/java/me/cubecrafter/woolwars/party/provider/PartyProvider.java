@@ -16,22 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.powerup;
+package me.cubecrafter.woolwars.party.provider;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
+import me.cubecrafter.woolwars.party.Party;
+import org.bukkit.entity.Player;
 
-import java.util.List;
+public interface PartyProvider {
 
-@Getter
-@RequiredArgsConstructor
-public class PowerUpData {
-
-    private final ItemStack displayedItem;
-    private final List<String> holoLines;
-    private final List<ItemStack> items;
-    private final List<PotionEffect> effects;
+    Party getParty(Player player);
+    Party createParty(Player leader);
+    boolean hasParty(Player player);
+    void disbandParty(Party party);
 
 }
