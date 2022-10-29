@@ -102,7 +102,7 @@ public abstract class Database {
                 "blocks_broken INT," +
                 "powerups_collected INT," +
                 "selected_kit VARCHAR(255)," +
-                "win_streak INT )",
+                "win_streak INT)",
                 PreparedStatement::executeUpdate);
     }
 
