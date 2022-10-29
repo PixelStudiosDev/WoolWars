@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.arena;
 
+import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,41 +29,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class ArenaManager {
 
-    private final Map<String, Arena> arenas = new HashMap<>();
     private final WoolWars plugin;
 
-    public ArenaManager(WoolWars plugin) {
-        this.plugin = plugin;
-        loadArenas();
-    }
+    private final Map<String, Arena> arenas = new HashMap<>();
 
-    private void loadArenas() {
+    public void load() {
         int loaded = 0;
         for (File file : plugin.getFileManager().getArenaFiles()) {
-            registerArena(getArenaFromFile(file));
+            String id = file.getName().replace(".yml", "");
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+            Arena arena = new Arena(id, config);
+            register(arena);
             loaded++;
         }
         TextUtil.info("Loaded " + loaded + " arenas!");
     }
 
-    public void registerArena(Arena arena) {
+    public void register(Arena arena) {
         arenas.put(arena.getId(), arena);
         TextUtil.info("Arena '" + arena.getId() + "' loaded!");
     }
 
-    public Arena getArenaFromFile(File file) {
-        YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
-        String id = file.getName().replace(".yml", "");
-        return new Arena(id, arenaConfig);
+    public Arena getArena(String id) {
+        return arenas.get(id);
     }
 
-    public Arena getArena(String name) {
-        return arenas.get(name);
-    }
-
-    public void disableArenas() {
+    public void disable() {
         getArenas().forEach(Arena::restart);
     }
 

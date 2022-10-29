@@ -20,14 +20,13 @@ package me.cubecrafter.woolwars.arena.tasks;
 
 import com.cryptomorin.xseries.messages.ActionBar;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.storage.PlayerData;
 import me.cubecrafter.woolwars.api.events.arena.RoundStartEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.kits.Kit;
-import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -35,7 +34,6 @@ import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -43,7 +41,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class PreRoundTask extends ArenaTask {
 
     public PreRoundTask(Arena arena) {
-        super(arena, Configuration.PRE_ROUND_DURATION.getAsInt());
+        super(arena, Config.PRE_ROUND_DURATION.getAsInt());
     }
 
     @Override
@@ -63,7 +61,7 @@ public class PreRoundTask extends ArenaTask {
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         }
         arena.getDeadPlayers().clear();
-        arena.getTeams().forEach(Team::teleportToSpawn);
+        arena.getTeams().forEach(Team::respawn);
         for (Player player : arena.getPlayers()) {
             arena.getPlayers().forEach(other -> VersionUtil.showPlayer(player, other));
         }
@@ -89,7 +87,7 @@ public class PreRoundTask extends ArenaTask {
         if (arena.getTimer() <= 3) {
             String[] numbers = new String[] {"&c❶", "&6❷", "&a❸"};
             TextUtil.sendTitle(arena.getPlayers(), 1, Messages.ROUND_START_COUNTDOWN_TITLE.getAsString().replace("{seconds}", numbers[arena.getTimer() - 1]), Messages.ROUND_START_COUNTDOWN_SUBTITLE.getAsString());
-            ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_COUNTDOWN.getAsString());
+            ArenaUtil.playSound(arena.getPlayers(), Config.SOUNDS_COUNTDOWN.getAsString());
         }
     }
 
@@ -101,7 +99,7 @@ public class PreRoundTask extends ArenaTask {
             int i = 0;
             @Override
             public void run() {
-                ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_START.getAsString());
+                ArenaUtil.playSound(arena.getPlayers(), Config.SOUNDS_ROUND_START.getAsString());
                 i++;
                 if (i == 3) cancel();
             }

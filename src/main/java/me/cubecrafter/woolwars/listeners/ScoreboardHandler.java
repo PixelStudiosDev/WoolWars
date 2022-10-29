@@ -22,7 +22,7 @@ import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -45,8 +45,8 @@ public class ScoreboardHandler implements Listener, Runnable {
 
     public ScoreboardHandler() {
         Bukkit.getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
-        if (Configuration.SCOREBOARD_GAME_ENABLED.getAsBoolean()) {
-            updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, Configuration.SCOREBOARD_REFRESH_INTERVAL.getAsInt());
+        if (Config.SCOREBOARD_GAME_ENABLED.getAsBoolean()) {
+            updateTask = Bukkit.getScheduler().runTaskTimer(WoolWars.getInstance(), this, 0L, Config.SCOREBOARD_REFRESH_INTERVAL.getAsInt());
         }
     }
 
@@ -55,7 +55,7 @@ public class ScoreboardHandler implements Listener, Runnable {
         Player player = e.getPlayer();
         updateScoreboard(player);
         PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
-        if (Configuration.SCOREBOARD_LOBBY_ENABLED.getAsBoolean()) {
+        if (Config.SCOREBOARD_LOBBY_ENABLED.getAsBoolean()) {
             scoreboard.show();
         }
     }
@@ -69,7 +69,7 @@ public class ScoreboardHandler implements Listener, Runnable {
     @EventHandler
     public void onArenaJoin(PlayerJoinArenaEvent e) {
         PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(e.getPlayer());
-        if (Configuration.SCOREBOARD_GAME_ENABLED.getAsBoolean()) {
+        if (Config.SCOREBOARD_GAME_ENABLED.getAsBoolean()) {
             scoreboard.show();
         } else {
             scoreboard.hide();
@@ -79,7 +79,7 @@ public class ScoreboardHandler implements Listener, Runnable {
     @EventHandler
     public void onArenaLeave(PlayerLeaveArenaEvent e) {
         PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(e.getPlayer());
-        if (Configuration.SCOREBOARD_LOBBY_ENABLED.getAsBoolean()) {
+        if (Config.SCOREBOARD_LOBBY_ENABLED.getAsBoolean()) {
             scoreboard.show();
         } else {
             scoreboard.hide();

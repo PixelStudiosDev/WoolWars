@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
@@ -55,7 +55,7 @@ public class PowerUp {
 
     public void use(Player player) {
         remove();
-        ArenaUtil.playSound(player, Configuration.SOUNDS_POWERUP_COLLECTED.getAsString());
+        ArenaUtil.playSound(player, Config.SOUNDS_POWERUP_COLLECTED.getAsString());
         List<String> toReplace = Arrays.asList("_HELMET", "_CHESTPLATE", "_LEGGINGS", "_BOOTS", "_PICKAXE", "_SWORD", "_AXE", "_SHOVEL", "_HOE");
         for (ItemStack item : data.getItems()) {
             String material = item.getType().toString();

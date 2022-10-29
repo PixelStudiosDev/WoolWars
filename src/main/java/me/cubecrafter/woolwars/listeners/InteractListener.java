@@ -20,7 +20,7 @@ package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.menu.menus.TeleporterMenu;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -42,7 +42,7 @@ public class InteractListener implements Listener {
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            for (String material : Configuration.DISABLED_INTERACTION_BLOCKS.getAsStringList()) {
+            for (String material : Config.DISABLED_INTERACTION_BLOCKS.getAsStringList()) {
                 if (TextUtil.matchMaterial(material, e.getClickedBlock().getType().toString())) {
                     e.setCancelled(true);
                     return;

@@ -25,25 +25,27 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
-public class ChatInput {
+public class Utils {
 
-    public ChatInput(Player player, Consumer<String> onInput) {
+    public static CompletableFuture<String> requestInput(Player player, String prompt) {
+        CompletableFuture<String> future = new CompletableFuture<>();
         ConversationFactory factory = new ConversationFactory(WoolWars.getInstance());
         factory.withLocalEcho(false);
         factory.withFirstPrompt(new StringPrompt() {
             @Override
             public String getPromptText(ConversationContext context) {
-                return "";
+                return TextUtil.color(prompt);
             }
             @Override
             public Prompt acceptInput(ConversationContext context, String input) {
-                onInput.accept(input);
+                future.complete(input);
                 return Prompt.END_OF_CONVERSATION;
             }
         });
         factory.buildConversation(player).begin();
+        return future;
     }
 
 }

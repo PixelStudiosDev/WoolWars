@@ -36,7 +36,7 @@ public class SetupCommand implements SubCommand {
             TextUtil.sendMessage(player, "{prefix}&cYou can't setup an arena while you're in game!");
             return;
         }
-        if (args.length < 2) {
+        if (args.length < 1) {
             if (SetupSession.isActive(player)) {
                 SetupSession.getSession(player).getMenu().openMenu();
             } else {
@@ -48,7 +48,7 @@ public class SetupCommand implements SubCommand {
             TextUtil.sendMessage(player, "{prefix}&cYou are already in setup mode!");
             return;
         }
-        String id = args[1];
+        String id = args[0];
         if (ArenaUtil.getArenaById(id) != null) {
             TextUtil.sendMessage(player, "{prefix}&cAn arena called &e" + id + "&c already exists!");
             return;

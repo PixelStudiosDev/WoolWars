@@ -34,7 +34,7 @@ import me.cubecrafter.woolwars.party.Party;
 import me.cubecrafter.woolwars.party.provider.PartyProvider;
 import me.cubecrafter.woolwars.team.TeamColor;
 import me.cubecrafter.woolwars.arena.setup.SetupSession;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.team.Team;
@@ -195,13 +195,13 @@ public class Arena {
                 VersionUtil.hidePlayer(online, player);
             }
         }
-        ItemStack leaveItem = ItemBuilder.fromConfig(Configuration.LEAVE_ITEM.getAsSection()).setTag("leave-item").build();
-        player.getInventory().setItem(Configuration.LEAVE_ITEM.getAsSection().getInt("slot"), leaveItem);
+        ItemStack leaveItem = ItemBuilder.fromConfig(Config.LEAVE_ITEM.getAsSection()).setTag("leave-item").build();
+        player.getInventory().setItem(Config.LEAVE_ITEM.getAsSection().getInt("slot"), leaveItem);
         TextUtil.sendMessage(players, Messages.PLAYER_JOIN_ARENA.getAsString()
                 .replace("{player}", player.getName())
                 .replace("{current}", String.valueOf(players.size()))
                 .replace("{max}", String.valueOf(maxPlayers)));
-        ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_JOINED.getAsString());
+        ArenaUtil.playSound(players, Config.SOUNDS_PLAYER_JOINED.getAsString());
         if (gameState == GameState.WAITING && getPlayers().size() >= getMinPlayers()) {
             setGameState(GameState.STARTING);
         }
@@ -253,7 +253,7 @@ public class Arena {
                 .replace("{current}", String.valueOf(players.size()))
                 .replace("{max}", String.valueOf(maxPlayers)));
         if (gameState == GameState.WAITING || gameState == GameState.STARTING) {
-            ArenaUtil.playSound(players, Configuration.SOUNDS_PLAYER_LEFT.getAsString());
+            ArenaUtil.playSound(players, Config.SOUNDS_PLAYER_LEFT.getAsString());
         }
         if (gameState == GameState.STARTING && getPlayers().size() < getMinPlayers()) {
             cancelTasks();
@@ -322,7 +322,7 @@ public class Arena {
     public void restart() {
         cancelTasks();
         removeAllPlayers();
-        getTeams().forEach(Team::reset);
+        teams.forEach(Team::reset);
         removePlacedBlocks();
         fillCenter();
         powerUps.forEach(PowerUp::remove);
@@ -413,8 +413,8 @@ public class Arena {
     }
 
     public void fillCenter() {
-        List<String> defaultBlocks = new ArrayList<>(Arrays.asList("QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"));
-        center.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(defaultBlocks.get(ThreadLocalRandom.current().nextInt(defaultBlocks.size()))).get().parseMaterial()));
+        String[] blocks = {"QUARTZ_BLOCK", "SNOW_BLOCK", "WHITE_WOOL"};
+        center.getBlocks().forEach(block -> block.setType(XMaterial.matchXMaterial(blocks[ThreadLocalRandom.current().nextInt(blocks.length)]).get().parseMaterial()));
     }
 
     public String getPointsFormatted() {

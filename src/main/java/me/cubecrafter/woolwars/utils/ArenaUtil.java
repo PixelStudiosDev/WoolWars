@@ -22,9 +22,9 @@ import com.cryptomorin.xseries.XSound;
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.storage.PlayerData;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.kits.Kit;
 import org.bukkit.GameMode;
@@ -43,11 +43,11 @@ import java.util.stream.Collectors;
 public class ArenaUtil {
 
     public void teleportToLobby(Player player) {
-        if (Configuration.LOBBY_LOCATION.getAsString().equals("")) {
+        if (Config.LOBBY_LOCATION.getAsString().equals("")) {
             TextUtil.sendMessage(player, "{prefix}&cThe lobby location is not set! Set it using /woolwars setlobby");
             return;
         }
-        player.teleport(Configuration.LOBBY_LOCATION.getAsLocation());
+        player.teleport(Config.LOBBY_LOCATION.getAsLocation());
     }
 
     public boolean isBlockInTeamBase(Block block, Arena arena) {
@@ -125,7 +125,7 @@ public class ArenaUtil {
     }
 
     public void handleDeath(Player player, Arena arena) {
-        ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_PLAYER_DEATH.getAsString());
+        ArenaUtil.playSound(arena.getPlayers(), Config.SOUNDS_PLAYER_DEATH.getAsString());
         arena.addDeaths(player, 1);
         PlayerData data = ArenaUtil.getPlayerData(player);
         data.setDeaths(data.getDeaths() + 1);
@@ -145,8 +145,8 @@ public class ArenaUtil {
         for (Player dead : arena.getDeadPlayers()) {
             VersionUtil.showPlayer(player, dead);
         }
-        ItemStack teleporter = ItemBuilder.fromConfig(Configuration.TELEPORTER_ITEM.getAsSection()).setTag("teleport-item").build();
-        player.getInventory().setItem(Configuration.TELEPORTER_ITEM.getAsSection().getInt("slot"), teleporter);
+        ItemStack teleporter = ItemBuilder.fromConfig(Config.TELEPORTER_ITEM.getAsSection()).setTag("teleport-item").build();
+        player.getInventory().setItem(Config.TELEPORTER_ITEM.getAsSection().getInt("slot"), teleporter);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 0, false, false));
         if (arena.getAlivePlayers().isEmpty()) {
             TextUtil.sendMessage(arena.getPlayers(),  Messages.ALL_PLAYERS_DEAD.getAsString());

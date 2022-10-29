@@ -21,11 +21,11 @@ package me.cubecrafter.woolwars.arena.tasks;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.storage.PlayerData;
 import me.cubecrafter.woolwars.api.events.arena.GameEndEvent;
 import me.cubecrafter.woolwars.api.events.arena.RoundEndEvent;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.team.Team;
@@ -55,7 +55,7 @@ public class RoundTask extends ArenaTask {
     private final Map<Player, Integer> roundBrokenBlocks = new HashMap<>();
 
     public RoundTask(Arena arena) {
-        super(arena, Configuration.ACTIVE_ROUND_DURATION.getAsInt());
+        super(arena, Config.ACTIVE_ROUND_DURATION.getAsInt());
     }
 
     @Override
@@ -173,25 +173,25 @@ public class RoundTask extends ArenaTask {
         }
         if (draw) {
             TextUtil.sendTitle(arena.getPlayers(), 3, Messages.ROUND_DRAW_TITLE.getAsString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_DRAW_SUBTITLE.getAsString());
-            ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_ROUND_DRAW.getAsString());
+            ArenaUtil.playSound(arena.getPlayers(), Config.SOUNDS_ROUND_DRAW.getAsString());
             return;
         }
         for (Team team : arena.getTeams()) {
             if (lastRound) {
                 if (team.equals(winner)) {
                     TextUtil.sendTitle(team.getMembers(), 3,  Messages.WINNER_TITLE.getAsString(),  Messages.WINNER_SUBTITLE.getAsString());
-                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_WON.getAsString());
+                    ArenaUtil.playSound(team.getMembers(), Config.SOUNDS_GAME_WON.getAsString());
                 } else {
                     TextUtil.sendTitle(team.getMembers(), 3,  Messages.LOSER_TITLE.getAsString(),  Messages.LOSER_SUBTITLE.getAsString());
-                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_GAME_LOST.getAsString());
+                    ArenaUtil.playSound(team.getMembers(), Config.SOUNDS_GAME_LOST.getAsString());
                 }
             } else {
                 if (team.equals(winner)) {
                     TextUtil.sendTitle(team.getMembers(), 3, Messages.ROUND_WIN_TITLE.getAsString().replace("{points}", arena.getPointsFormatted()),  Messages.ROUND_WIN_SUBTITLE.getAsString());
-                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_WON.getAsString());
+                    ArenaUtil.playSound(team.getMembers(), Config.SOUNDS_ROUND_WON.getAsString());
                 } else {
                     TextUtil.sendTitle(team.getMembers(), 3, Messages.ROUND_LOSE_TITLE.getAsString().replace("{points}", arena.getPointsFormatted()),  Messages.ROUND_LOSE_SUBTITLE.getAsString());
-                    ArenaUtil.playSound(team.getMembers(), Configuration.SOUNDS_ROUND_LOST.getAsString());
+                    ArenaUtil.playSound(team.getMembers(), Config.SOUNDS_ROUND_LOST.getAsString());
                 }
             }
         }

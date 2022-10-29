@@ -35,22 +35,22 @@ public class JoinCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (args.length < 2) return;
-        Arena arena = ArenaUtil.getArenaById(args[1]);
+        if (args.length < 1) return;
+        Arena arena = ArenaUtil.getArenaById(args[0]);
         if (arena != null) {
             arena.addPlayer((Player) sender, true);
-        } else if (ArenaUtil.getGroups().contains(args[1])) {
-            ArenaUtil.joinRandomArena((Player) sender, args[1]);
-        } else if (args[1].equalsIgnoreCase("random")) {
+        } else if (ArenaUtil.getGroups().contains(args[0])) {
+            ArenaUtil.joinRandomArena((Player) sender, args[0]);
+        } else if (args[0].equalsIgnoreCase("random")) {
             ArenaUtil.joinRandomArena((Player) sender);
         } else {
-            TextUtil.sendMessage((Player) sender, Messages.ARENA_NOT_FOUND.getAsString());
+            TextUtil.sendMessage(sender, Messages.ARENA_NOT_FOUND.getAsString());
         }
     }
 
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
-        if (args.length != 2) return null;
+        if (args.length != 1) return null;
         List<String> completions = new ArrayList<>();
         completions.addAll(ArenaUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).map(Arena::getId).collect(Collectors.toList()));
         completions.addAll(ArenaUtil.getGroups());

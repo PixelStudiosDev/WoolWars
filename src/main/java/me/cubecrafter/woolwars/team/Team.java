@@ -22,10 +22,11 @@ import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.PlayerScoreboard;
+import me.cubecrafter.woolwars.utils.VersionUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -51,10 +52,7 @@ public class Team {
     }
 
     public void removeMember(Player player) {
-        PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
-        if (scoreboard != null) {
-            scoreboard.removeGamePrefix(this);
-        }
+        PlayerScoreboard.getOrCreate(player).removeGamePrefix(this);
         members.remove(player);
     }
 
@@ -63,16 +61,18 @@ public class Team {
     }
 
     public void applyNameTags() {
-        if (!Configuration.NAME_TAGS_ENABLED.getAsBoolean()) return;
+        if (!Config.NAME_TAGS_ENABLED.getAsBoolean()) return;
         for (Player player : getMembers()) {
-            PlayerScoreboard scoreboard = PlayerScoreboard.getOrCreate(player);
-            scoreboard.setGamePrefix(this);
+            PlayerScoreboard.getOrCreate(player).setGamePrefix(this);
         }
     }
 
-    public void teleportToSpawn() {
-        members.forEach(member -> member.teleport(spawnLocation));
-        ArenaUtil.playSound(members, Configuration.SOUNDS_TELEPORT_TO_BASE.getAsString());
+    public void respawn() {
+        members.forEach(member -> {
+            member.teleport(spawnLocation);
+            VersionUtil.setCollidable(member, false);
+        });
+        ArenaUtil.playSound(members, Config.SOUNDS_TELEPORT_TO_BASE.getAsString());
     }
 
     public void addPoint() {
@@ -88,7 +88,7 @@ public class Team {
     }
 
     public void reset() {
-        if (Configuration.NAME_TAGS_ENABLED.getAsBoolean()) {
+        if (Config.NAME_TAGS_ENABLED.getAsBoolean()) {
             for (Player player : members) {
                 PlayerScoreboard.getOrCreate(player).removeGamePrefix(this);
             }

@@ -21,7 +21,7 @@ package me.cubecrafter.woolwars.arena.tasks;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.api.events.arena.GameStartEvent;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -31,7 +31,7 @@ import org.bukkit.Bukkit;
 public class StartingTask extends ArenaTask {
 
     public StartingTask(Arena arena) {
-        super(arena, Configuration.STARTING_COUNTDOWN.getAsInt());
+        super(arena, Config.STARTING_COUNTDOWN.getAsInt());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class StartingTask extends ArenaTask {
     public void execute() {
         if (arena.getTimer() % 10 == 0 || arena.getTimer() <= 5) {
             TextUtil.sendMessage(arena.getPlayers(), Messages.GAME_START_COUNTDOWN.getAsString().replace("{seconds}", String.valueOf(arena.getTimer())));
-            ArenaUtil.playSound(arena.getPlayers(), Configuration.SOUNDS_COUNTDOWN.getAsString());
+            ArenaUtil.playSound(arena.getPlayers(), Config.SOUNDS_COUNTDOWN.getAsString());
         }
     }
 

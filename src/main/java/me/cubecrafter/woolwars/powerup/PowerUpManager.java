@@ -33,11 +33,8 @@ public class PowerUpManager {
 
     private final List<PowerUpType> powerUps = new ArrayList<>();
 
-    public PowerUpManager() {
-        loadPowerUps();
-    }
-
-    private void loadPowerUps() {
+    public void load() {
+        powerUps.clear();
         YamlConfiguration config = WoolWars.getInstance().getFileManager().getPowerUps();
         int loaded = 0;
         for (String id : config.getKeys(false)) {
@@ -61,12 +58,7 @@ public class PowerUpManager {
             powerUps.add(data);
             loaded++;
         }
-        TextUtil.info("Loaded " + loaded + " powerup types!");
-    }
-
-    public void reload() {
-        powerUps.clear();
-        loadPowerUps();
+        TextUtil.info("Loaded " + loaded + " powerups!");
     }
 
     public PowerUpType getRandom() {

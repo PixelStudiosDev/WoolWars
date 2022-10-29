@@ -26,10 +26,11 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.storage.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -54,7 +55,7 @@ public class TextUtil {
     }
 
     public void info(String msg) {
-        Bukkit.getLogger().info(msg);
+        WoolWars.getInstance().getLogger().info(msg);
     }
 
     public String serializeLocation(Location location) {
@@ -79,14 +80,15 @@ public class TextUtil {
         return text;
     }
 
-    public String format(Player player, String text) {
+    public String format(CommandSender sender, String text) {
+        Player player = sender instanceof Player ? (Player) sender : null;
         text = parsePlaceholders(player, text);
         text = text.replace("{date}", getCurrentDate()).replace("{prefix}", Messages.PREFIX.getAsString());
         for (String group : ArenaUtil.getGroups()) {
             text = text.replace("{count_" + group + "}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
                     .replace("{count_total}", String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
         }
-        if (player != null && player.isOnline()) {
+        if (player != null) {
             PlayerData data = ArenaUtil.getPlayerData(player);
             text = text.replace("{wins}", String.valueOf(data.getWins()))
                     .replace("{losses}", String.valueOf(data.getLosses()))
@@ -115,9 +117,9 @@ public class TextUtil {
         return text;
     }
 
-    public List<String> format(Player player, List<String> lines) {
+    public List<String> format(CommandSender sender, List<String> lines) {
         if (lines == null) return Collections.emptyList();
-        lines.replaceAll(line -> format(player, line));
+        lines.replaceAll(line -> format(sender, line));
         return lines;
     }
 
@@ -127,16 +129,16 @@ public class TextUtil {
         return lines;
     }
 
-    public void sendMessage(Player player, String message) {
-        message = format(player, message);
+    public void sendMessage(CommandSender sender, String message) {
+        message = format(sender, message);
         if (message.startsWith("<center>") && message.endsWith("</center>")) {
             message = getCenteredMessage(message);
         }
-        player.sendMessage(message);
+        sender.sendMessage(message);
     }
 
-    public void sendMessage(Player player, List<String> messages) {
-        messages.forEach(message -> sendMessage(player, message));
+    public void sendMessage(CommandSender sender, List<String> messages) {
+        messages.forEach(message -> sendMessage(sender, message));
     }
 
     public void sendMessage(List<Player> players, String message) {

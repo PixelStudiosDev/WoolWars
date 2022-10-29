@@ -22,7 +22,7 @@ import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Abilities;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -44,7 +44,7 @@ public class DamageListener implements Listener {
         Player player = (Player) e.getEntity();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && Configuration.DISABLE_FALL_DAMAGE.getAsBoolean()) {
+        if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && Config.DISABLE_FALL_DAMAGE.getAsBoolean()) {
             e.setCancelled(true);
             return;
         }

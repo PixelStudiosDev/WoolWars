@@ -20,7 +20,6 @@ package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.config.Configuration;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.CommandSender;
@@ -31,10 +30,8 @@ public class ReloadCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        WoolWars.getInstance().getFileManager().load();
-        WoolWars.getInstance().getKitManager().load();
-        WoolWars.getInstance().getPowerupManager().reload();
-        sender.sendMessage(TextUtil.format(null, Messages.CONFIG_RELOADED.getAsString()));
+        WoolWars.getInstance().reload();
+        TextUtil.sendMessage(sender, Messages.CONFIG_RELOADED.getAsString());
     }
 
     @Override

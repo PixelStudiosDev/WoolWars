@@ -28,46 +28,88 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FileManager {
 
     private final WoolWars plugin;
-    private final File configFile;
-    private final File messagesFile;
-    private final File powerUpsFile;
-    private final File menusFile;
-    private final File abilitiesFile;
+
     @Getter private YamlConfiguration config;
     @Getter private YamlConfiguration messages;
     @Getter private YamlConfiguration powerUps;
     @Getter private YamlConfiguration menus;
     @Getter private YamlConfiguration abilities;
 
+    private final File configFile;
+    private final File messagesFile;
+    private final File powerUpsFile;
+    private final File menusFile;
+    private final File abilitiesFile;
+
+    public static final File PLUGIN_FOLDER = WoolWars.getInstance().getDataFolder();
+    public static final File ARENAS_FOLDER = new File(PLUGIN_FOLDER, "arenas");
+    public static final File KITS_FOLDER = new File(PLUGIN_FOLDER, "kits");
+
     public FileManager(WoolWars plugin) {
         this.plugin = plugin;
-        configFile = new File(plugin.getDataFolder(), "config.yml");
-        messagesFile = new File(plugin.getDataFolder(), "messages.yml");
-        powerUpsFile = new File(plugin.getDataFolder(), "powerups.yml");
-        menusFile = new File(plugin.getDataFolder(), "menus.yml");
-        abilitiesFile = new File(plugin.getDataFolder(), "abilities.yml");
-        load();
+        configFile = new File(PLUGIN_FOLDER, "config.yml");
+        messagesFile = new File(PLUGIN_FOLDER, "messages.yml");
+        powerUpsFile = new File(PLUGIN_FOLDER, "powerups.yml");
+        menusFile = new File(PLUGIN_FOLDER, "menus.yml");
+        abilitiesFile = new File(PLUGIN_FOLDER, "abilities.yml");
+        load(true);
     }
 
-    private void createFiles() {
-        getArenasDir().mkdirs();
-        if (new File(plugin.getDataFolder(), "kits").mkdirs()) {
-            List<String> kits = Arrays.asList("archer", "assault", "engineer", "golem", "swordsman", "tank");
-            kits.forEach(kit -> saveResource("kits/" + kit + ".yml", new File(plugin.getDataFolder(), "kits/" + kit + ".yml")));
-        }
+    public void load(boolean updateFiles) {
+        ARENAS_FOLDER.mkdirs();
         if (!configFile.exists()) saveResource("config.yml", configFile);
         if (!messagesFile.exists()) saveResource("messages.yml", messagesFile);
         if (!powerUpsFile.exists()) saveResource("powerups.yml", powerUpsFile);
         if (!menusFile.exists()) saveResource("menus.yml", menusFile);
         if (!abilitiesFile.exists()) saveResource("abilities.yml", abilitiesFile);
+        if (KITS_FOLDER.mkdirs()) {
+            for (String kit : new String[]{"archer", "assault", "engineer", "golem", "swordsman", "tank"}) {
+                String path = "kits/" + kit + ".yml";
+                saveResource(path, new File(KITS_FOLDER, path));
+            }
+        }
+        config = YamlConfiguration.loadConfiguration(configFile);
+        messages = YamlConfiguration.loadConfiguration(messagesFile);
+        powerUps = YamlConfiguration.loadConfiguration(powerUpsFile);
+        menus = YamlConfiguration.loadConfiguration(menusFile);
+        abilities = YamlConfiguration.loadConfiguration(abilitiesFile);
+        if (!updateFiles) return;
+        Map<YamlConfiguration, File> configs = new HashMap<>();
+        configs.put(config, configFile);
+        configs.put(messages, messagesFile);
+        configs.put(menus, menusFile);
+        boolean update = false;
+        for (Map.Entry<YamlConfiguration, File> entry : configs.entrySet()) {
+            YamlConfiguration config = entry.getKey();
+            InputStream inputStream = plugin.getResource(entry.getValue().getName());
+            YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
+            for (String key : defaultConfig.getKeys(true)) {
+                if (config.contains(key)) continue;
+                config.set(key, defaultConfig.get(key));
+                update = true;
+            }
+        }
+        if (!update) return;
+        save();
+        load(false);
+    }
+
+    public void save() {
+        try {
+            config.save(configFile);
+            messages.save(messagesFile);
+            powerUps.save(powerUpsFile);
+            menus.save(menusFile);
+            abilities.save(abilitiesFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void saveResource(String name, File destination) {
@@ -78,63 +120,12 @@ public class FileManager {
         }
     }
 
-    public void save() {
-        try {
-            config.save(configFile);
-            messages.save(messagesFile);
-            powerUps.save(powerUpsFile);
-            menus.save(menusFile);
-            abilities.save(abilitiesFile);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void load() {
-        createFiles();
-        config = YamlConfiguration.loadConfiguration(configFile);
-        TextUtil.info("File 'config.yml' loaded!");
-        messages = YamlConfiguration.loadConfiguration(messagesFile);
-        TextUtil.info("File 'messages.yml' loaded!");
-        powerUps = YamlConfiguration.loadConfiguration(powerUpsFile);
-        TextUtil.info("File 'powerups.yml' loaded!");
-        menus = YamlConfiguration.loadConfiguration(menusFile);
-        TextUtil.info("File 'menus.yml' loaded!");
-        abilities = YamlConfiguration.loadConfiguration(abilitiesFile);
-        TextUtil.info("File 'abilities.yml' loaded!");
-        updateConfigs();
-    }
-
-    public void updateConfigs() {
-        Map<YamlConfiguration, File> configurations = new HashMap<>();
-        configurations.put(config, configFile);
-        configurations.put(messages, messagesFile);
-        configurations.put(menus, menusFile);
-        boolean update = false;
-        for (Map.Entry<YamlConfiguration, File> entry : configurations.entrySet()) {
-            YamlConfiguration configuration = entry.getKey();
-            File file = entry.getValue();
-            InputStream inputStream = plugin.getResource(file.getName());
-            YamlConfiguration updated = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
-            for (String key : updated.getKeys(true)) {
-                if (configuration.contains(key)) continue;
-                configuration.set(key, updated.get(key));
-                update = true;
-            }
-        }
-        if (update) save();
-    }
-
     public File[] getArenaFiles() {
-        return getArenasDir().listFiles((dir, name) -> name.endsWith(".yml"));
+        return ARENAS_FOLDER.listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
     public File[] getKitFiles() {
-        return new File(plugin.getDataFolder(), "kits").listFiles((dir, name) -> name.endsWith(".yml"));
-    }
-
-    public static File getArenasDir() {
-        return new File(WoolWars.getInstance().getDataFolder(), "arenas");
+        return KITS_FOLDER.listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
 }

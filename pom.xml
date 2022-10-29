@@ -6,7 +6,7 @@
 
     <groupId>me.cubecrafter</groupId>
     <artifactId>WoolWars</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     <packaging>jar</packaging>
 
     <name>WoolWars</name>
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.0.0</version>
+            <version>9.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -132,12 +132,6 @@
             <artifactId>HikariCP</artifactId>
             <version>4.0.3</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

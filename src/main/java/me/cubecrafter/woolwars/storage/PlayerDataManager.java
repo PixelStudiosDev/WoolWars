@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.database;
+package me.cubecrafter.woolwars.storage;
 
 import me.cubecrafter.woolwars.WoolWars;
 import org.bukkit.Bukkit;
@@ -32,6 +32,7 @@ import java.util.UUID;
 
 public class PlayerDataManager implements Listener {
 
+    private final Map<UUID, PlayerData> playerData = new HashMap<>();
     private final Database database;
 
     public PlayerDataManager(WoolWars plugin) {
@@ -39,38 +40,41 @@ public class PlayerDataManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    private final Map<UUID, PlayerData> playerData = new HashMap<>();
-
-    public PlayerData getPlayerData(Player player) {
-        return playerData.get(player.getUniqueId());
-    }
-
     @EventHandler
     public void onLogin(PlayerLoginEvent e) {
         if (e.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
-        Player player = e.getPlayer();
-        PlayerData data = database.getPlayerData(player.getUniqueId());
-        playerData.put(player.getUniqueId(), data);
+        UUID uuid = e.getPlayer().getUniqueId();
+        playerData.put(uuid, new PlayerData(uuid));
+        database.fetchData(uuid).thenAccept(data -> {
+            if (data == null) return;
+            playerData.put(uuid, data);
+        });
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        database.savePlayerDataAsync(getPlayerData(player));
+        database.saveData(getPlayerData(player));
         playerData.remove(player.getUniqueId());
     }
 
-    public void save() {
-        for (PlayerData data : playerData.values()) {
-            database.savePlayerData(data);
-        }
+    public PlayerData getPlayerData(Player player) {
+        return playerData.get(player.getUniqueId());
     }
 
     public void load() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerData data = database.getPlayerData(player.getUniqueId());
-            playerData.put(player.getUniqueId(), data);
+            UUID uuid = player.getUniqueId();
+            playerData.put(uuid, new PlayerData(uuid));
+            database.fetchData(uuid).thenAccept(data -> {
+                if (data == null) return;
+                playerData.put(uuid, data);
+            });
         }
+    }
+
+    public void save() {
+        database.saveAllData(playerData.values());
     }
 
 }

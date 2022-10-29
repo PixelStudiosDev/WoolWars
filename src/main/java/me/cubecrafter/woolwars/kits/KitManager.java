@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.kits;
 
+import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.Abilities;
 import me.cubecrafter.woolwars.kits.ability.Ability;
@@ -40,15 +41,37 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@RequiredArgsConstructor
 public class KitManager {
+
+    private final WoolWars plugin;
 
     private final Map<String, Kit> kits = new HashMap<>();
     private final Map<String, Ability> abilities = new HashMap<>();
     private final Set<Player> abilityCooldowns = new HashSet<>();
-    private final WoolWars plugin;
 
-    public KitManager(WoolWars plugin) {
-        this.plugin = plugin;
+    public void load() {
+        kits.clear();
+        abilities.clear();
+        abilities.put("GIGAHEAL", new GigaHealAbility(Abilities.GIGAHEAL.getAsSection()));
+        abilities.put("KNOCKBACK_TNT", new KnockbackTNTAbility(Abilities.KNOCKBACK_TNT.getAsSection()));
+        abilities.put("STEP_BACK", new StepBackAbility(Abilities.STEP_BACK.getAsSection()));
+        abilities.put("SPRINT", new SprintAbility(Abilities.SPRINT.getAsSection()));
+        abilities.put("GOLDEN_SHELL", new GoldenShellAbility(Abilities.GOLDEN_SHELL.getAsSection()));
+        abilities.put("HACK", new HackAbility(Abilities.HACK.getAsSection()));
+        for (String id : Abilities.CUSTOM_ABILITIES.getAsSection().getKeys(false)) {
+            ConfigurationSection section = Abilities.CUSTOM_ABILITIES.getAsSection().getConfigurationSection(id);
+            Ability ability = new CustomAbility(section);
+            abilities.put(id.toUpperCase(), ability);
+        }
+        TextUtil.info("Loaded " + abilities.size() + " abilities!");
+        for (File file : plugin.getFileManager().getKitFiles()) {
+            String id = file.getName().replace(".yml", "");
+            YamlConfiguration kitConfig = YamlConfiguration.loadConfiguration(file);
+            Kit kit = new Kit(id, kitConfig);
+            kits.put(id, kit);
+        }
+        TextUtil.info("Loaded " + kits.size() + " kits!");
     }
 
     public Collection<Kit> getKits() {
@@ -61,35 +84,6 @@ public class KitManager {
 
     public Ability getAbility(String id) {
         return abilities.get(id.toUpperCase());
-    }
-
-    public void load() {
-        kits.clear();
-        abilities.clear();
-        abilities.put("GIGAHEAL", new GigaHealAbility(Abilities.GIGAHEAL.getAsSection()));
-        abilities.put("KNOCKBACK_TNT", new KnockbackTNTAbility(Abilities.KNOCKBACK_TNT.getAsSection()));
-        abilities.put("STEP_BACK", new StepBackAbility(Abilities.STEP_BACK.getAsSection()));
-        abilities.put("SPRINT", new SprintAbility(Abilities.SPRINT.getAsSection()));
-        abilities.put("GOLDEN_SHELL", new GoldenShellAbility(Abilities.GOLDEN_SHELL.getAsSection()));
-        abilities.put("HACK", new HackAbility(Abilities.HACK.getAsSection()));
-        int loadedAbilities = 0;
-        for (String id : Abilities.CUSTOM_ABILITIES.getAsSection().getKeys(false)) {
-            ConfigurationSection section = Abilities.CUSTOM_ABILITIES.getAsSection().getConfigurationSection(id);
-            Ability ability = new CustomAbility(section);
-            abilities.put(id.toUpperCase(), ability);
-            loadedAbilities++;
-        }
-        TextUtil.info("Loaded " + loadedAbilities + " custom abilities!");
-        int loadedKits = 0;
-        for (File kitFile : plugin.getFileManager().getKitFiles()) {
-            String id = kitFile.getName().replace(".yml", "");
-            YamlConfiguration kitConfig = YamlConfiguration.loadConfiguration(kitFile);
-            Kit kit = new Kit(id, kitConfig);
-            kits.put(id, kit);
-            TextUtil.info("Kit '" + id + "' loaded!");
-            loadedKits++;
-        }
-        TextUtil.info("Loaded " + loadedKits + " kits!");
     }
 
     public boolean hasCooldown(Player player) {

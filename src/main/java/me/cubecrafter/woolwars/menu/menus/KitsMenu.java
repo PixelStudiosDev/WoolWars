@@ -19,7 +19,7 @@
 package me.cubecrafter.woolwars.menu.menus;
 
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.storage.PlayerData;
 import me.cubecrafter.woolwars.api.events.player.PlayerSelectKitEvent;
 import me.cubecrafter.woolwars.config.Menus;
 import me.cubecrafter.woolwars.config.Messages;

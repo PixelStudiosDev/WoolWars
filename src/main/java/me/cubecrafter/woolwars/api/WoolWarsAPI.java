@@ -20,8 +20,8 @@ package me.cubecrafter.woolwars.api;
 
 import lombok.experimental.UtilityClass;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.database.PlayerData;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.storage.PlayerData;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.kits.Kit;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.Location;
@@ -33,7 +33,7 @@ import java.util.List;
 public class WoolWarsAPI {
 
     public Location getLobbyLocation() {
-        return Configuration.LOBBY_LOCATION.getAsLocation();
+        return Config.LOBBY_LOCATION.getAsLocation();
     }
 
     public List<Arena> getArenas() {

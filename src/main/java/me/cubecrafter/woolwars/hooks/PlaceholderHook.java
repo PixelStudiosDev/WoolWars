@@ -21,7 +21,7 @@ package me.cubecrafter.woolwars.hooks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.database.PlayerData;
+import me.cubecrafter.woolwars.storage.PlayerData;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.entity.Player;
 

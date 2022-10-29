@@ -20,7 +20,7 @@ package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
@@ -39,19 +39,19 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
-        if (!Configuration.CHAT_FORMAT_ENABLED.getAsBoolean()) return;
+        if (!Config.CHAT_FORMAT_ENABLED.getAsBoolean()) return;
         Player player = e.getPlayer();
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena != null) {
             if (arena.isAlive(player)) {
                 setRecipients(e, arena.getAlivePlayers());
                 if (arena.getGameState().equals(GameState.STARTING) || arena.getGameState().equals(GameState.WAITING)) {
-                    e.setFormat(TextUtil.format(player, Configuration.WAITING_LOBBY_CHAT_FORMAT.getAsString()
+                    e.setFormat(TextUtil.format(player, Config.WAITING_LOBBY_CHAT_FORMAT.getAsString()
                             .replace("{player}", player.getName())
                             .replace("{message}", e.getMessage())));
                 } else {
                     Team team = arena.getTeamByPlayer(player);
-                    e.setFormat(TextUtil.format(player, Configuration.GAME_CHAT_FORMAT.getAsString()
+                    e.setFormat(TextUtil.format(player, Config.GAME_CHAT_FORMAT.getAsString()
                             .replace("{player}", player.getName())
                             .replace("{team_color}", team.getTeamColor().getChatColor().toString())
                             .replace("{team}", team.getName())
@@ -60,13 +60,13 @@ public class ChatListener implements Listener {
                 }
             } else {
                 setRecipients(e, arena.getDeadPlayers());
-                e.setFormat(TextUtil.format(player, Configuration.SPECTATOR_CHAT_FORMAT.getAsString()
+                e.setFormat(TextUtil.format(player, Config.SPECTATOR_CHAT_FORMAT.getAsString()
                         .replace("{player}", player.getName())
                         .replace("{message}", e.getMessage())));
             }
         } else {
             setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(p)).collect(Collectors.toList()));
-            e.setFormat(TextUtil.format(player, Configuration.LOBBY_CHAT_FORMAT.getAsString()
+            e.setFormat(TextUtil.format(player, Config.LOBBY_CHAT_FORMAT.getAsString()
                     .replace("{player}", player.getName())
                     .replace("{message}", e.getMessage())));
         }
@@ -77,8 +77,8 @@ public class ChatListener implements Listener {
         Player player = e.getPlayer();
         if (player.hasPermission("woolwars.bypass")) return;
         if (!ArenaUtil.isPlaying(player)) return;
-        List<String> commands = Configuration.BLOCKED_COMMANDS.getAsStringList();
-        if (Configuration.BLOCKED_COMMANDS_WHITELIST.getAsBoolean()) {
+        List<String> commands = Config.BLOCKED_COMMANDS.getAsStringList();
+        if (Config.BLOCKED_COMMANDS_WHITELIST.getAsBoolean()) {
             if (commands.stream().noneMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
                 e.setCancelled(true);
                 player.sendMessage(TextUtil.color(Messages.COMMAND_BLOCKED.getAsString()));

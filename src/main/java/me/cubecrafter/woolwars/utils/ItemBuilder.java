@@ -40,7 +40,7 @@ import java.util.List;
 
 public class ItemBuilder {
 
-    private ItemStack item;
+    private final ItemStack item;
     private boolean legacySplashPotion = false;
 
     public ItemBuilder(String material) {
@@ -104,7 +104,7 @@ public class ItemBuilder {
     public ItemBuilder setTag(String value) {
         NBTItem nbtItem = new NBTItem(item);
         nbtItem.setString("woolwars", value);
-        item = nbtItem.getItem();
+        nbtItem.applyNBT(item);
         return this;
     }
 

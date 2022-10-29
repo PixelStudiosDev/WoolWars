@@ -21,7 +21,7 @@ package me.cubecrafter.woolwars.menu.menus.setup;
 import me.cubecrafter.woolwars.arena.setup.SetupSession;
 import me.cubecrafter.woolwars.menu.Menu;
 import me.cubecrafter.woolwars.menu.MenuItem;
-import me.cubecrafter.woolwars.utils.ChatInput;
+import me.cubecrafter.woolwars.utils.Utils;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.Location;
@@ -61,7 +61,7 @@ public class SetupMenu extends Menu {
                 .setLore("&7Click to set the arena display name.", "", session.isDisplayNameSet() ? "&8Current: &7" + session.getDisplayName() + " &a✔" : "&cNot Set ✘").build(), player).addAction(e -> {
             closeMenu();
             TextUtil.sendTitle(player, 3, "&e&lSet Display Name", "&7Type &cCANCEL &7to exit!");
-            new ChatInput(player, input -> {
+            Utils.requestInput(player, "&7Enter the arena displayname:").thenAccept(input -> {
                 if (!input.equalsIgnoreCase("cancel")) {
                     session.setDisplayName(input);
                 }
@@ -72,7 +72,7 @@ public class SetupMenu extends Menu {
                 .setLore("&7Click to set the arena group.", "", session.isGroupSet() ? "&8Current: &7" + session.getGroup() + " &a✔" : "&cNot Set ✘").build(), player).addAction(e -> {
             closeMenu();
             TextUtil.sendTitle(player, 3, "&e&lSet Group", "&7Type &cCANCEL &7to exit!");
-            new ChatInput(player, input -> {
+            Utils.requestInput(player, "&7Enter the arena group:").thenAccept(input -> {
                 if (!input.equalsIgnoreCase("cancel")) {
                     session.setGroup(input);
                 }

@@ -54,4 +54,12 @@ public class VersionUtil {
         }
     }
 
+    public void setCollidable(Player player, boolean collidable) {
+        if (ReflectionUtils.supports(9)) {
+            player.setCollidable(collidable);
+        } else {
+            player.spigot().setCollidesWithEntities(collidable);
+        }
+    }
+
 }

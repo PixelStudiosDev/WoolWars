@@ -20,8 +20,15 @@ package me.cubecrafter.woolwars.commands;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.commands.subcommands.*;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.commands.subcommands.ArenasCommand;
+import me.cubecrafter.woolwars.commands.subcommands.ForceStartCommand;
+import me.cubecrafter.woolwars.commands.subcommands.JoinCommand;
+import me.cubecrafter.woolwars.commands.subcommands.LeaveCommand;
+import me.cubecrafter.woolwars.commands.subcommands.ReloadCommand;
+import me.cubecrafter.woolwars.commands.subcommands.SetLobbyCommand;
+import me.cubecrafter.woolwars.commands.subcommands.SetupCommand;
+import me.cubecrafter.woolwars.commands.subcommands.StatsCommand;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.command.Command;
@@ -30,27 +37,30 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 public class CommandManager implements TabExecutor {
 
-    private final Set<SubCommand> subCommands = new HashSet<>();
+    private final SubCommand[] commands = {
+            new ArenasCommand(),
+            new ForceStartCommand(),
+            new JoinCommand(),
+            new LeaveCommand(),
+            new ReloadCommand(),
+            new SetLobbyCommand(),
+            new SetupCommand(),
+            new StatsCommand()
+    };
 
     public CommandManager(WoolWars plugin) {
-        subCommands.add(new JoinCommand());
-        subCommands.add(new LeaveCommand());
-        subCommands.add(new ArenasCommand());
-        subCommands.add(new ForceStartCommand());
-        subCommands.add(new ReloadCommand());
-        subCommands.add(new StatsCommand());
-        subCommands.add(new SetLobbyCommand());
-        subCommands.add(new SetupCommand());
         PluginCommand command = plugin.getCommand("woolwars");
         command.setExecutor(this);
         command.setTabCompleter(this);
-        if (Configuration.ENABLE_LEAVE_COMMAND_SHORTCUT.getAsBoolean()) {
+        if (Config.ENABLE_LEAVE_COMMAND_SHORTCUT.getAsBoolean()) {
             plugin.getCommand("leave").setExecutor(new LeaveCommand());
         }
     }
@@ -58,22 +68,22 @@ public class CommandManager implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0) {
-            SubCommand cmd = subCommands.stream().filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
+            SubCommand cmd = Arrays.stream(commands).filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
-                sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
+                TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.getAsString());
                 return true;
             }
             if (cmd.isPlayerOnly() && !(sender instanceof Player)) {
-                sender.sendMessage(TextUtil.color(Messages.ONLY_PLAYER_COMMAND.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
+                TextUtil.sendMessage(sender, Messages.ONLY_PLAYER_COMMAND.getAsString());
                 return true;
             }
             if (!sender.hasPermission(cmd.getPermission())) {
-                sender.sendMessage(TextUtil.color(Messages.NO_PERMISSION.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
+                TextUtil.sendMessage(sender, Messages.NO_PERMISSION.getAsString());
                 return true;
             }
-            cmd.execute(sender, args);
+            cmd.execute(sender, Arrays.copyOfRange(args, 1, args.length));
         } else {
-            sender.sendMessage(TextUtil.color(Messages.UNKNOWN_COMMAND.getAsString().replace("{prefix}", Messages.PREFIX.getAsString())));
+            TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.getAsString());
         }
         return true;
     }
@@ -81,18 +91,20 @@ public class CommandManager implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length > 1) {
-            SubCommand cmd = subCommands.stream().filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
+            SubCommand cmd = Arrays.stream(commands).filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
                 return Collections.emptyList();
             }
             if (sender.hasPermission(cmd.getPermission())) {
-                return cmd.tabComplete(sender, args) != null ? cmd.tabComplete(sender, args) : Collections.emptyList();
+                List<String> completions = cmd.tabComplete(sender, Arrays.copyOfRange(args, 1, args.length));
+                return completions == null ? Collections.emptyList() : completions;
             }
         } else if (args.length == 1) {
+            List<String> completions = Arrays.stream(commands).filter(sub -> sender.hasPermission(sub.getPermission())).map(SubCommand::getLabel).collect(Collectors.toList());
             if (args[0].isEmpty()) {
-                return subCommands.stream().filter(cmd -> sender.hasPermission(cmd.getPermission())).map(SubCommand::getLabel).collect(Collectors.toList());
+                return completions;
             } else {
-                return subCommands.stream().filter(sub -> sender.hasPermission(sub.getPermission())).map(SubCommand::getLabel).filter(label -> label.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
+                return completions.stream().filter(label -> label.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();

@@ -27,7 +27,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.List;
 
 @RequiredArgsConstructor
-public enum Configuration {
+public enum Config {
 
     // GAME SETTINGS
 

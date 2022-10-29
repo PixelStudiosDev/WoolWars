@@ -19,7 +19,7 @@
 package me.cubecrafter.woolwars.utils;
 
 import com.cryptomorin.xseries.ReflectionUtils;
-import me.cubecrafter.woolwars.config.Configuration;
+import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -87,7 +87,7 @@ public class PlayerScoreboard {
                 scoreboardTeam.setColor(team.getTeamColor().getChatColor());
             }
         }
-        String color = TextUtil.color(Configuration.NAME_TAGS_PREFIX.getAsString()
+        String color = TextUtil.color(Config.NAME_TAGS_PREFIX.getAsString()
                 .replace("{team_color}", team.getTeamColor().getChatColor().toString())
                 .replace("{team}", team.getName())
                 .replace("{team_letter}", team.getTeamLetter()));

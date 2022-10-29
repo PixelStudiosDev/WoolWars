@@ -138,7 +138,7 @@ public class SetupSession implements Listener {
     public void save() {
         ArenaUtil.teleportToLobby(player);
         HandlerList.unregisterAll(this);
-        File file = new File(FileManager.getArenasDir(), id + ".yml");
+        File file = new File(FileManager.ARENAS_FOLDER, id + ".yml");
         try {
             file.createNewFile();
         } catch (IOException e) {
@@ -173,8 +173,8 @@ public class SetupSession implements Listener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Arena arena = WoolWars.getInstance().getArenaManager().getArenaFromFile(file);
-        WoolWars.getInstance().getArenaManager().registerArena(arena);
+        Arena arena = new Arena(id, config);
+        WoolWars.getInstance().getArenaManager().register(arena);
         TextUtil.sendMessage(player, "{prefix}&7Arena &e" + id + " &7successfully created and loaded!");
         remove(player);
     }
