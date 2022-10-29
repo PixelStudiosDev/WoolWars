@@ -1,8 +1,8 @@
 ![](https://imgur.com/kMXE3jo.png)
 
 <p align="center">
-  <a href="https://polymart.org/resource/2551"><img src="https://img.shields.io/badge/BUY-POLYMART-success?style=for-the-badge"></a>
-  <img src="https://img.shields.io/badge/dynamic/json?color=success&label=DOWNLOADS&query=response.resource.downloads&url=https%3A%2F%2Fapi.polymart.org%2Fv1%2FgetResourceInfo%2F%3Fpretty_print_result%3D1%26resource_id%3D2551&style=for-the-badge">
+  <a href="https://polymart.org/resource/2551"><img src="https://img.shields.io/badge/BUY-POLYMART-orange?style=for-the-badge"></a>
+  <a href="https://www.spigotmc.org/resources/105548/"><img src="https://img.shields.io/badge/BUY-SPIGOTMC-yellow?style=for-the-badge"></a>
   <img src="https://img.shields.io/bstats/servers/14788?color=success&style=for-the-badge">
   <img src="https://img.shields.io/bstats/players/14788?color=success&style=for-the-badge">
   <a href="https://jitpack.io/#cubecrafter/woolwars"><img src="https://img.shields.io/jitpack/v/github/cubecrafter/woolwars?color=success&style=for-the-badge"></a>
