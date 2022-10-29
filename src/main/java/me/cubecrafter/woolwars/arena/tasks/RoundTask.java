@@ -213,11 +213,13 @@ public class RoundTask extends ArenaTask {
                 for (Player player : team.getMembers()) {
                     PlayerData data = ArenaUtil.getPlayerData(player);
                     data.setWins(data.getWins() + 1);
+                    data.setWinStreak(data.getWinStreak() + 1);
                 }
             } else {
                 for (Player player : team.getMembers()) {
                     PlayerData data = ArenaUtil.getPlayerData(player);
                     data.setLosses(data.getLosses() + 1);
+                    data.setWinStreak(0);
                 }
             }
         }

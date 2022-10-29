@@ -97,7 +97,8 @@ public class TextUtil {
                     .replace("{deaths}", String.valueOf(data.getDeaths()))
                     .replace("{wool_placed}", String.valueOf(data.getWoolPlaced()))
                     .replace("{blocks_broken}", String.valueOf(data.getBlocksBroken()))
-                    .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()));
+                    .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()))
+                    .replace("{win_streak}", String.valueOf(data.getWinStreak()));
         }
         return color(text);
     }
