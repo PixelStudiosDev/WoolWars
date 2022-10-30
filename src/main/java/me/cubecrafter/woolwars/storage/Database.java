@@ -101,7 +101,8 @@ public abstract class Database {
                 "wool_placed INT," +
                 "blocks_broken INT," +
                 "powerups_collected INT," +
-                "selected_kit VARCHAR(255))",
+                "selected_kit VARCHAR(255)," +
+                "win_streak INT)",
                 PreparedStatement::executeUpdate);
     }
 
@@ -124,6 +125,7 @@ public abstract class Database {
             data.setBlocksBroken(resultSet.getInt("blocks_broken"));
             data.setPowerUpsCollected(resultSet.getInt("powerups_collected"));
             data.setSelectedKit(resultSet.getString("selected_kit"));
+            data.setWinStreak(resultSet.getInt("win_streak"));
             future.complete(data);
         });
         return future;
