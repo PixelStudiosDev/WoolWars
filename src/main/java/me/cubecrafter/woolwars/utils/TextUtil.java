@@ -88,7 +88,7 @@ public class TextUtil {
             text = text.replace("{count_" + group + "}", String.valueOf(ArenaUtil.getArenasByGroup(group).stream().mapToInt(arena -> arena.getPlayers().size()).sum()))
                     .replace("{count_total}", String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum()));
         }
-        if (player != null) {
+        if (player != null && player.isOnline()) {
             PlayerData data = ArenaUtil.getPlayerData(player);
             text = text.replace("{wins}", String.valueOf(data.getWins()))
                     .replace("{losses}", String.valueOf(data.getLosses()))
