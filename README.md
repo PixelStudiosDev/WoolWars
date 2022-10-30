@@ -16,7 +16,7 @@
 
 > Notice: Support will only be provided to **buyers**. Buy the plugin on Polymart: [Link](https://polymart.org/r/2551)
 
-> Contributors: [@Ixf1nity](https://github.com/Ixf1nity), [@Teru](https://github.com/TeruHUB)
+> Contributors: [@Ixf1nity](https://github.com/Ixf1nity), [@Teru](https://github.com/TeruHUB), [@Xxyuri2005xX](https://github.com/Xxyuri2005xX)
 
 <br>
 
