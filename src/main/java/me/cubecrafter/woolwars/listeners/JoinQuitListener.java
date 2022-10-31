@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.utils.Utils;
 import me.cubecrafter.woolwars.utils.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -48,6 +50,11 @@ public class JoinQuitListener implements Listener {
                 }
             }
         }, 15L);
+        if (!Utils.isLatestVersion() && (player.isOp() || player.hasPermission("woolwars.admin"))) {
+            TextUtil.sendMessage(player, "&aThere is a new WoolWars update available!");
+            TextUtil.sendMessage(player, "&7SpigotMC: &8https://www.spigotmc.org/resources/105548/");
+            TextUtil.sendMessage(player, "&7Polymart: &8https://polymart.org/r/2551");
+        }
     }
 
     @EventHandler

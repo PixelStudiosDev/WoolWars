@@ -44,6 +44,7 @@ import me.cubecrafter.woolwars.party.provider.PAFProvider;
 import me.cubecrafter.woolwars.party.provider.PartyProvider;
 import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.utils.Utils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -93,6 +94,8 @@ public final class WoolWars extends JavaPlugin {
 
         registerListeners();
         registerHooks();
+
+        Utils.checkForUpdates();
 
         new Metrics(this, 14788);
     }
