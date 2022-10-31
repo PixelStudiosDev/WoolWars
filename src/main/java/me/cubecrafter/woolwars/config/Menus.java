@@ -64,6 +64,8 @@ public enum Menus {
     STATS_MENU_BLOCKS_BROKEN_ITEM_SLOT("stats-menu.items.blocks-broken-item.slot"),
     STATS_MENU_POWERUPS_COLLECTED_ITEM("stats-menu.items.powerups-collected-item"),
     STATS_MENU_POWERUPS_COLLECTED_ITEM_SLOT("stats-menu.items.powerups-collected-item.slot"),
+    STATS_MENU_WIN_STREAK_ITEM("stats-menu.items.win-streak-item"),
+    STATS_MENU_WIN_STREAK_ITEM_SLOT("stats-menu.items.win-streak-item.slot"),
     STATS_MENU_CLOSE_ITEM("stats-menu.items.close-item"),
     STATS_MENU_CLOSE_ITEM_SLOT("stats-menu.items.close-item.slot"),
 

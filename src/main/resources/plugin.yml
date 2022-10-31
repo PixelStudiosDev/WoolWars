@@ -1,5 +1,5 @@
 name: WoolWars
-version: ${project.version}
+version: ${version}
 main: me.cubecrafter.woolwars.WoolWars
 api-version: 1.13
 description: A fun and unique minigame to play with your friends!

@@ -90,15 +90,17 @@ public class TextUtil {
         }
         if (player != null) {
             PlayerData data = ArenaUtil.getPlayerData(player);
-            text = text.replace("{wins}", String.valueOf(data.getWins()))
-                    .replace("{losses}", String.valueOf(data.getLosses()))
-                    .replace("{games_played}", String.valueOf(data.getGamesPlayed()))
-                    .replace("{kills}", String.valueOf(data.getKills()))
-                    .replace("{deaths}", String.valueOf(data.getDeaths()))
-                    .replace("{wool_placed}", String.valueOf(data.getWoolPlaced()))
-                    .replace("{blocks_broken}", String.valueOf(data.getBlocksBroken()))
-                    .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()))
-                    .replace("{win_streak}", String.valueOf(data.getWinStreak()));
+            if (data != null) {
+                text = text.replace("{wins}", String.valueOf(data.getWins()))
+                        .replace("{losses}", String.valueOf(data.getLosses()))
+                        .replace("{games_played}", String.valueOf(data.getGamesPlayed()))
+                        .replace("{kills}", String.valueOf(data.getKills()))
+                        .replace("{deaths}", String.valueOf(data.getDeaths()))
+                        .replace("{wool_placed}", String.valueOf(data.getWoolPlaced()))
+                        .replace("{blocks_broken}", String.valueOf(data.getBlocksBroken()))
+                        .replace("{powerups_collected}", String.valueOf(data.getPowerUpsCollected()))
+                        .replace("{win_streak}", String.valueOf(data.getWinStreak()));
+            }
         }
         return color(text);
     }

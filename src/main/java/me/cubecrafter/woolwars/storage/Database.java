@@ -104,6 +104,12 @@ public abstract class Database {
                 "selected_kit VARCHAR(255)," +
                 "win_streak INT)",
                 PreparedStatement::executeUpdate);
+        execute("SELECT * FROM player_data LIMIT 1", statement -> {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.getMetaData().getColumnCount() == 11) {
+                execute("ALTER TABLE player_data ADD COLUMN win_streak INT", PreparedStatement::executeUpdate);
+            }
+        });
     }
 
     public CompletableFuture<PlayerData> fetchData(UUID uuid) {

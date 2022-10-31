@@ -1,7 +1,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | WOOLWARS MENUS FILE                      |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Version: ${project.version}
+# Version: ${version}
 # Author: CubeCrafter
 # Issues: https://github.com/CubeCrafter/WoolWars/issues
 # Wiki: https://cubecrafter.github.io/
@@ -104,6 +104,13 @@ stats-menu:
       lore:
         - "&7{powerups_collected}"
       slot: 32
+    win-streak-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDU1ODdkYTdmZTczMzZlOGFiOWY3OTFlYTVlMmNmYzhhODI3Y2E5NTk1NjdlYjlkNTNhNjQ3YmFiZjk0OGQ1In19fQ=="
+      displayname: "&aWin Streak"
+      lore:
+        - "&7{win_streak}"
+      slot: 13
     close-item:
       material: BARRIER
       displayname: "&cClose"

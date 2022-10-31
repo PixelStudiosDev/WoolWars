@@ -8,15 +8,13 @@
   <a href="https://jitpack.io/#cubecrafter/woolwars"><img src="https://img.shields.io/jitpack/v/github/cubecrafter/woolwars?color=success&style=for-the-badge"></a>
 </p>
 <p align="center">
-  <a href="https://cubecrafter.github.io"><img src="https://img.shields.io/static/v1?label=DOCS&message=CUBECRAFTER.GITHUB.IO&color=blue&style=for-the-badge"></a>
+  <a href="https://cubecrafter.github.io"><img src="https://img.shields.io/static/v1?label=DOCS&message=CUBECRAFTER.GITHUB.IO&color=red&style=for-the-badge"></a>
   <img src="https://img.shields.io/codefactor/grade/github/CubeCrafter/WoolWars?color=blue&style=for-the-badge">
   <a href="https://discord.gg/ehjkwp5Fn4"><img src="https://img.shields.io/discord/821278914965405698?color=blue&label=DISCORD&style=for-the-badge"></a>
 </p>
 <br>
 
-> Notice: Support will only be provided to **buyers**. Buy the plugin on Polymart: [Link](https://polymart.org/r/2551)
-
-> Contributors: [@Ixf1nity](https://github.com/Ixf1nity), [@Teru](https://github.com/TeruHUB), [@Xxyuri2005xX](https://github.com/Xxyuri2005xX)
+> Buy the plugin on [Polymart](https://polymart.org/r/2551) or [SpigotMC](https://www.spigotmc.org/resources/105548/) to get support and keep the development going!
 
 <br>
 

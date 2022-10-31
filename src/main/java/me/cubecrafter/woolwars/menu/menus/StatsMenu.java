@@ -57,8 +57,8 @@ public class StatsMenu extends Menu {
         items.put(Menus.STATS_MENU_WOOL_PLACED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WOOL_PLACED_ITEM.getAsSection()).build(), player));
         items.put(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_BLOCKS_BROKEN_ITEM.getAsSection()).build(), player));
         items.put(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_POWERUPS_COLLECTED_ITEM.getAsSection()).build(), player));
-        items.put(Menus.STATS_MENU_CLOSE_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_CLOSE_ITEM.getAsSection()).build(), player)
-                .addAction((e) -> closeMenu()));
+        items.put(Menus.STATS_MENU_WIN_STREAK_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_WIN_STREAK_ITEM.getAsSection()).build(), player));
+        items.put(Menus.STATS_MENU_CLOSE_ITEM_SLOT.getAsInt(), new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_CLOSE_ITEM.getAsSection()).build(), player).addAction((e) -> closeMenu()));
         return items;
     }
 
