@@ -20,7 +20,6 @@ package me.cubecrafter.woolwars.config;
 
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -70,8 +69,7 @@ public class FileManager {
         if (!abilitiesFile.exists()) saveResource("abilities.yml", abilitiesFile);
         if (KITS_FOLDER.mkdirs()) {
             for (String kit : new String[]{"archer", "assault", "engineer", "golem", "swordsman", "tank"}) {
-                String path = "kits/" + kit + ".yml";
-                saveResource(path, new File(KITS_FOLDER, path));
+                saveResource("kits/" + kit + ".yml", new File(KITS_FOLDER, kit + ".yml"));
             }
         }
         config = YamlConfiguration.loadConfiguration(configFile);

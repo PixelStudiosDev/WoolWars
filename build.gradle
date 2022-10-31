@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.0.6'
+version = '1.1.6'
 
 repositories {
     mavenCentral()
@@ -55,13 +55,6 @@ jar {
     archiveFileName = 'WoolWars-' + project.version + '-sources.jar'
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
-
-compileJava.dependsOn clean
-
-build.dependsOn shadowJar
-
 processResources {
     expand 'version': project.version
 }
@@ -77,3 +70,22 @@ publishing {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
+compileJava.dependsOn clean
+
+build.dependsOn shadowJar
+
+task buy {
+    doLast {
+        println '-----------------------------------------------------------------------------------'
+        println 'Consider buying the plugin to get support and allow me to continue developing it!'
+        println 'SpigotMC: https://www.spigotmc.org/resources/105548/'
+        println 'Polymart: https://polymart.org/r/2551'
+        println '-----------------------------------------------------------------------------------'
+    }
+}
+
+build.finalizedBy buy
