@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discord Server
+    url: https://discord.gg/ehjkwp5Fn4
+    about: Join our Discord server to get support if you are a buyer!
+  - name: Documentation
+    url: https://cubecrafter.github.io/wool-wars/
+    about: Read the plugin's documentation!
