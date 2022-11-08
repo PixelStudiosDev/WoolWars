@@ -2,40 +2,8 @@ name: WoolWars
 version: ${version}
 main: me.cubecrafter.woolwars.WoolWars
 api-version: 1.13
-description: A fun and unique minigame to play with your friends!
+description: Fight to take control of the wool at the center of the map!
 softdepend:
   - PlaceholderAPI
   - Multiverse-Core
   - Spigot-Party-API-PAF
-commands:
-  woolwars:
-    description: Main plugin command
-    aliases:
-      - ww
-  leave:
-    description: Leave an arena
-permissions:
-  woolwars.player:
-    description: Grant access to all player commands
-    children:
-      - woolwars.join
-      - woolwars.leave
-      - woolwars.arenas
-      - woolwars.stats
-      - woolwars.playagain
-  woolwars.admin:
-    description: Grant access to all admin commands
-  woolwars.forcestart:
-    description: Force start the game
-  woolwars.join:
-    description: Join an arena
-  woolwars.leave:
-    description: Leave an arena
-  woolwars.arenas:
-    description: Open the arenas gui
-  woolwars.stats:
-    description: Open the stats gui
-  woolwars.playagain:
-    description: Play again
-  woolwars.bypass:
-    description: Bypass the command blocker

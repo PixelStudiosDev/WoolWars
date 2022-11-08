@@ -18,7 +18,6 @@
 
 package me.cubecrafter.woolwars.commands;
 
-import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.subcommands.ArenasCommand;
 import me.cubecrafter.woolwars.commands.subcommands.ForceStartCommand;
@@ -31,19 +30,26 @@ import me.cubecrafter.woolwars.commands.subcommands.StatsCommand;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-public class CommandManager implements TabExecutor {
+public class CommandManager extends Command implements PluginIdentifiableCommand {
+
+    private final WoolWars plugin;
 
     private final SubCommand[] commands = {
             new ArenasCommand(),
@@ -57,16 +63,44 @@ public class CommandManager implements TabExecutor {
     };
 
     public CommandManager(WoolWars plugin) {
-        PluginCommand command = plugin.getCommand("woolwars");
-        command.setExecutor(this);
-        command.setTabCompleter(this);
+        super("woolwars");
+        this.plugin = plugin;
+
+        setAliases(Collections.singletonList("ww"));
+        setDescription("Main command for Wool Wars");
+
+        registerCommands();
+        registerPermissions();
+    }
+
+    private void registerCommands() {
+        CommandMap commandMap;
+        try {
+            Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            field.setAccessible(true);
+            commandMap = (CommandMap) field.get(Bukkit.getServer());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+        commandMap.register("woolwars", this);
         if (Config.ENABLE_LEAVE_COMMAND_SHORTCUT.getAsBoolean()) {
-            plugin.getCommand("leave").setExecutor(new LeaveCommand());
+            commandMap.register("woolwars", new LeaveCommand());
+        }
+    }
+
+    private void registerPermissions() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        for (String permission : new String[] {"join", "leave", "stats", "arenas", "playagain"}) {
+            pluginManager.addPermission(new Permission("woolwars." + permission, PermissionDefault.TRUE));
+        }
+        for (String permission : new String[] {"admin", "bypass", "forcestart"}) {
+            pluginManager.addPermission(new Permission("woolwars." + permission, PermissionDefault.OP));
         }
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (args.length > 0) {
             SubCommand cmd = Arrays.stream(commands).filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
@@ -89,7 +123,7 @@ public class CommandManager implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
         if (args.length > 1) {
             SubCommand cmd = Arrays.stream(commands).filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
@@ -108,6 +142,11 @@ public class CommandManager implements TabExecutor {
             }
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return plugin;
     }
 
 }
