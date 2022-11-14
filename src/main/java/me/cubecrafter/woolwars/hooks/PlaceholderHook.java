@@ -22,6 +22,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.storage.PlayerData;
+import me.cubecrafter.woolwars.team.Team;
 import me.cubecrafter.woolwars.utils.ArenaUtil;
 import org.bukkit.entity.Player;
 
@@ -86,6 +87,7 @@ public class PlaceholderHook extends PlaceholderExpansion {
         if (!params.startsWith("arena_")) return null;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return null;
+        Team team = arena.getTeamByPlayer(player);
         switch (params.substring(6)) {
             case "id":
                 return arena.getId();
@@ -124,6 +126,12 @@ public class PlaceholderHook extends PlaceholderExpansion {
             case "round_blocks_broken":
                 if (arena.getRoundTask() == null) return "0";
                 return String.valueOf(arena.getRoundTask().getRoundBrokenBlocks().getOrDefault(player, 0));
+            case "team_letter":
+                return team.getTeamLetter();
+            case "team_color":
+                return team.getTeamColor().getChatColor().toString();
+            case "team_name":
+                return team.getName();
         }
         return null;
     }
