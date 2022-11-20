@@ -26,7 +26,7 @@ import java.util.Collection;
 
 public class SQLite extends Database {
 
-    private final String INSERT_OR_REPLACE = "INSERT OR REPLACE INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit, win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    private final String INSERT_OR_REPLACE = "INSERT OR REPLACE INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit, win_streak, highest_win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     @Override
     public void saveData(PlayerData data) {
@@ -61,6 +61,7 @@ public class SQLite extends Database {
         statement.setInt(10, data.getPowerUpsCollected());
         statement.setString(11, data.getSelectedKit());
         statement.setInt(12, data.getWinStreak());
+        statement.setInt(13, data.getHighestWinStreak());
     }
 
 }

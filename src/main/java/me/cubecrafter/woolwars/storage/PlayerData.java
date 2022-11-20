@@ -32,6 +32,7 @@ public class PlayerData {
     private int kills;
     private int deaths;
     private int winStreak;
+    private int highestWinStreak;
     private int woolPlaced;
     private int blocksBroken;
     private int powerUpsCollected;

@@ -214,6 +214,8 @@ public class RoundTask extends ArenaTask {
                     PlayerData data = ArenaUtil.getPlayerData(player);
                     data.setWins(data.getWins() + 1);
                     data.setWinStreak(data.getWinStreak() + 1);
+                    if(data.getWinStreak() > data.getHighestWinStreak())
+                        data.setHighestWinStreak(data.getWinStreak());
                 }
             } else {
                 for (Player player : team.getMembers()) {

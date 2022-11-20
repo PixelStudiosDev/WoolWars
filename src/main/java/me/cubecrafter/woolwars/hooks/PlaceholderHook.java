@@ -80,6 +80,8 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return data.getSelectedKit();
             case "win_streak":
                 return String.valueOf(data.getWinStreak());
+            case "highest_win_streak":
+                return String.valueOf(data.getHighestWinStreak());
             case "kdr":
                 if (data.getDeaths() == 0) return data.getKills() + ".00";
                 return String.format("%.2f", (double) data.getKills() / data.getDeaths());

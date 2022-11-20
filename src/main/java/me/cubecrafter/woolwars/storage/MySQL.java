@@ -26,8 +26,8 @@ import java.util.Collection;
 
 public class MySQL extends Database {
 
-    private final String INSERT_OR_UPDATE = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit, win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) " +
-            "ON DUPLICATE KEY UPDATE name=?, wins=?, losses=?, games_played=?, kills=?, deaths=?, wool_placed=?, blocks_broken=?, powerups_collected=?, selected_kit=?, win_streak=?";
+    private final String INSERT_OR_UPDATE = "INSERT INTO player_data (uuid, name, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit, win_streak, highest_win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) " +
+            "ON DUPLICATE KEY UPDATE name=?, wins=?, losses=?, games_played=?, kills=?, deaths=?, wool_placed=?, blocks_broken=?, powerups_collected=?, selected_kit=?, win_streak=?, highest_win_streak=?";
 
     @Override
     public void saveData(PlayerData data) {
@@ -63,17 +63,19 @@ public class MySQL extends Database {
         statement.setInt(10, data.getPowerUpsCollected());
         statement.setString(11, data.getSelectedKit());
         statement.setInt(12, data.getWinStreak());
-        statement.setString(13, name);
-        statement.setInt(14, data.getWins());
-        statement.setInt(15, data.getLosses());
-        statement.setInt(16, data.getGamesPlayed());
-        statement.setInt(17, data.getKills());
-        statement.setInt(18, data.getDeaths());
-        statement.setInt(19, data.getWoolPlaced());
-        statement.setInt(20, data.getBlocksBroken());
-        statement.setInt(21, data.getPowerUpsCollected());
-        statement.setString(22, data.getSelectedKit());
-        statement.setInt(23, data.getWinStreak());
+        statement.setInt(13, data.getHighestWinStreak());
+        statement.setString(14, name);
+        statement.setInt(15, data.getWins());
+        statement.setInt(16, data.getLosses());
+        statement.setInt(17, data.getGamesPlayed());
+        statement.setInt(18, data.getKills());
+        statement.setInt(19, data.getDeaths());
+        statement.setInt(20, data.getWoolPlaced());
+        statement.setInt(21, data.getBlocksBroken());
+        statement.setInt(22, data.getPowerUpsCollected());
+        statement.setString(23, data.getSelectedKit());
+        statement.setInt(24, data.getWinStreak());
+        statement.setInt(25, data.getHighestWinStreak());
     }
 
 }
