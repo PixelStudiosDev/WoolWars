@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.1.7'
+version = '1.1.8'
 
 repositories {
     mavenCentral()
@@ -81,9 +81,10 @@ build.dependsOn shadowJar
 task buy {
     doLast {
         println '-----------------------------------------------------------------------------------'
-        println 'Consider buying the plugin to get support and allow me to continue developing it!'
+        println 'Buy the plugin to get support and keep the development going!'
         println 'SpigotMC: https://www.spigotmc.org/resources/105548/'
         println 'Polymart: https://polymart.org/r/2551'
+        println 'BuiltByBit: https://builtbybit.com/resources/25971/'
         println '-----------------------------------------------------------------------------------'
     }
 }

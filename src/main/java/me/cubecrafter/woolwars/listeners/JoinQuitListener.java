@@ -54,6 +54,7 @@ public class JoinQuitListener implements Listener {
             TextUtil.sendMessage(player, "&aThere is a new WoolWars update available!");
             TextUtil.sendMessage(player, "&7SpigotMC: &8https://www.spigotmc.org/resources/105548/");
             TextUtil.sendMessage(player, "&7Polymart: &8https://polymart.org/r/2551");
+            TextUtil.sendMessage(player, "&7BuiltByBit: &8https://builtbybit.com/resources/25971/");
         }
     }
 
