@@ -110,6 +110,7 @@ stats-menu:
       displayname: "&aWin Streak"
       lore:
         - "&7{win_streak}"
+        - "&fHighest: &7{highest_win_streak}"
       slot: 13
     close-item:
       material: BARRIER
