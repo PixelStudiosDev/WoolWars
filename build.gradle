@@ -15,7 +15,6 @@ repositories {
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url 'https://repo.codemc.org/repository/maven-public/' }
     maven { url 'https://simonsator.de/repo/' }
-    maven { url 'https://repo.alessiodp.com/releases/' }
 }
 
 dependencies {
@@ -23,13 +22,12 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
     implementation 'org.bstats:bstats-bukkit:3.0.0'
-    implementation 'de.tr7zw:item-nbt-api:2.10.0'
+    implementation 'de.tr7zw:item-nbt-api:2.11.1'
     compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.1'
     compileOnly 'de.simonsator:Party-and-Friends-MySQL-Edition-Spigot-API:1.5.4-RELEASE'
     compileOnly 'de.simonsator:spigot-party-api-for-party-and-friends:1.0.4-RELEASE'
     compileOnly 'de.simonsator:DevelopmentPAFSpigot:1.0.67'
-    compileOnly 'com.alessiodp.parties:parties-api:3.2.6'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
