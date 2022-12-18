@@ -23,10 +23,6 @@ import me.cubecrafter.woolwars.arena.ArenaManager;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.FileManager;
-import me.cubecrafter.woolwars.storage.Database;
-import me.cubecrafter.woolwars.storage.MySQL;
-import me.cubecrafter.woolwars.storage.SQLite;
-import me.cubecrafter.woolwars.storage.PlayerDataManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
 import me.cubecrafter.woolwars.kits.KitManager;
 import me.cubecrafter.woolwars.listeners.ArenaListener;
@@ -39,10 +35,15 @@ import me.cubecrafter.woolwars.listeners.JoinQuitListener;
 import me.cubecrafter.woolwars.listeners.MoveListener;
 import me.cubecrafter.woolwars.listeners.RewardsListener;
 import me.cubecrafter.woolwars.listeners.ScoreboardHandler;
-import me.cubecrafter.woolwars.party.provider.InternalProvider;
-import me.cubecrafter.woolwars.party.provider.PAFProvider;
+import me.cubecrafter.woolwars.party.provider.NoProvider;
+import me.cubecrafter.woolwars.party.provider.PAFBungee;
+import me.cubecrafter.woolwars.party.provider.PAFSpigot;
 import me.cubecrafter.woolwars.party.provider.PartyProvider;
 import me.cubecrafter.woolwars.powerup.PowerUpManager;
+import me.cubecrafter.woolwars.storage.Database;
+import me.cubecrafter.woolwars.storage.MySQL;
+import me.cubecrafter.woolwars.storage.PlayerDataManager;
+import me.cubecrafter.woolwars.storage.SQLite;
 import me.cubecrafter.woolwars.utils.TextUtil;
 import me.cubecrafter.woolwars.utils.Utils;
 import org.bstats.bukkit.Metrics;
@@ -134,10 +135,13 @@ public final class WoolWars extends JavaPlugin {
             TextUtil.info("Hooked into PlaceholderAPI!");
         }
         if (getServer().getPluginManager().isPluginEnabled("Spigot-Party-API-PAF")) {
-            partyProvider = new PAFProvider();
-            TextUtil.info("Hooked into Party And Friends!");
+            partyProvider = new PAFBungee();
+            TextUtil.info("Hooked into Party And Friends Bungeecord!");
+        } else if (getServer().getPluginManager().isPluginEnabled("PartyAndFriends")) {
+            partyProvider = new PAFSpigot();
+            TextUtil.info("Hooked into Party And Friends Spigot!");
         } else {
-            partyProvider = new InternalProvider();
+            partyProvider = new NoProvider();
         }
     }
 

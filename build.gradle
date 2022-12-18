@@ -15,6 +15,7 @@ repositories {
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url 'https://repo.codemc.org/repository/maven-public/' }
     maven { url 'https://simonsator.de/repo/' }
+    maven { url 'https://repo.alessiodp.com/releases/' }
 }
 
 dependencies {
@@ -27,6 +28,8 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.1'
     compileOnly 'de.simonsator:Party-and-Friends-MySQL-Edition-Spigot-API:1.5.4-RELEASE'
     compileOnly 'de.simonsator:spigot-party-api-for-party-and-friends:1.0.4-RELEASE'
+    compileOnly 'de.simonsator:DevelopmentPAFSpigot:1.0.67'
+    compileOnly 'com.alessiodp.parties:parties-api:3.2.6'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
@@ -80,12 +83,12 @@ build.dependsOn shadowJar
 
 task buy {
     doLast {
-        println '-----------------------------------------------------------------------------------'
+        println '----------------------------------------------------------------'
         println 'Buy the plugin to get support and keep the development going!'
         println 'SpigotMC: https://www.spigotmc.org/resources/105548/'
         println 'Polymart: https://polymart.org/r/2551'
         println 'BuiltByBit: https://builtbybit.com/resources/25971/'
-        println '-----------------------------------------------------------------------------------'
+        println '----------------------------------------------------------------'
     }
 }
 
