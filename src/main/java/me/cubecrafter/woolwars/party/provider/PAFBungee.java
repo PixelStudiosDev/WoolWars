@@ -18,26 +18,31 @@
 
 package me.cubecrafter.woolwars.party.provider;
 
+import de.simonsator.partyandfriends.spigot.api.pafplayers.PAFPlayer;
+import de.simonsator.partyandfriends.spigot.api.pafplayers.PAFPlayerManager;
+import de.simonsator.partyandfriends.spigot.api.party.PartyManager;
+import de.simonsator.partyandfriends.spigot.api.party.PlayerParty;
 import me.cubecrafter.woolwars.party.Party;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class InternalProvider implements PartyProvider {
-
-    private final List<Party> parties = new ArrayList<>();
+public class PAFBungee implements PartyProvider {
 
     @Override
     public Party getParty(Player player) {
-        return parties.stream().filter(party -> party.isMember(player) || party.isLeader(player)).findAny().orElse(null);
+        PAFPlayer pafPlayer = PAFPlayerManager.getInstance().getPlayer(player.getUniqueId());
+        PlayerParty pafParty = PartyManager.getInstance().getParty(pafPlayer);
+        if (pafParty == null) return null;
+        Party party = new Party(Bukkit.getPlayer(pafParty.getLeader().getUniqueId()));
+        for (PAFPlayer pafMember : pafParty.getPlayers()) {
+            party.addMember(pafMember.getUniqueId());
+        }
+        return party;
     }
 
     @Override
     public Party createParty(Player leader) {
-        Party party = new Party(leader);
-        parties.add(party);
-        return party;
+        return null;
     }
 
     @Override
@@ -46,8 +51,7 @@ public class InternalProvider implements PartyProvider {
     }
 
     @Override
-    public void disbandParty(Party party) {
-        parties.remove(party);
-    }
+    public void disbandParty(Party party) {}
 
 }
+
