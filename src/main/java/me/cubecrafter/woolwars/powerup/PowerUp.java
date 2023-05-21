@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,15 +24,15 @@ import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.EulerAngle;
 
@@ -45,77 +45,85 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PowerUp {
 
-    private ArmorStand armorStand;
-    private final List<ArmorStand> hologramLines = new ArrayList<>();
-    private final Location location;
-    private final Arena arena;
-    private PowerUpType data;
-    private int rotation = 0;
-    private boolean active = false;
+    private static final String[] UPGRADABLE_ITEMS = {
+            "_HELMET", "_CHESTPLATE", "_LEGGINGS", "_BOOTS",
+            "_PICKAXE", "_SWORD", "_AXE", "_SHOVEL", "_HOE", "BOW"
+    };
 
-    public void use(Player player) {
+    private final Arena arena;
+    private final Location location;
+    private final List<ArmorStand> hologram = new ArrayList<>();
+
+    private ArmorStand stand;
+    private PowerUpData data;
+    private int rotation;
+    private boolean active;
+
+    public void use(WoolPlayer player) {
         remove();
-        ArenaUtil.playSound(player, Config.SOUNDS_POWERUP_COLLECTED.getAsString());
-        List<String> toReplace = Arrays.asList("_HELMET", "_CHESTPLATE", "_LEGGINGS", "_BOOTS", "_PICKAXE", "_SWORD", "_AXE", "_SHOVEL", "_HOE");
+        player.playSound(Config.SOUNDS_POWERUP_COLLECTED.asString());
+        // Add potion effects
+        for (PotionEffect effect : data.getEffects()) {
+            player.getPlayer().addPotionEffect(effect, true);
+        }
+        // Give items
+        PlayerInventory inventory = player.getPlayer().getInventory();
         for (ItemStack item : data.getItems()) {
             String material = item.getType().toString();
-            String end = toReplace.stream().filter(material::endsWith).findAny().orElse(null);
-            if (end == null) {
-                player.getInventory().addItem(item);
-            } else {
-                boolean found = false;
-                for (int i = 0; i < player.getInventory().getSize(); i++) {
-                    ItemStack stack = player.getInventory().getItem(i);
-                    if (stack == null || stack.getType().equals(Material.AIR)) continue;
-                    if (stack.getType().toString().endsWith(end)) {
-                        player.getInventory().setItem(i, item);
+            // Check if item is upgradable
+            String type = Arrays.stream(UPGRADABLE_ITEMS).filter(material::endsWith).findAny().orElse(null);
+            boolean found = false;
+            if (type != null) {
+                switch (type) {
+                    case "_HELMET":
+                        inventory.setHelmet(item);
                         found = true;
                         break;
-                    }
-                }
-                if (!found) {
-                    for (int i = 0; i < player.getInventory().getArmorContents().length; i++) {
-                        ItemStack stack = player.getInventory().getArmorContents()[i];
-                        if (stack == null || stack.getType().equals(Material.AIR)) continue;
-                        if (stack.getType().toString().endsWith(end)) {
-                            switch (i) {
-                                case 0:
-                                    player.getInventory().setBoots(item);
-                                    break;
-                                case 1:
-                                    player.getInventory().setLeggings(item);
-                                    break;
-                                case 2:
-                                    player.getInventory().setChestplate(item);
-                                    break;
-                                case 3:
-                                    player.getInventory().setHelmet(item);
-                                    break;
+                    case "_CHESTPLATE":
+                        inventory.setChestplate(item);
+                        found = true;
+                        break;
+                    case "_LEGGINGS":
+                        inventory.setLeggings(item);
+                        found = true;
+                        break;
+                    case "_BOOTS":
+                        inventory.setBoots(item);
+                        found = true;
+                        break;
+                    default:
+                        // Find the item to replace
+                        for (int i = 0; i < inventory.getSize(); i++) {
+                            ItemStack stack = inventory.getItem(i);
+                            if (stack == null || stack.getType() == Material.AIR) continue;
+                            if (stack.getType().toString().endsWith(type)) {
+                                inventory.setItem(i, item);
+                                found = true;
+                                break;
                             }
-                            found = true;
-                            break;
                         }
-                    }
-                }
-                if (!found) {
-                    player.getInventory().addItem(item);
+                        break;
                 }
             }
-        }
-        for (PotionEffect effect : data.getEffects()) {
-            player.addPotionEffect(effect, true);
+            // If not upgradable, add to inventory
+            if (!found) {
+                inventory.addItem(item);
+            }
         }
     }
 
     public void spawn() {
-        data = WoolWars.getInstance().getPowerupManager().getRandom();
-        armorStand = spawnArmorStand(null, location);
-        if (XMaterial.PLAYER_HEAD.parseMaterial().equals(data.getDisplayedItem().getType())) {
-            armorStand.getEquipment().setHelmet(data.getDisplayedItem());
+        data = WoolWars.get().getPowerupManager().getRandom();
+        stand = spawnArmorStand(null, location);
+
+        ItemStack item = data.getDisplayedItem();
+        if (XMaterial.PLAYER_HEAD.parseMaterial().equals(item.getType())) {
+            stand.getEquipment().setHelmet(item);
         } else {
-            armorStand.getEquipment().setItemInHand(data.getDisplayedItem());
-            armorStand.setRightArmPose(new EulerAngle(Math.toRadians(280), Math.toRadians(270), 0));
+            stand.getEquipment().setItemInHand(item);
+            stand.setRightArmPose(new EulerAngle(Math.toRadians(280), Math.toRadians(270), 0));
         }
+
         setupHolo();
         active = true;
     }
@@ -123,16 +131,16 @@ public class PowerUp {
     public void remove() {
         if (!active) return;
         active = false;
-        armorStand.remove();
-        hologramLines.forEach(Entity::remove);
-        hologramLines.clear();
+        stand.remove();
+        hologram.forEach(Entity::remove);
+        hologram.clear();
     }
 
     public void rotate() {
         if (!active) return;
-        Location loc = armorStand.getLocation();
+        Location loc = stand.getLocation();
         loc.setYaw(rotation);
-        armorStand.teleport(loc);
+        stand.teleport(loc);
         rotation += 3;
     }
 
@@ -141,7 +149,7 @@ public class PowerUp {
         List<String> reversed = new ArrayList<>(data.getHoloLines());
         Collections.reverse(reversed);
         for (String line : reversed) {
-            hologramLines.add(spawnArmorStand(line, location.clone().add(0, offset, 0)));
+            hologram.add(spawnArmorStand(line, location.clone().add(0, offset, 0)));
             offset += 0.3;
         }
     }

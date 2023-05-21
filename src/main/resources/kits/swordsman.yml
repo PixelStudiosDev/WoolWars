@@ -1,4 +1,6 @@
-displayname: "Swordsman"
+# The displayed name of the kit
+name: "Swordsman"
+# Armor pieces
 armor:
   helmet:
     material: LEATHER_HELMET
@@ -8,6 +10,7 @@ armor:
     material: LEATHER_LEGGINGS
   boots:
     material: LEATHER_BOOTS
+# Kit items
 items:
   item-1:
     material: STONE_SWORD
@@ -25,7 +28,24 @@ items:
   item-5:
     material: WOOL
     amount: 64
-    slot: 4    
+    slot: 4
+# Keystone ability
 ability:
   type: SPRINT
+  name: "&6&lSPRINT"
   slot: 8
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lSPRINT"
+    lore:
+      - "&7Give yourself a speed boost for"
+      - "&73 seconds."
+      - ""
+      - "&6Press &e&lRight Click &6to activate"
+      - ""
+      - "&7You can only use your keystone"
+      - "&7ability &c&lONCE &7per round."
+  effect:
+    duration: 3
+    amplifier: 1

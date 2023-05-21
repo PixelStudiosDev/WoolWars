@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ package me.cubecrafter.woolwars.api.events.arena;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.team.Team;
+import me.cubecrafter.woolwars.arena.team.Team;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

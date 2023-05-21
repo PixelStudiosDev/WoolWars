@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,9 @@ package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,7 +32,7 @@ public class ForceStartCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+        WoolPlayer player = PlayerManager.get((Player) sender);
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
         arena.forceStart();

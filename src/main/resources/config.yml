@@ -22,6 +22,8 @@ disabled-interaction-blocks:
   - WORKBENCH
   - FURNACE
 placeable-blocks: []
+center-blocks:
+  - RED_WOOL
 disable-fall-damage: true
 items:
   play-again-item:
@@ -64,7 +66,7 @@ chat-format:
   lobby-format: "{player}: &7{message}"
   waiting-lobby-format: "{player}: &7{message}"
   game-format: "{team_color}&l{team_letter} {team_color}{player}: &7{message}"
-  spectator-format: "&7[SPECTATOR] {player}: &7{message}"
+  spectator-format: "&7[SPECTATOR] {team_color}&l{team_letter} {team_color}{player}: &7{message}"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | REWARDS                                  |
@@ -106,12 +108,12 @@ sounds:
 
 scoreboard:
   lobby-enabled: true
-  game-enabled: true
   # The scoreboard refresh interval in ticks.
   refresh-interval: 20
 name-tags:
   enabled: true
   prefix: "{team_color}&l{team_letter} {team_color}"
+  suffix: ""
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | STORAGE SETTINGS                         |

@@ -10,34 +10,33 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | MESSAGES                                 |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-prefix: "&8[&cWoolWars&8] "
 general:
-  arena-not-found: "{prefix}&cThere are no groups or arenas called like this!"
-  no-arenas-available: "{prefix}&cThere are no arenas available!"
-  already-in-arena: "{prefix}&cYou are already in an arena!"
-  already-in-setup-mode: "{prefix}&cYou can't join an arena while you are in setup mode!"
-  game-already-started: "{prefix}&cThe game is already started!"
-  arena-full: "{prefix}&cThis game is full!"
-  unknown-command: "{prefix}&cUnknown command!"
-  only-player-command: "{prefix}&cThis command can be executed only by a player!"
-  no-permission: "{prefix}&cYou don't have the permission to do this!"
-  command-blocked: "{prefix}You can't use this command while you are in game!"
-  config-reloaded: "{prefix}&7Config files reloaded!"
+  arena-not-found: "&cThere are no groups or arenas called like this!"
+  no-arenas-available: "&cThere are no arenas available!"
+  already-in-arena: "&cYou are already in an arena!"
+  already-in-setup-mode: "&cYou can't join an arena while you are in setup mode!"
+  game-already-started: "&cThe game is already started!"
+  arena-full: "&cThis game is full!"
+  unknown-command: "&cUnknown command!"
+  only-player-command: "&cThis command can be executed only by a player!"
+  no-permission: "&cYou don't have the permission to do this!"
+  command-blocked: "You can't use this command while you are in game!"
+  config-reloaded: "&7Config files reloaded!"
 party:
-  not-leader: "{prefix}&cYou must be the party leader to join an arena!"
-  too-big: "{prefix}&cYour party is too big to join this arena!"
-  offline-members: "{prefix}&cAll of your party members must be in the server to join an arena!"
-  members-in-arena: "{prefix}&cSome of your party members are already in an arena!"
+  not-leader: "&cYou must be the party leader to join an arena!"
+  too-big: "&cYour party is too big to join this arena!"
+  offline-members: "&cAll of your party members must be in the server to join an arena!"
+  members-in-arena: "&cSome of your party members are already in an arena!"
 game:
-  player-join: "{prefix}&e{player} &7joined the game! &8({current}/{max})"
-  player-leave: "{prefix}&e{player} &7left the game!"
-  start-cancelled: "{prefix}&cWe don't have enough players! Start cancelled!"
-  cant-break-block: "{prefix}&cYou can't break this block!"
-  cant-place-block: "{prefix}&cYou can't place blocks here!"
-  center-locked: "{prefix}&cCenter is locked!"
-  round-time-left-countdown: "{prefix}&c{seconds} &7seconds left in the round!"
-  all-players-dead: "{prefix}&cAll players died! Starting a new round!"
-  start-countdown: "{prefix}&7The game starts in &a{seconds} &7seconds!"
+  player-join: "&e{player} &7joined the game! &8({current}/{max})"
+  player-leave: "&e{player} &7left the game!"
+  start-cancelled: "&cWe don't have enough players! Start cancelled!"
+  cant-break-block: "&cYou can't break this block!"
+  cant-place-block: "&cYou can't place blocks here!"
+  center-locked: "&cCenter is locked!"
+  round-time-left-countdown: "&c{seconds} &7seconds left in the round!"
+  all-players-dead: "&cAll players died! Starting a new round!"
+  start-countdown: "&7The game starts in &a{seconds} &7seconds!"
   start-message:
     - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
     - "<center>&c&lWOOL WARS</center>"
@@ -47,29 +46,34 @@ game:
   player-death:
     title: "&c&lYOU DIED"
     subtitle: "&7You will respawn at the start of the next round!"
-    fall: "{prefix}{player_team_color}{player} &7fell from a high place"
-    lava: "{prefix}{player_team_color}{player} &7burned to death"
-    void: "{prefix}{player_team_color}{player} &7fell out of the world"
-    generic: "{prefix}{player_team_color}{player} &7died"
-    kill-message: "{prefix}{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
+    fall: "{player_team_color}{player} &7fell from a high place"
+    lava: "{player_team_color}{player} &7burned to death"
+    void: "{player_team_color}{player} &7fell out of the world"
+    generic: "{player_team_color}{player} &7died"
+    kill-message: "{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
   kits:
     shift-to-select-kit: "&eShift to select a kit!"
-    kit-already-selected: "{prefix}&cYou already have this kit selected!"
-    kit-selected: "{prefix}&7You have selected the &b{displayname} &7kit!"
+    kit-already-selected: "&cYou already have this kit selected!"
+    kit-selected: "&7You have selected the &b{name} &7kit!"
     kit-status-selected: "&cAlready Selected!"
     kit-status-not-selected: "&eClick to Select!"
-    ability-cant-use: "{prefix}&cYou can't use your ability yet!"
-    ability-already-used: "{prefix}&cYou have already used your ability!"
-    ability-use: "{prefix}&aYou used your keystone ability: {name}"
+    ability-cant-use: "&cYou can't use your ability yet!"
+    ability-already-used: "&cYou have already used your ability!"
+    ability-use: "&aYou used your keystone ability: {name}"
   round-start:
     title: "&a&lROUND START"
     subtitle: "&bRound {round}"
     countdown-title: "{seconds}"
     countdown-subtitle: "&6Get Ready!"
+    seconds:
+      three: "&a❸"
+      two: "&6❷"
+      one: "&c❶"
   pre-round:
     title: "&e&lPRE ROUND"
     subtitle: "&7Select your kit!"
   round-end:
+    points-title-separator: " &f- "
     winner-team:
       title: "{points}"
       subtitle: "&e&lROUND WON"
@@ -124,6 +128,9 @@ game:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 scoreboard:
   team-format: "{team_color}[{team_letter}] {team_progress} &8({team_points}/{win_points})"
+  progress-format:
+    empty: "&8⬤"
+    full: "{team_color}⬤"
   title: "&c&lWOOL WARS"
   lobby:
     - '&7{date}'

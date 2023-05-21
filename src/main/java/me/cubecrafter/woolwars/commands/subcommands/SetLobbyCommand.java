@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,9 +33,9 @@ public class SetLobbyCommand implements SubCommand {
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Location location = player.getLocation();
-        WoolWars.getInstance().getFileManager().getConfig().set("lobby-location", TextUtil.serializeLocation(location));
-        WoolWars.getInstance().getFileManager().save();
-        TextUtil.sendMessage(player, "{prefix}&7Lobby location set! &8(" + location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")");
+        WoolWars.get().getConfigManager().getConfig().set("lobby-location", TextUtil.fromLocation(location));
+        WoolWars.get().getConfigManager().save();
+        TextUtil.sendMessage(player, "&7Lobby location set! &8(" + location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")");
     }
 
     @Override

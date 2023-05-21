@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,34 +18,53 @@
 
 package me.cubecrafter.woolwars.arena;
 
-import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.config.Config;
+import me.cubecrafter.woolwars.listeners.*;
+import me.cubecrafter.xutils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class ArenaManager {
 
     private final WoolWars plugin;
-
     private final Map<String, Arena> arenas = new HashMap<>();
 
+    private final ScoreboardListener scoreboard;
+
+    public ArenaManager(WoolWars plugin) {
+        this.plugin = plugin;
+        this.scoreboard = new ScoreboardListener();
+        // Register listeners
+        Arrays.asList(
+                new ArenaListener(),
+                new BlockListener(),
+                new StatisticsListener(),
+                new JoinQuitListener(),
+                new DamageListener(),
+                new MoveListener(),
+                new InventoryListener(),
+                new ChatListener()
+        ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, plugin));
+
+        if (Config.REWARD_COMMANDS_ENABLED.asBoolean()) {
+            Bukkit.getPluginManager().registerEvents(new RewardsListener(), plugin);
+        }
+    }
+
     public void load() {
-        int loaded = 0;
-        for (File file : plugin.getFileManager().getArenaFiles()) {
+        for (File file : plugin.getConfigManager().getArenaFiles()) {
             String id = file.getName().replace(".yml", "");
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-            Arena arena = new Arena(id, config);
-            register(arena);
-            loaded++;
+            register(new Arena(id, config));
         }
-        TextUtil.info("Loaded " + loaded + " arenas!");
+        TextUtil.info("Loaded " + arenas.size() + " arenas!");
     }
 
     public void register(Arena arena) {
@@ -57,12 +76,13 @@ public class ArenaManager {
         return arenas.get(id);
     }
 
-    public void disable() {
-        getArenas().forEach(Arena::restart);
+    public Collection<Arena> getArenas() {
+        return arenas.values();
     }
 
-    public List<Arena> getArenas() {
-        return new ArrayList<>(arenas.values());
+    public void disable() {
+        getArenas().forEach(Arena::restart);
+        scoreboard.disable();
     }
 
 }

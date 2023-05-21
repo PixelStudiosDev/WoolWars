@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.kits.ability.Ability;
-import org.bukkit.entity.Player;
+import me.cubecrafter.woolwars.kit.ability.Ability;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -37,9 +37,9 @@ public class PlayerAbilityEvent extends Event implements Cancellable {
     @Setter
     private boolean cancelled;
 
-    private final Player player;
-    private final Ability ability;
+    private final WoolPlayer player;
     private final Arena arena;
+    private final Ability ability;
 
     @Override
     public HandlerList getHandlers() {

@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,17 @@
 
 package me.cubecrafter.woolwars.listeners;
 
-import lombok.RequiredArgsConstructor;
-import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.woolwars.utils.Utils;
 import me.cubecrafter.woolwars.utils.VersionUtil;
+import me.cubecrafter.xutils.Tasks;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,39 +36,58 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-@RequiredArgsConstructor
 public class JoinQuitListener implements Listener {
 
-    private final WoolWars plugin;
-
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        e.setJoinMessage("");
-        Player player = e.getPlayer();
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        // Disable join message
+        event.setJoinMessage("");
         ArenaUtil.teleportToLobby(player);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        // Hide players in game
+        Tasks.later(() -> {
             for (Player online : Bukkit.getOnlinePlayers()) {
-                if (ArenaUtil.isPlaying(online)) {
+                WoolPlayer woolPlayer = PlayerManager.get(online);
+                if (ArenaUtil.isPlaying(woolPlayer)) {
                     VersionUtil.hidePlayer(player, online);
                     VersionUtil.hidePlayer(online, player);
                 }
             }
         }, 15L);
-        if (!Utils.isLatestVersion() && (player.isOp() || player.hasPermission("woolwars.admin"))) {
-            TextUtil.sendMessage(player, "&aThere is a new WoolWars update available!");
-            TextUtil.sendMessage(player, "&7SpigotMC: &8https://www.spigotmc.org/resources/105548/");
-            TextUtil.sendMessage(player, "&7Polymart: &8https://polymart.org/r/2551");
-            TextUtil.sendMessage(player, "&7BuiltByBit: &8https://builtbybit.com/resources/25971/");
+        // Send update message
+        if (Utils.isUpdateAvailable() && (player.isOp() || player.hasPermission("woolwars.admin"))) {
+            sendUpdateMessage(player);
         }
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        e.setQuitMessage("");
-        Player player = e.getPlayer();
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (arena == null) return;
-        arena.removePlayer(player, false);
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        // Disable quit message
+        event.setQuitMessage("");
+        // Remove player from arena when they leave the server
+        WoolPlayer woolPlayer = PlayerManager.get(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(woolPlayer);
+        if (arena != null) {
+            arena.removePlayer(woolPlayer, PlayerLeaveArenaEvent.Reason.DISCONNECT);
+        }
+    }
+
+    public void sendUpdateMessage(Player player) {
+        HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§8Click to open!").create());
+
+        ComponentBuilder builder = new ComponentBuilder("§8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n");
+        builder.append("§7A new version of §cWool Wars §7is available! (§e" + Utils.getLatestVersion() + "§7)\n         ");
+        builder.append("§6SpigotMC").event(hover)
+                .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/105548"));
+        builder.append(" §7- §aPolymart").event(hover)
+                .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://polymart.org/r/2551"));
+        builder.append(" §7- §bBuiltByBit\n").event(hover)
+                .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://builtbybit.com/resources/25971"));
+        builder.append("§8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
+                .event((ClickEvent) null).event((HoverEvent) null);
+
+        player.spigot().sendMessage(builder.create());
     }
 
 }

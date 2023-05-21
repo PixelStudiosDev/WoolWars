@@ -1,4 +1,6 @@
-displayname: "Archer"
+# The displayed name of the kit
+name: "Archer"
+# Armor pieces
 armor:
   helmet:
     material: LEATHER_HELMET
@@ -8,6 +10,7 @@ armor:
     material: LEATHER_LEGGINGS
   boots:
     material: LEATHER_BOOTS
+# Kit items
 items:
   item-1:
     material: BOW
@@ -29,6 +32,20 @@ items:
     material: WOOL
     amount: 32
     slot: 5
+# Keystone ability
 ability:
   type: STEP_BACK
+  name: "&6&lSTEP BACK"
   slot: 8
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lSTEP BACK"
+    lore:
+      - "&7Push yourself back instantly!"
+      - ""
+      - "&6Press &e&lRight Click &6to activate"
+      - ""
+      - "&7You can only use your keystone"
+      - "&7ability &c&lONCE &7per round."
+  power: 1.5

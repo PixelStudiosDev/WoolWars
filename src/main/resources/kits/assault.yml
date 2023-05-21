@@ -1,4 +1,6 @@
-displayname: "Assault"
+# The displayed name of the kit
+name: "Assault"
+# Armor pieces
 armor:
   helmet:
     material: LEATHER_HELMET
@@ -8,6 +10,7 @@ armor:
     material: LEATHER_LEGGINGS
   boots:
     material: LEATHER_BOOTS
+# Kit items
 items:
   item-1:
     material: WOODEN_SWORD
@@ -34,7 +37,23 @@ items:
   item-7:
     material: WOOL
     amount: 64
-    slot: 6    
+    slot: 6
+# Keystone ability
 ability:
   type: KNOCKBACK_TNT
+  name: "&6&lKNOCKBACK TNT"
   slot: 8
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lKNOCKBACK TNT"
+    lore:
+      - "&7Place a TNT that doesn't deal"
+      - "&7damage, but deals massive"
+      - "&7knockback to enemies."
+      - ""
+      - "&6Press &e&lRight Click &6to activate"
+      - ""
+      - "&7You can only use your keystone"
+      - "&7ability &c&lONCE &7per round."
+  power: 1.5

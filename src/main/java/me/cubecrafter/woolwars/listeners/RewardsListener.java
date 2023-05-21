@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ package me.cubecrafter.woolwars.listeners;
 import me.cubecrafter.woolwars.api.events.arena.GameEndEvent;
 import me.cubecrafter.woolwars.api.events.arena.RoundEndEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
+import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,26 +33,27 @@ import java.util.List;
 public class RewardsListener implements Listener {
 
     @EventHandler
-    public void onRoundEnd(RoundEndEvent e) {
-        for (Team team : e.getLoserTeams()) {
-            team.getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_ROUND_LOSE.getAsStringList()));
+    public void onRoundEnd(RoundEndEvent event) {
+        for (Team team : event.getLoserTeams()) {
+            team.getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_ROUND_LOSE.asStringList()));
         }
-        e.getWinnerTeam().getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_ROUND_WIN.getAsStringList()));
+        if (event.getWinnerTeam() == null) return;
+        event.getWinnerTeam().getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_ROUND_WIN.asStringList()));
     }
 
     @EventHandler
-    public void onKillDeath(PlayerKillEvent e) {
-        executeCommands(e.getVictim(), Config.REWARD_COMMANDS_DEATH.getAsStringList());
-        if (e.getAttacker() == null) return;
-        executeCommands(e.getAttacker(), Config.REWARD_COMMANDS_KILL.getAsStringList());
+    public void onPlayerKill(PlayerKillEvent event) {
+        executeCommands(event.getVictim().getPlayer(), Config.REWARD_COMMANDS_DEATH.asStringList());
+        if (event.getAttacker() == null) return;
+        executeCommands(event.getAttacker().getPlayer(), Config.REWARD_COMMANDS_KILL.asStringList());
     }
 
     @EventHandler
-    public void onGameEnd(GameEndEvent e) {
-        for (Team team : e.getLoserTeams()) {
-            team.getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_MATCH_LOSE.getAsStringList()));
+    public void onGameEnd(GameEndEvent event) {
+        for (Team team : event.getLoserTeams()) {
+            team.getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_MATCH_LOSE.asStringList()));
         }
-        e.getWinnerTeam().getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_MATCH_WIN.getAsStringList()));
+        event.getWinnerTeam().getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_MATCH_WIN.asStringList()));
     }
 
     public void executeCommands(Player player, List<String> commands) {

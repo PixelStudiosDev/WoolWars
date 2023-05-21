@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@ import me.cubecrafter.woolwars.config.Messages;
 @RequiredArgsConstructor
 public enum GameState {
 
-    WAITING(Messages.GAME_STATE_WAITING.getAsString()),
-    STARTING(Messages.GAME_STATE_STARTING.getAsString()),
-    PRE_ROUND(Messages.GAME_STATE_PRE_ROUND.getAsString()),
-    ACTIVE_ROUND(Messages.GAME_STATE_ACTIVE_ROUND.getAsString()),
-    ROUND_OVER(Messages.GAME_STATE_ROUND_OVER.getAsString()),
-    GAME_ENDED(Messages.GAME_STATE_GAME_ENDED.getAsString());
+    WAITING(Messages.GAME_STATE_WAITING.asString()),
+    STARTING(Messages.GAME_STATE_STARTING.asString()),
+    PRE_ROUND(Messages.GAME_STATE_PRE_ROUND.asString()),
+    ACTIVE_ROUND(Messages.GAME_STATE_ACTIVE_ROUND.asString()),
+    ROUND_OVER(Messages.GAME_STATE_ROUND_OVER.asString()),
+    GAME_ENDED(Messages.GAME_STATE_GAME_ENDED.asString());
 
     private final String name;
 

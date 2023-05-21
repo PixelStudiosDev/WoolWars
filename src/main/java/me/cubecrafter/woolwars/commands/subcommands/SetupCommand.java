@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@ package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.arena.setup.SetupSession;
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,26 +32,26 @@ public class SetupCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+        WoolPlayer player = PlayerManager.get((Player) sender);
         if (ArenaUtil.getArenaByPlayer(player) != null) {
-            TextUtil.sendMessage(player, "{prefix}&cYou can't setup an arena while you're in game!");
+            player.send("&cYou can't setup an arena while you're in game!");
             return;
         }
         if (args.length < 1) {
-            if (SetupSession.isActive(player)) {
-                SetupSession.getSession(player).getMenu().openMenu();
+            if (SetupSession.check(player)) {
+                SetupSession.get(player).getMenu().open();
             } else {
-                TextUtil.sendMessage(player, "{prefix}&cUsage: /woolwars setup <arena-id>");
+                player.send("&cUsage: /woolwars setup <arena-id>");
             }
             return;
         }
-        if (SetupSession.isActive(player)) {
-            TextUtil.sendMessage(player, "{prefix}&cYou are already in setup mode!");
+        if (SetupSession.check(player)) {
+            player.send("&cYou are already in setup mode!");
             return;
         }
         String id = args[0];
         if (ArenaUtil.getArenaById(id) != null) {
-            TextUtil.sendMessage(player, "{prefix}&cAn arena called &e" + id + "&c already exists!");
+            player.send("&cAn arena called &e" + id + "&c already exists!");
             return;
         }
         new SetupSession(player, id);

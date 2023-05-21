@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,14 @@
 package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.team.Team;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,62 +40,73 @@ import java.util.stream.Collectors;
 public class ChatListener implements Listener {
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent e) {
-        if (!Config.CHAT_FORMAT_ENABLED.getAsBoolean()) return;
-        Player player = e.getPlayer();
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (!Config.CHAT_FORMAT_ENABLED.asBoolean()) return;
+
+        WoolPlayer player = PlayerManager.get(event.getPlayer());
         Arena arena = ArenaUtil.getArenaByPlayer(player);
+
         if (arena != null) {
-            if (arena.isAlive(player)) {
-                setRecipients(e, arena.getAlivePlayers());
-                if (arena.getGameState().equals(GameState.STARTING) || arena.getGameState().equals(GameState.WAITING)) {
-                    e.setFormat(TextUtil.format(player, Config.WAITING_LOBBY_CHAT_FORMAT.getAsString()
-                            .replace("{player}", player.getName())
-                            .replace("{message}", e.getMessage())));
+            Team team = arena.getTeam(player);
+            if (player.isAlive()) {
+                setRecipients(event, arena.getAlivePlayers());
+                if (arena.getState().equals(GameState.STARTING) || arena.getState().equals(GameState.WAITING)) {
+                    event.setFormat(formatMessage(event, player, Config.LOBBY_CHAT_FORMAT.asString()));
                 } else {
-                    Team team = arena.getTeamByPlayer(player);
-                    e.setFormat(TextUtil.format(player, Config.GAME_CHAT_FORMAT.getAsString()
-                            .replace("{player}", player.getName())
+                    event.setFormat(formatMessage(event, player, Config.GAME_CHAT_FORMAT.asString()
                             .replace("{team_color}", team.getTeamColor().getChatColor().toString())
                             .replace("{team}", team.getName())
-                            .replace("{team_letter}", team.getTeamLetter())
-                            .replace("{message}", e.getMessage())));
+                            .replace("{team_letter}", team.getLetter())));
                 }
             } else {
-                setRecipients(e, arena.getDeadPlayers());
-                e.setFormat(TextUtil.format(player, Config.SPECTATOR_CHAT_FORMAT.getAsString()
-                        .replace("{player}", player.getName())
-                        .replace("{message}", e.getMessage())));
+                setRecipients(event, arena.getDeadPlayers());
+                event.setFormat(formatMessage(event, player, Config.SPECTATOR_CHAT_FORMAT.asString()
+                        .replace("{team_color}", team.getTeamColor().getChatColor().toString())
+                        .replace("{team}", team.getName())
+                        .replace("{team_letter}", team.getLetter())));
             }
         } else {
-            setRecipients(e, Bukkit.getOnlinePlayers().stream().filter(p -> !ArenaUtil.isPlaying(p)).collect(Collectors.toList()));
-            e.setFormat(TextUtil.format(player, Config.LOBBY_CHAT_FORMAT.getAsString()
-                    .replace("{player}", player.getName())
-                    .replace("{message}", e.getMessage())));
+            setRecipients(event, getLobbyPlayers());
+            event.setFormat(formatMessage(event, player, Config.LOBBY_CHAT_FORMAT.asString()));
         }
     }
 
     @EventHandler
-    public void onCommand(PlayerCommandPreprocessEvent e) {
-        Player player = e.getPlayer();
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+
         if (player.hasPermission("woolwars.bypass")) return;
-        if (!ArenaUtil.isPlaying(player)) return;
-        List<String> commands = Config.BLOCKED_COMMANDS.getAsStringList();
-        if (Config.BLOCKED_COMMANDS_WHITELIST.getAsBoolean()) {
-            if (commands.stream().noneMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
-                e.setCancelled(true);
-                player.sendMessage(TextUtil.color(Messages.COMMAND_BLOCKED.getAsString()));
+        if (!ArenaUtil.isPlaying(PlayerManager.get(player))) return;
+
+        List<String> commands = Config.BLOCKED_COMMANDS.asStringList();
+
+        if (Config.BLOCKED_COMMANDS_WHITELIST.asBoolean()) {
+            if (commands.stream().noneMatch(command -> event.getMessage().toLowerCase().startsWith('/' + command.toLowerCase()))) {
+                event.setCancelled(true);
+                TextUtil.sendMessage(player, Messages.COMMAND_BLOCKED.asString());
             }
         } else {
-            if (commands.stream().anyMatch(command -> e.getMessage().toLowerCase().startsWith("/" + command.toLowerCase()))) {
-                e.setCancelled(true);
-                player.sendMessage(TextUtil.color(Messages.COMMAND_BLOCKED.getAsString()));
+            if (commands.stream().anyMatch(command -> event.getMessage().toLowerCase().startsWith('/' + command.toLowerCase()))) {
+                event.setCancelled(true);
+                TextUtil.sendMessage(player, Messages.COMMAND_BLOCKED.asString());
             }
         }
     }
 
-    private void setRecipients(AsyncPlayerChatEvent e, List<Player> recipients) {
-        e.getRecipients().clear();
-        e.getRecipients().addAll(recipients);
+    private String formatMessage(AsyncPlayerChatEvent event, WoolPlayer player, String message) {
+        message = message.replace("{player}", player.getName()).replace("{message}", event.getMessage());
+        return TextUtil.color(ArenaUtil.parsePlaceholders(player, message));
+    }
+
+    private void setRecipients(AsyncPlayerChatEvent event, List<WoolPlayer> recipients) {
+        event.getRecipients().clear();
+        for (WoolPlayer recipient : recipients) {
+            event.getRecipients().add(recipient.getPlayer());
+        }
+    }
+
+    private List<WoolPlayer> getLobbyPlayers() {
+        return Bukkit.getOnlinePlayers().stream().map(PlayerManager::get).filter(woolPlayer -> !ArenaUtil.isPlaying(woolPlayer)).collect(Collectors.toList());
     }
 
 }

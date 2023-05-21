@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public enum Menus {
-
-    // ARENAS MENU
-
+    // Arenas menu
     ARENAS_MENU_TITLE("arenas-menu.title"),
     ARENAS_MENU_ROWS("arenas-menu.rows"),
     ARENAS_MENU_FILLER("arenas-menu.filler"),
@@ -40,9 +38,7 @@ public enum Menus {
     ARENAS_MENU_ARENA_ITEM_LORE("arenas-menu.items.arena-item.lore"),
     ARENAS_MENU_CLOSE_ITEM("arenas-menu.items.close-item"),
     ARENAS_MENU_CLOSE_ITEM_SLOT("arenas-menu.items.close-item.slot"),
-
-    // STATS MENU
-
+    // Statistics menu
     STATS_MENU_TITLE("stats-menu.title"),
     STATS_MENU_ROWS("stats-menu.rows"),
     STATS_MENU_FILLER("stats-menu.filler"),
@@ -68,49 +64,41 @@ public enum Menus {
     STATS_MENU_WIN_STREAK_ITEM_SLOT("stats-menu.items.win-streak-item.slot"),
     STATS_MENU_CLOSE_ITEM("stats-menu.items.close-item"),
     STATS_MENU_CLOSE_ITEM_SLOT("stats-menu.items.close-item.slot"),
-
-    // KITS MENU
-
+    // Kits menu
     KITS_MENU_TITLE("kits-menu.title"),
     KITS_MENU_ROWS("kits-menu.rows"),
     KITS_MENU_FILLER("kits-menu.filler"),
     KITS_MENU_FILLER_ENABLED("kits-menu.filler.enabled"),
     KITS_MENU_FILLER_SLOTS("kits-menu.filler.slots"),
     KITS_MENU_KITS_SECTION("kits-menu.kits"),
-
-    // TELEPORTER MENU
-
+    // Teleporter menu
     TELEPORTER_MENU_TITLE("teleporter-menu.title"),
     TELEPORTER_MENU_PLAYER_ITEM("teleporter-menu.items.player-item");
 
     private final String path;
 
-    public String getAsString() {
-        return WoolWars.getInstance().getFileManager().getMenus().getString(path);
+    public String asString() {
+        return WoolWars.get().getConfigManager().getMenus().getString(path);
     }
 
-    public int getAsInt() {
-        return WoolWars.getInstance().getFileManager().getMenus().getInt(path);
+    public int asInt() {
+        return WoolWars.get().getConfigManager().getMenus().getInt(path);
     }
 
-    public double getAsDouble() {
-        return WoolWars.getInstance().getFileManager().getMenus().getDouble(path);
+    public List<Integer> asIntegerList() {
+        return WoolWars.get().getConfigManager().getMenus().getIntegerList(path);
     }
 
-    public List<Integer> getAsIntegerList() {
-        return WoolWars.getInstance().getFileManager().getMenus().getIntegerList(path);
+    public boolean asBoolean() {
+        return WoolWars.get().getConfigManager().getMenus().getBoolean(path);
     }
 
-    public boolean getAsBoolean() {
-        return WoolWars.getInstance().getFileManager().getMenus().getBoolean(path);
+    public ConfigurationSection asSection() {
+        return WoolWars.get().getConfigManager().getMenus().getConfigurationSection(path);
     }
 
-    public ConfigurationSection getAsSection() {
-        return WoolWars.getInstance().getFileManager().getMenus().getConfigurationSection(path);
-    }
-
-    public List<String> getAsStringList() {
-        return WoolWars.getInstance().getFileManager().getMenus().getStringList(path);
+    public List<String> asStringList() {
+        return WoolWars.get().getConfigManager().getMenus().getStringList(path);
     }
 
 }

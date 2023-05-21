@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,41 +18,36 @@
 
 package me.cubecrafter.woolwars.arena.tasks;
 
-import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.api.events.arena.GameStartEvent;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.team.Team;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
-import org.bukkit.Bukkit;
+import me.cubecrafter.woolwars.arena.team.Team;
+import me.cubecrafter.xutils.Events;
 
 public class StartingTask extends ArenaTask {
 
     public StartingTask(Arena arena) {
-        super(arena, Config.STARTING_COUNTDOWN.getAsInt());
+        super(arena, Config.STARTING_COUNTDOWN.asInt());
     }
-
-    @Override
-    public void onStart() {}
 
     @Override
     public void execute() {
         if (arena.getTimer() % 10 == 0 || arena.getTimer() <= 5) {
-            TextUtil.sendMessage(arena.getPlayers(), Messages.GAME_START_COUNTDOWN.getAsString().replace("{seconds}", String.valueOf(arena.getTimer())));
-            ArenaUtil.playSound(arena.getPlayers(), Config.SOUNDS_COUNTDOWN.getAsString());
+            arena.broadcast(Messages.GAME_START_COUNTDOWN.asString().replace("{seconds}", String.valueOf(arena.getTimer())));
+            arena.playSound(Config.SOUNDS_COUNTDOWN.asString());
         }
     }
 
     @Override
-    public void onEnd() {
-        GameStartEvent event = new GameStartEvent(arena);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        TextUtil.sendMessage(arena.getPlayers(), Messages.GAME_START_MESSAGE.getAsStringList());
+    public GameState end() {
+        Events.call(new GameStartEvent(arena));
         arena.assignTeams();
-        arena.getTeams().forEach(Team::applyNameTags);
-        arena.setGameState(GameState.PRE_ROUND);
+        arena.getTeams().forEach(Team::updateNameTags);
+        arena.broadcast(Messages.GAME_START_MESSAGE.asStringList());
+        // Start the game
+        return GameState.PRE_ROUND;
     }
 
 }

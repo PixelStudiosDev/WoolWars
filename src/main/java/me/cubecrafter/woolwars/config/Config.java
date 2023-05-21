@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ package me.cubecrafter.woolwars.config;
 
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -28,9 +28,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public enum Config {
-
-    // GAME SETTINGS
-
+    // Game settings
     ENABLE_LEAVE_COMMAND_SHORTCUT("enable-leave-command-shortcut"),
     STARTING_COUNTDOWN("starting-countdown"),
     PRE_ROUND_DURATION("pre-round-duration"),
@@ -39,6 +37,7 @@ public enum Config {
     GAME_END_DURATION("game-end-duration"),
     DISABLED_INTERACTION_BLOCKS("disabled-interaction-blocks"),
     PLACEABLE_BLOCKS("placeable-blocks"),
+    CENTER_BLOCKS("center-blocks"),
     DISABLE_FALL_DAMAGE("disable-fall-damage"),
     PLAY_AGAIN_ITEM("items.play-again-item"),
     LEAVE_ITEM("items.leave-item"),
@@ -47,9 +46,7 @@ public enum Config {
     JUMP_PADS_BOTTOM_BLOCK("jump-pads.bottom-block"),
     JUMP_PADS_HORIZONTAL_POWER("jump-pads.horizontal-power"),
     JUMP_PADS_VERTICAL_POWER("jump-pads.vertical-power"),
-
-    // CHAT SETTINGS
-
+    // Chat settings
     BLOCKED_COMMANDS("blocked-commands.commands"),
     BLOCKED_COMMANDS_WHITELIST("blocked-commands.whitelist"),
     CHAT_FORMAT_ENABLED("chat-format.enabled"),
@@ -57,9 +54,7 @@ public enum Config {
     WAITING_LOBBY_CHAT_FORMAT("chat-format.waiting-lobby-format"),
     GAME_CHAT_FORMAT("chat-format.game-format"),
     SPECTATOR_CHAT_FORMAT("chat-format.spectator-format"),
-
-    // REWARDS
-
+    // Rewards
     REWARD_COMMANDS_ENABLED("reward-commands.enabled"),
     REWARD_COMMANDS_ROUND_WIN("reward-commands.round-win"),
     REWARD_COMMANDS_ROUND_LOSE("reward-commands.round-lose"),
@@ -67,14 +62,11 @@ public enum Config {
     REWARD_COMMANDS_MATCH_LOSE("reward-commands.match-lose"),
     REWARD_COMMANDS_KILL("reward-commands.kill"),
     REWARD_COMMANDS_DEATH("reward-commands.death"),
-
-    // SOUNDS
-
+    // Sounds
     SOUNDS_JUMP_PAD("sounds.jump-pad"),
     SOUNDS_ROUND_START("sounds.round-start"),
     SOUNDS_ROUND_WON("sounds.round-won"),
     SOUNDS_ROUND_LOST("sounds.round-lost"),
-    SOUNDS_ROUND_DRAW("sounds.round-draw"),
     SOUNDS_TELEPORT_TO_BASE("sounds.teleport-to-base"),
     SOUNDS_GAME_WON("sounds.game-won"),
     SOUNDS_GAME_LOST("sounds.game-lost"),
@@ -83,17 +75,14 @@ public enum Config {
     SOUNDS_COUNTDOWN("sounds.countdown"),
     SOUNDS_PLAYER_JOINED("sounds.player-joined"),
     SOUNDS_PLAYER_LEFT("sounds.player-left"),
-
-    // SCOREBOARD & NAME TAGS SETTINGS
-
+    // Scoreboard and name tags
     SCOREBOARD_LOBBY_ENABLED("scoreboard.lobby-enabled"),
     SCOREBOARD_GAME_ENABLED("scoreboard.game-enabled"),
     SCOREBOARD_REFRESH_INTERVAL("scoreboard.refresh-interval"),
     NAME_TAGS_ENABLED("name-tags.enabled"),
     NAME_TAGS_PREFIX("name-tags.prefix"),
-
-    // STORAGE SETTINGS
-
+    NAME_TAGS_SUFFIX("name-tags.suffix"),
+    // Storage settings
     MYSQL_ENABLED("mysql.enabled"),
     MYSQL_HOST("mysql.host"),
     MYSQL_PORT("mysql.port"),
@@ -105,32 +94,32 @@ public enum Config {
 
     private final String path;
 
-    public String getAsString() {
-        return WoolWars.getInstance().getFileManager().getConfig().getString(path);
+    public String asString() {
+        return WoolWars.get().getConfigManager().getConfig().getString(path);
     }
 
-    public int getAsInt() {
-        return WoolWars.getInstance().getFileManager().getConfig().getInt(path);
+    public int asInt() {
+        return WoolWars.get().getConfigManager().getConfig().getInt(path);
     }
 
-    public double getAsDouble() {
-        return WoolWars.getInstance().getFileManager().getConfig().getDouble(path);
+    public double asDouble() {
+        return WoolWars.get().getConfigManager().getConfig().getDouble(path);
     }
 
-    public List<String> getAsStringList() {
-        return WoolWars.getInstance().getFileManager().getConfig().getStringList(path);
+    public List<String> asStringList() {
+        return WoolWars.get().getConfigManager().getConfig().getStringList(path);
     }
 
-    public boolean getAsBoolean() {
-        return WoolWars.getInstance().getFileManager().getConfig().getBoolean(path);
+    public boolean asBoolean() {
+        return WoolWars.get().getConfigManager().getConfig().getBoolean(path);
     }
 
-    public Location getAsLocation() {
-        return TextUtil.deserializeLocation(getAsString());
+    public ConfigurationSection asSection() {
+        return WoolWars.get().getConfigManager().getConfig().getConfigurationSection(path);
     }
 
-    public ConfigurationSection getAsSection() {
-        return WoolWars.getInstance().getFileManager().getConfig().getConfigurationSection(path);
+    public Location asLocation() {
+        return TextUtil.parseLocation(asString());
     }
 
 }
