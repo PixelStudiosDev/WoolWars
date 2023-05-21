@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@ package me.cubecrafter.woolwars.config;
 
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 public enum Messages {
 
-    PREFIX("prefix"),
     ARENA_NOT_FOUND("general.arena-not-found"),
     NO_ARENAS_AVAILABLE("general.no-arenas-available"),
     ALREADY_IN_ARENA("general.already-in-arena"),
@@ -73,6 +73,7 @@ public enum Messages {
     WINNER_SUBTITLE("game.game-end.winner-team.subtitle"),
     LOSER_TITLE("game.game-end.loser-team.title"),
     LOSER_SUBTITLE("game.game-end.loser-team.subtitle"),
+    POINTS_TITLE_SEPARATOR("game.round-end.points-title-separator"),
     ROUND_WIN_TITLE("game.round-end.winner-team.title"),
     ROUND_WIN_SUBTITLE("game.round-end.winner-team.subtitle"),
     ROUND_LOSE_TITLE("game.round-end.loser-team.title"),
@@ -81,6 +82,7 @@ public enum Messages {
     ROUND_DRAW_SUBTITLE("game.round-end.draw.subtitle"),
     ROUND_START_COUNTDOWN_TITLE("game.round-start.countdown-title"),
     ROUND_START_COUNTDOWN_SUBTITLE("game.round-start.countdown-subtitle"),
+    ROUND_START_COUNTDOWN_SECONDS("game.round-start.seconds"),
     GAME_START_MESSAGE("game.start-message"),
     NO_STATS_ACHIEVED("game.round-end.stats-message.no-stats-achieved"),
     STATS_MESSAGE("game.round-end.stats-message.message"),
@@ -100,6 +102,8 @@ public enum Messages {
     GAME_STATE_ROUND_OVER("game.game-states.round-over"),
     GAME_STATE_GAME_ENDED("game.game-states.game-ended"),
     SCOREBOARD_TEAM_FORMAT("scoreboard.team-format"),
+    SCOREBOARD_PROGRESS_EMPTY("scoreboard.progress-format.empty"),
+    SCOREBOARD_PROGRESS_FULL("scoreboard.progress-format.full"),
     SCOREBOARD_TITLE("scoreboard.title"),
     SCOREBOARD_LOBBY("scoreboard.lobby"),
     SCOREBOARD_WAITING("scoreboard.waiting"),
@@ -108,12 +112,16 @@ public enum Messages {
 
     private final String path;
 
-    public String getAsString() {
-        return WoolWars.getInstance().getFileManager().getMessages().getString(path);
+    public String asString() {
+        return WoolWars.get().getConfigManager().getMessages().getString(path);
     }
 
-    public List<String> getAsStringList() {
-        return WoolWars.getInstance().getFileManager().getMessages().getStringList(path);
+    public List<String> asStringList() {
+        return WoolWars.get().getConfigManager().getMessages().getStringList(path);
+    }
+
+    public ConfigurationSection asSection() {
+        return WoolWars.get().getConfigManager().getMessages().getConfigurationSection(path);
     }
 
 }

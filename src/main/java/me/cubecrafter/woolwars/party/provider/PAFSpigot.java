@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,35 +21,51 @@ package me.cubecrafter.woolwars.party.provider;
 import de.simonsator.partyandfriends.api.pafplayers.OnlinePAFPlayer;
 import de.simonsator.partyandfriends.api.party.PartyManager;
 import de.simonsator.partyandfriends.api.party.PlayerParty;
-import me.cubecrafter.woolwars.party.Party;
-import org.bukkit.entity.Player;
+import me.cubecrafter.woolwars.party.PartyProvider;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import org.bukkit.Bukkit;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PAFSpigot implements PartyProvider {
 
     @Override
-    public Party getParty(Player player) {
-        PlayerParty pafParty = PartyManager.getInstance().getParty(player.getUniqueId());
-        if (pafParty == null) return null;
-        Party party = new Party(pafParty.getLeader().getPlayer());
-        for (OnlinePAFPlayer pafMember : pafParty.getPlayers()) {
-            party.addMember(pafMember.getUniqueId());
-        }
-        return party;
-    }
-
-    @Override
-    public Party createParty(Player leader) {
-        return null;
-    }
-
-    @Override
-    public boolean hasParty(Player player) {
+    public boolean hasParty(WoolPlayer player) {
         return getParty(player) != null;
     }
 
     @Override
-    public void disbandParty(Party party) {
+    public boolean isLeader(WoolPlayer player) {
+        PlayerParty party = getParty(player);
+        if (party == null) return false;
+        return party.getLeader().getUniqueId().equals(player.getPlayer().getUniqueId());
+    }
 
+    @Override
+    public boolean isOnline(WoolPlayer player) {
+        PlayerParty party = getParty(player);
+        if (party == null) return false;
+        return party.getAllPlayers().stream().allMatch(OnlinePAFPlayer::isOnline);
+    }
+
+    @Override
+    public int getSize(WoolPlayer player) {
+        PlayerParty party = getParty(player);
+        if (party == null) return 0;
+        return party.getAllPlayers().size();
+    }
+
+    @Override
+    public List<WoolPlayer> getMembers(WoolPlayer player) {
+        PlayerParty party = getParty(player);
+        if (party == null) return null;
+        return party.getAllPlayers().stream().map(pafPlayer -> PlayerManager.get(Bukkit.getPlayer(pafPlayer.getUniqueId()))).collect(Collectors.toList());
+    }
+
+    private PlayerParty getParty(WoolPlayer player) {
+        return PartyManager.getInstance().getParty(player.getPlayer().getUniqueId());
     }
 
 }

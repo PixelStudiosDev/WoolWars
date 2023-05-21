@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 @UtilityClass
+@SuppressWarnings("deprecation")
 public class VersionUtil {
 
-    public void setUnbreakable(ItemStack item, boolean unbreakable) {
+    public static void setUnbreakable(ItemStack item, boolean unbreakable) {
         ItemMeta meta = item.getItemMeta();
         if (ReflectionUtils.supports(12)) {
             meta.setUnbreakable(unbreakable);
@@ -38,23 +39,23 @@ public class VersionUtil {
         item.setItemMeta(meta);
     }
 
-    public void showPlayer(Player player, Player target) {
+    public static void showPlayer(Player player, Player target) {
         if (ReflectionUtils.supports(12)) {
-            player.showPlayer(WoolWars.getInstance(), target);
+            player.showPlayer(WoolWars.get(), target);
         } else {
             player.showPlayer(target);
         }
     }
 
-    public void hidePlayer(Player player, Player target) {
+    public static void hidePlayer(Player player, Player target) {
         if (ReflectionUtils.supports(12)) {
-            player.hidePlayer(WoolWars.getInstance(), target);
+            player.hidePlayer(WoolWars.get(), target);
         } else {
             player.hidePlayer(target);
         }
     }
 
-    public void setCollidable(Player player, boolean collidable) {
+    public static void setCollidable(Player player, boolean collidable) {
         if (ReflectionUtils.supports(9)) {
             player.setCollidable(collidable);
         } else {

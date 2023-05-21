@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,20 +26,19 @@ import me.cubecrafter.woolwars.powerup.PowerUp;
 public class RoundOverTask extends ArenaTask {
 
     public RoundOverTask(Arena arena) {
-        super(arena, Config.ROUND_OVER_DURATION.getAsInt());
+        super(arena, Config.ROUND_OVER_DURATION.asInt());
     }
 
     @Override
-    public void execute() {}
-
-    @Override
-    public void onEnd() {
-        arena.setGameState(GameState.PRE_ROUND);
-    }
-
-    @Override
-    public void onStart() {
+    public void start() {
         arena.getPowerUps().forEach(PowerUp::remove);
+    }
+
+    @Override
+    public GameState end() {
+        arena.getPlayers().forEach(player -> player.getData().resetRoundStats());
+
+        return GameState.PRE_ROUND;
     }
 
 }

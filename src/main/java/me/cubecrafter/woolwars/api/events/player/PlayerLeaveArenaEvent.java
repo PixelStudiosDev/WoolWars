@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package me.cubecrafter.woolwars.api.events.player;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -31,8 +32,9 @@ public class PlayerLeaveArenaEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
 
-    private final Player player;
+    private final WoolPlayer player;
     private final Arena arena;
+    private final Reason reason;
 
     @Override
     public HandlerList getHandlers() {
@@ -41,6 +43,10 @@ public class PlayerLeaveArenaEvent extends Event {
 
     public static HandlerList getHandlerList() {
         return handlers;
+    }
+
+    public enum Reason {
+        DISCONNECT, GAME_END, PLAY_AGAIN;
     }
 
 }

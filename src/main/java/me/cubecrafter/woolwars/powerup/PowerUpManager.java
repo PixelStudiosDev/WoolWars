@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,11 @@
 
 package me.cubecrafter.woolwars.powerup;
 
+import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.utils.Utils;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -29,39 +31,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Getter
 public class PowerUpManager {
 
-    private final List<PowerUpType> powerUps = new ArrayList<>();
+    private final List<PowerUpData> powerUps = new ArrayList<>();
 
     public void load() {
         powerUps.clear();
-        YamlConfiguration config = WoolWars.getInstance().getFileManager().getPowerUps();
-        int loaded = 0;
+
+        YamlConfiguration config = WoolWars.get().getConfigManager().getPowerUps();
         for (String id : config.getKeys(false)) {
             ItemStack displayedItem = ItemBuilder.fromConfig(config.getConfigurationSection(id + ".displayed-item")).build();
             List<String> holoLines = config.getStringList(id + ".hologram-lines");
+            // Parse the items
             List<ItemStack> items = new ArrayList<>();
             if (config.contains(id + ".items")) {
                 for (String item : config.getConfigurationSection(id + ".items").getKeys(false)) {
-                    ItemStack created = ItemBuilder.fromConfig(config.getConfigurationSection(id + ".items." + item)).build();
-                    items.add(created);
+                    items.add(ItemBuilder.fromConfig(config.getConfigurationSection(id + ".items." + item)).setUnbreakable(true).build());
                 }
             }
+            // Parse the effects
             List<PotionEffect> effects = new ArrayList<>();
             if (config.contains(id + ".effects")) {
                 for (String effect : config.getStringList(id + ".effects")) {
-                    PotionEffect created = TextUtil.getEffect(effect);
-                    effects.add(created);
+                    effects.add(Utils.parseEffect(effect));
                 }
             }
-            PowerUpType data = new PowerUpType(displayedItem, holoLines, items, effects);
-            powerUps.add(data);
-            loaded++;
+            // Register the powerup
+            powerUps.add(new PowerUpData(displayedItem, holoLines, items, effects));
         }
-        TextUtil.info("Loaded " + loaded + " powerups!");
+        TextUtil.info("Loaded " + powerUps.size() + " powerups!");
     }
 
-    public PowerUpType getRandom() {
+    public PowerUpData getRandom() {
         return powerUps.get(ThreadLocalRandom.current().nextInt(powerUps.size()));
     }
 

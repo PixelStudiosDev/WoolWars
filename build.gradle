@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.1.8'
+version = '1.1.9'
 
 repositories {
     mavenCentral()
@@ -15,6 +15,7 @@ repositories {
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url 'https://repo.codemc.org/repository/maven-public/' }
     maven { url 'https://simonsator.de/repo/' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -23,63 +24,32 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.36'
     implementation 'org.bstats:bstats-bukkit:3.0.0'
     implementation 'de.tr7zw:item-nbt-api:2.11.1'
+    implementation 'com.github.cubecrafter:XUtils:master-SNAPSHOT'
+
     compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
-    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly 'me.clip:placeholderapi:2.11.3'
     compileOnly 'de.simonsator:Party-and-Friends-MySQL-Edition-Spigot-API:1.5.4-RELEASE'
     compileOnly 'de.simonsator:spigot-party-api-for-party-and-friends:1.0.4-RELEASE'
     compileOnly 'de.simonsator:DevelopmentPAFSpigot:1.0.67'
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
 
 shadowJar {
     archiveFileName = 'WoolWars-' + project.version + '.jar'
-    relocate('com.cryptomorin.xseries', 'me.cubecrafter.woolwars.libs.xseries')
-    relocate('com.zaxxer.hikari', 'me.cubecrafter.woolwars.libs.hikari')
-    relocate('org.bstats', 'me.cubecrafter.woolwars.libs.bstats')
-    relocate('de.tr7zw.changeme.nbtapi', 'me.cubecrafter.woolwars.libs.nbtapi')
-    relocate('de.tr7zw.annotations', 'me.cubecrafter.woolwars.libs.nbtapi.annotations')
-    exclude 'com/cryptomorin/xseries/XBiome*'
-    exclude 'com/cryptomorin/xseries/NMSExtras*'
-    exclude 'com/cryptomorin/xseries/NoteBlockMusic*'
-    exclude 'com/cryptomorin/xseries/SkullCacheListener*'
-    exclude 'com/cryptomorin/xseries/XBlock*'
-    exclude 'com/cryptomorin/xseries/XEntity*'
-    exclude 'com/cryptomorin/xseries/XItemStack*'
-    exclude 'com/cryptomorin/xseries/XTag*'
-    exclude 'com/cryptomorin/xseries/particles/*'
+    relocate 'me.cubecrafter.xutils', 'me.cubecrafter.woolwars.libs.xutils'
+    relocate 'com.cryptomorin.xseries', 'me.cubecrafter.woolwars.libs.xseries'
+    relocate 'com.zaxxer.hikari', 'me.cubecrafter.woolwars.libs.hikari'
+    relocate 'org.bstats', 'me.cubecrafter.woolwars.libs.bstats'
+    relocate 'de.tr7zw.changeme.nbtapi', 'me.cubecrafter.woolwars.libs.nbtapi'
+    relocate 'de.tr7zw.annotations', 'me.cubecrafter.woolwars.libs.nbtapi.annotations'
     exclude 'META-INF/**'
     exclude 'LICENSE'
+    minimize()
 }
 
-jar {
-    archiveFileName = 'WoolWars-' + project.version + '-sources.jar'
-}
-
-processResources {
-    expand 'version': project.version
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from (components.java)
-        }
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
-
-compileJava.dependsOn clean
-
-build.dependsOn shadowJar
-
-task buy {
+tasks.register('buy') {
     doLast {
         println '----------------------------------------------------------------'
         println 'Buy the plugin to get support and keep the development going!'
@@ -90,4 +60,30 @@ task buy {
     }
 }
 
-build.finalizedBy buy
+tasks {
+    compileJava {
+        options.encoding = 'UTF-8'
+        dependsOn clean
+    }
+    build {
+        dependsOn shadowJar
+        finalizedBy buy
+    }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+}
+
+processResources {
+    filteringCharset 'UTF-8'
+    expand 'version': project.version
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}

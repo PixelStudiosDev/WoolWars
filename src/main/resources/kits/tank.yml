@@ -1,4 +1,6 @@
-displayname: "Tank"
+# The displayed name of the kit
+name: "Tank"
+# Armor pieces
 armor:
   helmet:
     material: LEATHER_HELMET
@@ -8,6 +10,7 @@ armor:
     material: LEATHER_LEGGINGS
   boots:
     material: LEATHER_BOOTS
+# Kit items
 items:
   item-1:
     material: WOODEN_SWORD
@@ -22,6 +25,23 @@ items:
     material: WOOL
     amount: 64
     slot: 3
+# Keystone ability
 ability:
   type: GIGAHEAL
+  name: "&6&lGIGAHEAL"
   slot: 8
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&fKeystone Ability: &6&lGIGAHEAL"
+    lore:
+      - "&7Give yourself a high amount of"
+      - "&7regen for 2 seconds."
+      - ""
+      - "&6Press &e&lRight Click &6to activate"
+      - ""
+      - "&7You can only use your keystone"
+      - "&7ability &c&lONCE &7per round."
+  effect:
+    duration: 2
+    amplifier: 2

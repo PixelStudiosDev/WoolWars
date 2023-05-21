@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.config.FileManager;
-import org.bukkit.Bukkit;
+import me.cubecrafter.woolwars.storage.player.PlayerData;
+import me.cubecrafter.woolwars.storage.player.StatisticType;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.Tasks;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,15 +43,16 @@ public abstract class Database {
 
     public Database() {
         HikariConfig hikariConfig = new HikariConfig();
-        if (Config.MYSQL_ENABLED.getAsBoolean()) {
+
+        if (Config.MYSQL_ENABLED.asBoolean()) {
             hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s",
-                    Config.MYSQL_HOST.getAsString(),
-                    Config.MYSQL_PORT.getAsString(),
-                    Config.MYSQL_DATABASE.getAsString()));
-            hikariConfig.setUsername(Config.MYSQL_USERNAME.getAsString());
-            hikariConfig.setPassword(Config.MYSQL_PASSWORD.getAsString());
+                    Config.MYSQL_HOST.asString(),
+                    Config.MYSQL_PORT.asString(),
+                    Config.MYSQL_DATABASE.asString()));
+            hikariConfig.setUsername(Config.MYSQL_USERNAME.asString());
+            hikariConfig.setPassword(Config.MYSQL_PASSWORD.asString());
         } else {
-            File database = new File(FileManager.PLUGIN_FOLDER, "database.db");
+            File database = new File(WoolWars.get().getDataFolder(), "database.db");
             if (!database.exists()) {
                 try {
                     database.createNewFile();
@@ -60,15 +63,17 @@ public abstract class Database {
             hikariConfig.setJdbcUrl("jdbc:sqlite:" + database);
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
         }
+
         hikariConfig.setMaximumPoolSize(10);
         hikariConfig.setConnectionTestQuery("SELECT 1");
         hikariConfig.setPoolName("WoolWars-Pool");
-        hikariConfig.addDataSourceProperty("useSSL", Config.MYSQL_SSL_ENABLED.getAsBoolean());
+        hikariConfig.addDataSourceProperty("useSSL", Config.MYSQL_SSL_ENABLED.asBoolean());
         hikariConfig.addDataSourceProperty("characterEncoding", "utf8");
         hikariConfig.addDataSourceProperty("useUnicode", true);
         hikariConfig.addDataSourceProperty("cachePrepStmts", true);
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", 250);
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+
         dataSource = new HikariDataSource(hikariConfig);
         createTable();
     }
@@ -82,17 +87,12 @@ public abstract class Database {
     }
 
     protected void executeAsync(String sql, ThrowingConsumer<PreparedStatement> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(WoolWars.getInstance(), () -> execute(sql, consumer));
-    }
-
-    public void close() {
-        dataSource.close();
+        Tasks.async(() -> execute(sql, consumer));
     }
 
     private void createTable() {
         execute("CREATE TABLE IF NOT EXISTS player_data (" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
-                "name VARCHAR(255)," +
                 "wins INT," +
                 "losses INT," +
                 "games_played INT," +
@@ -101,44 +101,39 @@ public abstract class Database {
                 "wool_placed INT," +
                 "blocks_broken INT," +
                 "powerups_collected INT," +
-                "selected_kit VARCHAR(255)," +
-                "win_streak INT)",
+                "win_streak INT," +
+                "selected_kit VARCHAR(255))",
                 PreparedStatement::executeUpdate);
-        execute("SELECT * FROM player_data LIMIT 1", statement -> {
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.getMetaData().getColumnCount() == 11) {
-                execute("ALTER TABLE player_data ADD COLUMN win_streak INT", PreparedStatement::executeUpdate);
-            }
-        });
     }
 
     public CompletableFuture<PlayerData> fetchData(UUID uuid) {
         CompletableFuture<PlayerData> future = new CompletableFuture<>();
+        // Execute an async query
         executeAsync("SELECT * FROM player_data WHERE uuid=?", statement -> {
             statement.setString(1, uuid.toString());
             ResultSet resultSet = statement.executeQuery();
+            PlayerData data = new PlayerData();
             if (!resultSet.next()) {
-                future.complete(null);
+                // Return empty data
+                future.complete(data);
                 return;
             }
-            PlayerData data = new PlayerData(uuid);
-            data.setWins(resultSet.getInt("wins"));
-            data.setLosses(resultSet.getInt("losses"));
-            data.setGamesPlayed(resultSet.getInt("games_played"));
-            data.setKills(resultSet.getInt("kills"));
-            data.setDeaths(resultSet.getInt("deaths"));
-            data.setWoolPlaced(resultSet.getInt("wool_placed"));
-            data.setBlocksBroken(resultSet.getInt("blocks_broken"));
-            data.setPowerUpsCollected(resultSet.getInt("powerups_collected"));
             data.setSelectedKit(resultSet.getString("selected_kit"));
-            data.setWinStreak(resultSet.getInt("win_streak"));
+            // Loop through all columns and find valid statistic types
+            for (StatisticType type : StatisticType.values()) {
+                data.addStatistic(type, resultSet.getInt(type.getId()));
+            }
             future.complete(data);
         });
         return future;
     }
 
-    public abstract void saveData(PlayerData data);
-    public abstract void saveAllData(Collection<PlayerData> data);
+    public void close() {
+        dataSource.close();
+    }
+
+    public abstract void saveData(WoolPlayer player);
+    public abstract void saveAllData(Collection<WoolPlayer> players);
 
     @FunctionalInterface
     public interface ThrowingConsumer<T> {

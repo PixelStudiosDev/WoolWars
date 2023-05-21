@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@ import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.commands.SubCommand;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -37,14 +39,15 @@ public class JoinCommand implements SubCommand {
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) return;
         Arena arena = ArenaUtil.getArenaById(args[0]);
+        WoolPlayer player = PlayerManager.get((Player) sender);
         if (arena != null) {
-            arena.addPlayer((Player) sender, true);
+            arena.addPlayer(player, true);
         } else if (ArenaUtil.getGroups().contains(args[0])) {
-            ArenaUtil.joinRandomArena((Player) sender, args[0]);
+            ArenaUtil.joinRandomArena(player, args[0]);
         } else if (args[0].equalsIgnoreCase("random")) {
-            ArenaUtil.joinRandomArena((Player) sender);
+            ArenaUtil.joinRandomArena(player);
         } else {
-            TextUtil.sendMessage(sender, Messages.ARENA_NOT_FOUND.getAsString());
+            TextUtil.sendMessage(sender, Messages.ARENA_NOT_FOUND.asString());
         }
     }
 
@@ -52,7 +55,7 @@ public class JoinCommand implements SubCommand {
     public List<String> tabComplete(CommandSender sender, String[] args) {
         if (args.length != 1) return null;
         List<String> completions = new ArrayList<>();
-        completions.addAll(ArenaUtil.getArenas().stream().filter(arena -> arena.getGameState().equals(GameState.WAITING) || arena.getGameState().equals(GameState.STARTING)).map(Arena::getId).collect(Collectors.toList()));
+        completions.addAll(ArenaUtil.getArenas().stream().filter(arena -> arena.getState().equals(GameState.WAITING) || arena.getState().equals(GameState.STARTING)).map(Arena::getId).collect(Collectors.toList()));
         completions.addAll(ArenaUtil.getGroups());
         completions.add("random");
         return completions;

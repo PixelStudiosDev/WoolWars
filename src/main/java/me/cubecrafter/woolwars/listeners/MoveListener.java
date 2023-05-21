@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,15 @@ package me.cubecrafter.woolwars.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.storage.PlayerData;
 import me.cubecrafter.woolwars.powerup.PowerUp;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.StatisticType;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -35,54 +36,60 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class MoveListener implements Listener {
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockZ() == e.getTo().getBlockZ() && e.getFrom().getBlockY() == e.getTo().getBlockY()) return;
-        Player player = e.getPlayer();
+    public void onMove(PlayerMoveEvent event) {
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() &&
+                event.getFrom().getBlockZ() == event.getTo().getBlockZ() &&
+                event.getFrom().getBlockY() == event.getTo().getBlockY()) return;
+
+        WoolPlayer player = PlayerManager.get(event.getPlayer());
         if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (!arena.getArenaRegion().isInside(e.getTo())) {
-            if (arena.isDead(player)) {
+
+        if (!arena.getArenaRegion().isInside(event.getTo())) {
+            if (!player.isAlive()) {
                 player.teleport(arena.getLobby());
-                ArenaUtil.playSound(player, Config.SOUNDS_TELEPORT_TO_BASE.getAsString());
+                player.playSound(Config.SOUNDS_TELEPORT_TO_BASE.asString());
             } else {
-                switch (arena.getGameState()) {
+                switch (arena.getState()) {
                     case ACTIVE_ROUND:
-                        ArenaUtil.handleDeath(player, arena);
-                        break;
-                    case WAITING:
-                    case STARTING:
-                    case ROUND_OVER:
-                    case GAME_ENDED:
-                        player.teleport(arena.getLobby());
-                        ArenaUtil.playSound(player, Config.SOUNDS_TELEPORT_TO_BASE.getAsString());
+                        DamageListener.handleDeath(player, arena);
                         break;
                     case PRE_ROUND:
-                        player.teleport(arena.getTeamByPlayer(player).getSpawnLocation());
-                        ArenaUtil.playSound(player, Config.SOUNDS_TELEPORT_TO_BASE.getAsString());
+                        player.teleport(arena.getTeam(player).getSpawn());
+                        player.playSound(Config.SOUNDS_TELEPORT_TO_BASE.asString());
+                        break;
+                    default:
+                        player.teleport(arena.getLobby());
+                        player.playSound(Config.SOUNDS_TELEPORT_TO_BASE.asString());
                         break;
                 }
             }
+            return;
         }
-        if (arena.getGameState() == GameState.WAITING || arena.getGameState() == GameState.STARTING) {
+
+        if (arena.getState() == GameState.WAITING || arena.getState() == GameState.STARTING) {
             if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
                 player.teleport(arena.getLobby());
-                ArenaUtil.playSound(player, Config.SOUNDS_TELEPORT_TO_BASE.getAsString());
+                player.playSound(Config.SOUNDS_TELEPORT_TO_BASE.asString());
+                return;
             }
-        } else if (arena.getGameState() == GameState.ACTIVE_ROUND && !arena.getDeadPlayers().contains(player)) {
+        }
+
+        if (player.isAlive()) {
             Block top = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
             Block bottom = top.getRelative(BlockFace.DOWN);
-            if (top.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_TOP_BLOCK.getAsString()).get().parseMaterial())
-                    && bottom.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_BOTTOM_BLOCK.getAsString()).get().parseMaterial())) {
-                player.setVelocity(player.getLocation().getDirection().normalize().multiply(Config.JUMP_PADS_HORIZONTAL_POWER.getAsDouble()).setY(Config.JUMP_PADS_VERTICAL_POWER.getAsDouble()));
-                ArenaUtil.playSound(player, Config.SOUNDS_JUMP_PAD.getAsString());
+            if (top.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_TOP_BLOCK.asString()).get().parseMaterial())
+                    && bottom.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_BOTTOM_BLOCK.asString()).get().parseMaterial())) {
+                player.getPlayer().setVelocity(player.getLocation().getDirection().normalize().multiply(Config.JUMP_PADS_HORIZONTAL_POWER.asDouble()).setY(Config.JUMP_PADS_VERTICAL_POWER.asDouble()));
+                player.playSound(Config.SOUNDS_JUMP_PAD.asString());
             }
+            if (arena.getState() != GameState.ACTIVE_ROUND) return;
             for (PowerUp powerUp : arena.getPowerUps()) {
                 if (!powerUp.isActive()) continue;
                 double distance = player.getLocation().distance(powerUp.getLocation());
                 if (distance <= 1) {
                     powerUp.use(player);
-                    PlayerData data = ArenaUtil.getPlayerData(player);
-                    data.setPowerUpsCollected(data.getPowerUpsCollected() + 1);
+                    player.getData().addRoundStatistic(StatisticType.POWERUPS_COLLECTED, 1);
                 }
             }
         }

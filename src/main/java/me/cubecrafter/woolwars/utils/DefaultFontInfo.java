@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,14 @@
 
 package me.cubecrafter.woolwars.utils;
 
-public enum DefaultFontInfo{
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+
+@Getter
+@RequiredArgsConstructor
+public enum DefaultFontInfo {
 
     A('A', 5),
     a('a', 5),
@@ -91,7 +98,7 @@ public enum DefaultFontInfo{
     AMPERSAND('&', 5),
     ASTERISK('*', 5),
     LEFT_PARENTHESIS('(', 4),
-    RIGHT_PERENTHESIS(')', 4),
+    RIGHT_PARENTHESIS(')', 4),
     MINUS('-', 5),
     UNDERSCORE('_', 5),
     PLUS_SIGN('+', 5),
@@ -120,29 +127,15 @@ public enum DefaultFontInfo{
     private final char character;
     private final int length;
 
-    DefaultFontInfo(char character, int length) {
-        this.character = character;
-        this.length = length;
-    }
-
-    public char getCharacter(){
-        return this.character;
-    }
-
-    public int getLength(){
-        return this.length;
-    }
-
-    public int getBoldLength(){
-        if (this == DefaultFontInfo.SPACE) return this.getLength();
-        return this.length + 1;
-    }
-
-    public static DefaultFontInfo getDefaultFontInfo(char c) {
-        for (DefaultFontInfo dFI : DefaultFontInfo.values()) {
-            if (dFI.getCharacter() == c) return dFI;
+    public int getBoldLength() {
+        if (this == DefaultFontInfo.SPACE) {
+            return getLength();
         }
-        return DefaultFontInfo.DEFAULT;
+        return length + 1;
+    }
+
+    public static DefaultFontInfo getDefaultFontInfo(char character) {
+        return Arrays.stream(values()).filter(info -> info.getCharacter() == character).findAny().orElse(DefaultFontInfo.DEFAULT);
     }
 
 }

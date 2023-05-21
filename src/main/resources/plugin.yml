@@ -2,8 +2,30 @@ name: WoolWars
 version: ${version}
 main: me.cubecrafter.woolwars.WoolWars
 api-version: 1.13
+authors:
+  - CubeCrafter
+  - MathsAnalysis
 description: Fight to take control of the wool at the center of the map!
+website: https://cubecrafter.github.io/wool-wars/
 softdepend:
   - PlaceholderAPI
   - Multiverse-Core
+  - MultiWorld
   - Spigot-Party-API-PAF
+permissions:
+  woolwars.join:
+    default: true
+  woolwars.leave:
+    default: true
+  woolwars.stats:
+    default: true
+  woolwars.arenas:
+    default: true
+  woolwars.playagain:
+    default: true
+  woolwars.admin:
+    default: op
+  woolwars.bypass:
+    default: op
+  woolwars.forcestart:
+    default: op

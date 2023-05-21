@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,17 +29,14 @@ import me.cubecrafter.woolwars.commands.subcommands.SetupCommand;
 import me.cubecrafter.woolwars.commands.subcommands.StatsCommand;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -70,7 +67,6 @@ public class CommandManager extends Command implements PluginIdentifiableCommand
         setDescription("Main command for Wool Wars");
 
         registerCommands();
-        registerPermissions();
     }
 
     private void registerCommands() {
@@ -84,18 +80,8 @@ public class CommandManager extends Command implements PluginIdentifiableCommand
             return;
         }
         commandMap.register("woolwars", this);
-        if (Config.ENABLE_LEAVE_COMMAND_SHORTCUT.getAsBoolean()) {
+        if (Config.ENABLE_LEAVE_COMMAND_SHORTCUT.asBoolean()) {
             commandMap.register("woolwars", new LeaveCommand());
-        }
-    }
-
-    private void registerPermissions() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        for (String permission : new String[] {"join", "leave", "stats", "arenas", "playagain"}) {
-            pluginManager.addPermission(new Permission("woolwars." + permission, PermissionDefault.TRUE));
-        }
-        for (String permission : new String[] {"admin", "bypass", "forcestart"}) {
-            pluginManager.addPermission(new Permission("woolwars." + permission, PermissionDefault.OP));
         }
     }
 
@@ -104,20 +90,20 @@ public class CommandManager extends Command implements PluginIdentifiableCommand
         if (args.length > 0) {
             SubCommand cmd = Arrays.stream(commands).filter(sub -> sub.getLabel().equalsIgnoreCase(args[0])).findAny().orElse(null);
             if (cmd == null) {
-                TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.getAsString());
+                TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.asString());
                 return true;
             }
             if (cmd.isPlayerOnly() && !(sender instanceof Player)) {
-                TextUtil.sendMessage(sender, Messages.ONLY_PLAYER_COMMAND.getAsString());
+                TextUtil.sendMessage(sender, Messages.ONLY_PLAYER_COMMAND.asString());
                 return true;
             }
             if (!sender.hasPermission(cmd.getPermission())) {
-                TextUtil.sendMessage(sender, Messages.NO_PERMISSION.getAsString());
+                TextUtil.sendMessage(sender, Messages.NO_PERMISSION.asString());
                 return true;
             }
             cmd.execute(sender, Arrays.copyOfRange(args, 1, args.length));
         } else {
-            TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.getAsString());
+            TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.asString());
         }
         return true;
     }

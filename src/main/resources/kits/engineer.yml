@@ -1,4 +1,6 @@
-displayname: "Engineer"
+# The displayed name of the kit
+name: "Engineer"
+# Armor pieces
 armor:
   helmet:
     material: LEATHER_HELMET
@@ -8,6 +10,7 @@ armor:
     material: LEATHER_LEGGINGS
   boots:
     material: LEATHER_BOOTS
+# Kit items
 items:
   item-1:
     material: STONE_SWORD
@@ -32,7 +35,27 @@ items:
   item-7:
     material: WOOL
     amount: 64
-    slot: 6    
+    slot: 6
+# Keystone ability
 ability:
   type: HACK
+  name: "&6&lHACK"
   slot: 8
+  item:
+    material: BLAZE_POWDER
+    glow: true
+    displayname: "&eKeystone Ability: &6&lHACK"
+    lore:
+      - "&7Disable players from placing or"
+      - "&7breaking middle blocks for 5"
+      - "&7seconds."
+      - ""
+      - "&6Press &e&lRight Click &6to activate"
+      - ""
+      - "&7You can only use your keystone"
+      - "&7ability &c&lONCE &7per round."
+  duration: 5 # seconds
+  messages:
+    center-already-locked: "&cCenter is already locked!"
+    center-unlocked: "&e&lCENTER UNLOCKED!"
+    center-locked: "&e&lCENTER UNLOCKS IN {seconds} SECONDS!"

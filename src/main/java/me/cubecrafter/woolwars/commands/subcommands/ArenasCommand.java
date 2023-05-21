@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,9 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.menu.menus.ArenasMenu;
+import me.cubecrafter.woolwars.menu.game.ArenasMenu;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,7 +31,8 @@ public class ArenasCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        new ArenasMenu((Player) sender).openMenu();
+        WoolPlayer player = PlayerManager.get((Player) sender);
+        new ArenasMenu(player).open();
     }
 
     @Override

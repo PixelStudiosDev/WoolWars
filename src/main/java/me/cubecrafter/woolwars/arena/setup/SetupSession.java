@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,14 @@ import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.config.FileManager;
-import me.cubecrafter.woolwars.menu.Menu;
-import me.cubecrafter.woolwars.menu.menus.setup.SetupMenu;
-import me.cubecrafter.woolwars.menu.menus.setup.TeamSetupMenu;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.menu.setup.SetupMenu;
+import me.cubecrafter.woolwars.menu.setup.TeamSetupMenu;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.FileUtil;
+import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.menu.Menu;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -50,19 +49,19 @@ public class SetupSession implements Listener {
 
     private static final Map<UUID, SetupSession> sessions = new HashMap<>();
 
-    public static boolean isActive(Player player) {
-        return sessions.containsKey(player.getUniqueId());
+    public static boolean check(WoolPlayer player) {
+        return sessions.containsKey(player.getPlayer().getUniqueId());
     }
 
-    public static void remove(Player player) {
-        sessions.remove(player.getUniqueId());
+    public static void remove(WoolPlayer player) {
+        sessions.remove(player.getPlayer().getUniqueId());
     }
 
-    public static SetupSession getSession(Player player) {
-        return sessions.get(player.getUniqueId());
+    public static SetupSession get(WoolPlayer player) {
+        return sessions.get(player.getPlayer().getUniqueId());
     }
 
-    private final Player player;
+    private final WoolPlayer player;
     private final Menu menu;
     @Setter private boolean centerSetupMode = false;
     private final String id;
@@ -80,13 +79,13 @@ public class SetupSession implements Listener {
     private final List<TeamData> teams = new ArrayList<>();
     private final List<Location> powerUps = new ArrayList<>();
 
-    public SetupSession(Player player, String id) {
+    public SetupSession(WoolPlayer player, String id) {
         this.player = player;
         this.id = id;
-        WoolWars.getInstance().getServer().getPluginManager().registerEvents(this, WoolWars.getInstance());
-        sessions.put(player.getUniqueId(), this);
+        WoolWars.get().getServer().getPluginManager().registerEvents(this, WoolWars.get());
+        sessions.put(player.getPlayer().getUniqueId(), this);
         menu = new SetupMenu(player, this);
-        menu.openMenu();
+        menu.open();
     }
 
     public boolean isDisplayNameSet() {
@@ -132,86 +131,84 @@ public class SetupSession implements Listener {
     public void cancel() {
         HandlerList.unregisterAll(this);
         remove(player);
-        ArenaUtil.teleportToLobby(player);
+        player.teleportToLobby();
     }
 
     public void save() {
-        ArenaUtil.teleportToLobby(player);
+        player.teleportToLobby();
         HandlerList.unregisterAll(this);
-        File file = new File(FileManager.ARENAS_FOLDER, id + ".yml");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        File file = new File(WoolWars.get().getConfigManager().getArenasFolder(), id + ".yml");
+        if (!file.exists()) {
+            FileUtil.create(file);
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("displayname", displayName);
         config.set("group", group);
-        config.set("lobby-location", TextUtil.serializeLocation(lobby));
+        config.set("lobby-location", TextUtil.fromLocation(lobby));
         config.set("max-players-per-team", maxPlayersPerTeam);
         config.set("min-players", minPlayers);
         config.set("win-points", winPoints);
-        config.set("arena.pos1", TextUtil.serializeLocation(arenaPos1));
-        config.set("arena.pos2", TextUtil.serializeLocation(arenaPos2));
-        config.set("center.pos1", TextUtil.serializeLocation(centerPos1));
-        config.set("center.pos2", TextUtil.serializeLocation(centerPos2));
+        config.set("arena.pos1", TextUtil.fromLocation(arenaPos1));
+        config.set("arena.pos2", TextUtil.fromLocation(arenaPos2));
+        config.set("center.pos1", TextUtil.fromLocation(centerPos1));
+        config.set("center.pos2", TextUtil.fromLocation(centerPos2));
         for (TeamData data : teams) {
             config.set("teams." + data.getColor().toString() + ".name", data.getName());
-            config.set("teams." + data.getColor().toString() + ".spawn-location", TextUtil.serializeLocation(data.getSpawn()));
-            config.set("teams." + data.getColor().toString() + ".barrier.pos1", TextUtil.serializeLocation(data.getBarrierPos1()));
-            config.set("teams." + data.getColor().toString() + ".barrier.pos2", TextUtil.serializeLocation(data.getBarrierPos2()));
-            config.set("teams." + data.getColor().toString() + ".base.pos1", TextUtil.serializeLocation(data.getBasePos1()));
-            config.set("teams." + data.getColor().toString() + ".base.pos2", TextUtil.serializeLocation(data.getBasePos2()));
+            config.set("teams." + data.getColor().toString() + ".spawn-location", TextUtil.fromLocation(data.getSpawn()));
+            config.set("teams." + data.getColor().toString() + ".barrier.pos1", TextUtil.fromLocation(data.getBarrierPos1()));
+            config.set("teams." + data.getColor().toString() + ".barrier.pos2", TextUtil.fromLocation(data.getBarrierPos2()));
+            config.set("teams." + data.getColor().toString() + ".base.pos1", TextUtil.fromLocation(data.getBasePos1()));
+            config.set("teams." + data.getColor().toString() + ".base.pos2", TextUtil.fromLocation(data.getBasePos2()));
         }
         List<String> locations = new ArrayList<>();
         for (Location location : powerUps) {
-            locations.add(TextUtil.serializeLocation(location));
+            locations.add(TextUtil.fromLocation(location));
         }
         config.set("powerups", locations);
         try {
             config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         Arena arena = new Arena(id, config);
-        WoolWars.getInstance().getArenaManager().register(arena);
-        TextUtil.sendMessage(player, "{prefix}&7Arena &e" + id + " &7successfully created and loaded!");
+        WoolWars.get().getArenaManager().register(arena);
+        player.send("&7Arena &e" + id + " &7successfully created and loaded!");
         remove(player);
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        if (!e.getPlayer().equals(player)) return;
+        if (!e.getPlayer().equals(player.getPlayer())) return;
         if (centerSetupMode) {
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                 e.setCancelled(true);
                 centerPos1 = e.getClickedBlock().getLocation();
-                TextUtil.sendMessage(player, "{prefix}&aCenter position 1 set!");
-                ArenaUtil.playSound(player, "ORB_PICKUP");
+                player.send("&aCenter position 1 set!");
+                player.playSound("ORB_PICKUP");
             } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 e.setCancelled(true);
                 centerPos2 = e.getClickedBlock().getLocation();
-                TextUtil.sendMessage(player, "{prefix}&aCenter position 2 set!");
-                ArenaUtil.playSound(player, "ORB_PICKUP");
+                player.send("&aCenter position 2 set!");
+                player.playSound("ORB_PICKUP");
             }
             if (isCenterPos1Set() && isCenterPos2Set()) {
                 centerSetupMode = false;
-                menu.openMenu();
+                menu.open();
             }
         } else if (currentEditingTeam != null) {
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                 e.setCancelled(true);
                 currentEditingTeam.setBarrierPos1(e.getClickedBlock().getLocation());
-                TextUtil.sendMessage(player, "{prefix}&aBarrier position 1 set!");
-                ArenaUtil.playSound(player, "ORB_PICKUP");
+                player.send("&aBarrier position 1 set!");
+                player.playSound("ORB_PICKUP");
             } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 e.setCancelled(true);
                 currentEditingTeam.setBarrierPos2(e.getClickedBlock().getLocation());
-                TextUtil.sendMessage(player, "{prefix}&aBarrier position 2 set!");
-                ArenaUtil.playSound(player, "ORB_PICKUP");
+                player.send("&aBarrier position 2 set!");
+                player.playSound("ORB_PICKUP");
             }
             if (currentEditingTeam.isBarrierPos1Set() && currentEditingTeam.isBarrierPos2Set()) {
-                new TeamSetupMenu(player, this, currentEditingTeam).openMenu();
+                new TeamSetupMenu(player, this, currentEditingTeam).open();
                 currentEditingTeam = null;
             }
         }

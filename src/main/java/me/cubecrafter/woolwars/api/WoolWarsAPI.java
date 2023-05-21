@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,31 @@
 package me.cubecrafter.woolwars.api;
 
 import lombok.experimental.UtilityClass;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.storage.PlayerData;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.kits.Kit;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.kit.Kit;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @UtilityClass
 public class WoolWarsAPI {
 
     public Location getLobbyLocation() {
-        return Config.LOBBY_LOCATION.getAsLocation();
+        return Config.LOBBY_LOCATION.asLocation();
     }
 
     public List<Arena> getArenas() {
         return ArenaUtil.getArenas();
     }
 
-    public Arena getArenaByPlayer(Player player) {
+    public Arena getArenaByPlayer(WoolPlayer player) {
         return ArenaUtil.getArenaByPlayer(player);
     }
 
@@ -57,26 +60,26 @@ public class WoolWarsAPI {
     }
 
     public Kit getKitById(String id) {
-        return ArenaUtil.getKit(id);
+        return WoolWars.get().getKitManager().getKit(id);
     }
 
     public List<Kit> getKits() {
-        return ArenaUtil.getKits();
+        return new ArrayList<>(WoolWars.get().getKitManager().getKits());
     }
 
-    public PlayerData getPlayerData(Player player) {
-        return ArenaUtil.getPlayerData(player);
+    public WoolPlayer getPlayer(Player player) {
+        return PlayerManager.get(player);
     }
 
-    public boolean isPlaying(Player player) {
+    public boolean isPlaying(WoolPlayer player) {
         return ArenaUtil.isPlaying(player);
     }
 
-    public void joinRandomArena(Player player) {
+    public void joinRandomArena(WoolPlayer player) {
         ArenaUtil.joinRandomArena(player);
     }
 
-    public void joinRandomArena(Player player, String group) {
+    public void joinRandomArena(WoolPlayer player, String group) {
         ArenaUtil.joinRandomArena(player, group);
     }
 

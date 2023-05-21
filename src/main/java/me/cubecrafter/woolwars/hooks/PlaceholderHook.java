@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,18 @@ package me.cubecrafter.woolwars.hooks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.storage.PlayerData;
-import me.cubecrafter.woolwars.utils.ArenaUtil;
+import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerData;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.StatisticType;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.entity.Player;
 
+import java.text.DecimalFormat;
+
 public class PlaceholderHook extends PlaceholderExpansion {
+
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     @Override
     public String getIdentifier() {
@@ -34,12 +41,12 @@ public class PlaceholderHook extends PlaceholderExpansion {
 
     @Override
     public String getAuthor() {
-        return "CubeCrafter";
+        return WoolWars.get().getDescription().getAuthors().toString();
     }
 
     @Override
     public String getVersion() {
-        return WoolWars.getInstance().getDescription().getVersion();
+        return WoolWars.get().getDescription().getVersion();
     }
 
     @Override
@@ -48,44 +55,47 @@ public class PlaceholderHook extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean canRegister() {
+        return true;
+    }
+
+    @Override
     public String onPlaceholderRequest(Player player, String params) {
         String[] args = params.split("_");
+
         if (args[0].equals("count")) {
             if (args[1].equals("total")) {
                 return String.valueOf(ArenaUtil.getArenas().stream().mapToInt(arena -> arena.getPlayers().size()).sum());
             }
             return String.valueOf(ArenaUtil.getArenasByGroup(args[1]).stream().mapToInt(arena -> arena.getPlayers().size()).sum());
+
         }
+
         if (player == null) return null;
-        PlayerData data = ArenaUtil.getPlayerData(player);
+        WoolPlayer woolPlayer = PlayerManager.get(player);
+        PlayerData data = woolPlayer.getData();
+
+        StatisticType type = StatisticType.fromId(params);
+        if (type != null) {
+            return String.valueOf(data.getStatistic(type));
+        }
+
         switch (params) {
-            case "wins":
-                return String.valueOf(data.getWins());
-            case "losses":
-                return String.valueOf(data.getLosses());
-            case "games_played":
-                return String.valueOf(data.getGamesPlayed());
-            case "kills":
-                return String.valueOf(data.getKills());
-            case "deaths":
-                return String.valueOf(data.getDeaths());
-            case "wool_placed":
-                return String.valueOf(data.getWoolPlaced());
-            case "blocks_broken":
-                return String.valueOf(data.getBlocksBroken());
-            case "powerups_collected":
-                return String.valueOf(data.getPowerUpsCollected());
             case "selected_kit":
                 return data.getSelectedKit();
-            case "win_streak":
-                return String.valueOf(data.getWinStreak());
             case "kdr":
-                if (data.getDeaths() == 0) return data.getKills() + ".00";
-                return String.format("%.2f", (double) data.getKills() / data.getDeaths());
+                int deaths = data.getStatistic(StatisticType.DEATHS);
+                int kills = data.getStatistic(StatisticType.KILLS);
+                if (deaths == 0) {
+                    return decimalFormat.format(kills);
+                }
+                return decimalFormat.format(kills / deaths);
         }
+
         if (!params.startsWith("arena_")) return null;
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        Arena arena = ArenaUtil.getArenaByPlayer(woolPlayer);
         if (arena == null) return null;
+
         switch (params.substring(6)) {
             case "id":
                 return arena.getId();
@@ -100,7 +110,7 @@ public class PlaceholderHook extends PlaceholderExpansion {
             case "time_formatted":
                 return arena.getTimerFormatted();
             case "state":
-                return arena.getGameState().getName();
+                return arena.getState().getName();
             case "win_points":
                 return String.valueOf(arena.getWinPoints());
             case "players":
@@ -108,22 +118,19 @@ public class PlaceholderHook extends PlaceholderExpansion {
             case "max_players":
                 return String.valueOf(arena.getMaxPlayers());
             case "kills":
-                return String.valueOf(arena.getKills().getOrDefault(player, 0));
+                return String.valueOf(data.getArenaStatistic(StatisticType.KILLS));
             case "deaths":
-                return String.valueOf(arena.getDeaths().getOrDefault(player, 0));
+                return String.valueOf(data.getArenaStatistic(StatisticType.DEATHS));
             case "wool_placed":
-                return String.valueOf(arena.getWoolPlaced().getOrDefault(player, 0));
+                return String.valueOf(data.getArenaStatistic(StatisticType.WOOL_PLACED));
             case "blocks_broken":
-                return String.valueOf(arena.getBlocksBroken().getOrDefault(player, 0));
+                return String.valueOf(data.getArenaStatistic(StatisticType.BLOCKS_BROKEN));
             case "round_kills":
-                if (arena.getRoundTask() == null) return "0";
-                return String.valueOf(arena.getRoundTask().getRoundKills().getOrDefault(player, 0));
+                return String.valueOf(data.getRoundStatistic(StatisticType.KILLS));
             case "round_wool_placed":
-                if (arena.getRoundTask() == null) return "0";
-                return String.valueOf(arena.getRoundTask().getRoundPlacedWool().getOrDefault(player, 0));
+                return String.valueOf(data.getRoundStatistic(StatisticType.WOOL_PLACED));
             case "round_blocks_broken":
-                if (arena.getRoundTask() == null) return "0";
-                return String.valueOf(arena.getRoundTask().getRoundBrokenBlocks().getOrDefault(player, 0));
+                return String.valueOf(data.getRoundStatistic(StatisticType.BLOCKS_BROKEN));
         }
         return null;
     }

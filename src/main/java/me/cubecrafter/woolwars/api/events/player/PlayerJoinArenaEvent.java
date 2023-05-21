@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.cubecrafter.woolwars.arena.Arena;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -36,7 +37,7 @@ public class PlayerJoinArenaEvent extends Event implements Cancellable {
     @Setter
     private boolean cancelled;
 
-    private final Player player;
+    private final WoolPlayer player;
     private final Arena arena;
 
     @Override

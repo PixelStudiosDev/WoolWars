@@ -1,6 +1,6 @@
 /*
  * Wool Wars
- * Copyright (C) 2022 CubeCrafter Development
+ * Copyright (C) 2023 CubeCrafter Development
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,50 +19,41 @@
 package me.cubecrafter.woolwars;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.cubecrafter.woolwars.arena.ArenaManager;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.config.FileManager;
+import me.cubecrafter.woolwars.config.ConfigManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
-import me.cubecrafter.woolwars.kits.KitManager;
-import me.cubecrafter.woolwars.listeners.ArenaListener;
-import me.cubecrafter.woolwars.listeners.BlockListener;
-import me.cubecrafter.woolwars.listeners.ChatListener;
-import me.cubecrafter.woolwars.listeners.DamageListener;
-import me.cubecrafter.woolwars.listeners.InteractListener;
-import me.cubecrafter.woolwars.listeners.InventoryListener;
-import me.cubecrafter.woolwars.listeners.JoinQuitListener;
-import me.cubecrafter.woolwars.listeners.MoveListener;
-import me.cubecrafter.woolwars.listeners.RewardsListener;
-import me.cubecrafter.woolwars.listeners.ScoreboardHandler;
-import me.cubecrafter.woolwars.party.provider.NoProvider;
+import me.cubecrafter.woolwars.kit.KitManager;
+import me.cubecrafter.woolwars.party.PartyProvider;
 import me.cubecrafter.woolwars.party.provider.PAFBungee;
 import me.cubecrafter.woolwars.party.provider.PAFSpigot;
-import me.cubecrafter.woolwars.party.provider.PartyProvider;
 import me.cubecrafter.woolwars.powerup.PowerUpManager;
 import me.cubecrafter.woolwars.storage.Database;
-import me.cubecrafter.woolwars.storage.MySQL;
-import me.cubecrafter.woolwars.storage.PlayerDataManager;
-import me.cubecrafter.woolwars.storage.SQLite;
-import me.cubecrafter.woolwars.utils.TextUtil;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.type.MySQL;
+import me.cubecrafter.woolwars.storage.type.SQLite;
 import me.cubecrafter.woolwars.utils.Utils;
+import me.cubecrafter.xutils.Tasks;
+import me.cubecrafter.xutils.TextUtil;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
 public final class WoolWars extends JavaPlugin {
 
-    @Getter private static WoolWars instance;
+    private static WoolWars instance;
 
     private ArenaManager arenaManager;
-    private FileManager fileManager;
+    private ConfigManager configManager;
     private CommandManager commandManager;
     private Database storage;
     private KitManager kitManager;
-    private ScoreboardHandler scoreboardHandler;
-    private PlayerDataManager playerDataManager;
+    private PlayerManager playerManager;
     private PowerUpManager powerupManager;
+
+    @Setter
     private PartyProvider partyProvider;
 
     @Override
@@ -74,85 +65,62 @@ public final class WoolWars extends JavaPlugin {
         TextUtil.info("  \\ \\/\\/ / _ \\/ _ \\ |  \\ \\/\\/ / _` | '_(_-<");
         TextUtil.info("   \\_/\\_/\\___/\\___/_|   \\_/\\_/\\__,_|_| /__/");
         TextUtil.info("");
-        TextUtil.info("Author: CubeCrafter");
+        TextUtil.info("Authors: CubeCrafter, MathsAnalysis");
         TextUtil.info("Version: " + getDescription().getVersion());
         TextUtil.info("Running on: " + getServer().getVersion());
         TextUtil.info("Java Version: " + System.getProperty("java.version"));
 
-        fileManager = new FileManager(this);
-        storage = Config.MYSQL_ENABLED.getAsBoolean() ? new MySQL() : new SQLite();
+        configManager = new ConfigManager(this);
+        storage = Config.MYSQL_ENABLED.asBoolean() ? new MySQL() : new SQLite();
         arenaManager = new ArenaManager(this);
         commandManager = new CommandManager(this);
-        scoreboardHandler = new ScoreboardHandler();
         powerupManager = new PowerUpManager();
         kitManager = new KitManager(this);
-        playerDataManager = new PlayerDataManager(this);
+        playerManager = new PlayerManager(this);
 
         arenaManager.load();
         kitManager.load();
         powerupManager.load();
-        playerDataManager.load();
+        playerManager.load();
 
-        registerListeners();
         registerHooks();
 
         Utils.checkForUpdates();
-
         new Metrics(this, 14788);
     }
 
     @Override
     public void onDisable() {
-        playerDataManager.save();
-        storage.close();
         arenaManager.disable();
-        scoreboardHandler.disable();
-        getServer().getScheduler().cancelTasks(this);
-    }
+        playerManager.save();
+        storage.close();
 
-    private void registerListeners() {
-        Listener[] listeners = {
-                new InventoryListener(),
-                new ArenaListener(),
-                new BlockListener(),
-                new JoinQuitListener(this),
-                new ChatListener(),
-                new InteractListener(),
-                new MoveListener(),
-                new DamageListener()
-        };
-        for (Listener listener : listeners) {
-            getServer().getPluginManager().registerEvents(listener, this);
-        }
-        if (Config.REWARD_COMMANDS_ENABLED.getAsBoolean()) {
-            getServer().getPluginManager().registerEvents(new RewardsListener(), this);
-        }
+        Tasks.cancelAll();
     }
 
     private void registerHooks() {
-        if (isPAPIEnabled()) {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PlaceholderHook().register();
             TextUtil.info("Hooked into PlaceholderAPI!");
         }
+        // Find a party provider
         if (getServer().getPluginManager().isPluginEnabled("Spigot-Party-API-PAF")) {
             partyProvider = new PAFBungee();
             TextUtil.info("Hooked into Party And Friends Bungeecord!");
         } else if (getServer().getPluginManager().isPluginEnabled("PartyAndFriends")) {
             partyProvider = new PAFSpigot();
             TextUtil.info("Hooked into Party And Friends Spigot!");
-        } else {
-            partyProvider = new NoProvider();
         }
     }
 
     public void reload() {
-        fileManager.load(true);
+        configManager.load(true);
         kitManager.load();
         powerupManager.load();
     }
 
-    public boolean isPAPIEnabled() {
-        return getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
+    public static WoolWars get() {
+        return instance;
     }
 
 }
