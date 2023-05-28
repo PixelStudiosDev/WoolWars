@@ -45,7 +45,7 @@ public class SetupMenu extends Menu {
 
     @Override
     public String getTitle() {
-        return "● Arena Setup: " + session.getId();
+        return "● Arena Setup: " + session.getArenaId();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class SetupMenu extends Menu {
 
         setItem(new MenuItem(new ItemBuilder("WHITE_WOOL").setDisplayName("&e&lSet Center Region")
                 .setLore("&7Click to set the center region.", "", "&8Point 1: &7" + (session.isCenterPos1Set() ? formatLocation(session.getCenterPos1()) + " &a✔" : "&cNot Set ✘"), "&8Point 2: &7" + (session.isCenterPos2Set() ? formatLocation(session.getCenterPos2()) + " &a✔" : "&cNot Set ✘")).build()).addAction(event -> {
-            session.setCenterSetupMode(true);
+            session.setSettingCenter(true);
             player.send("&7Left-Click on a block to set the first point, Right-Click on a block to set the second point.");
             close();
         }), 19);
@@ -140,12 +140,13 @@ public class SetupMenu extends Menu {
         setItem(new MenuItem(new ItemBuilder("BARRIER").setDisplayName("&c&lCancel Setup")
                 .setLore("&7Click to cancel the arena setup.", "", "&cThis action is irreversible!").build()).addAction(e -> {
             close();
-            session.cancel();
+            SetupSession.remove(player);
+            player.teleportToLobby();
         }), 27);
 
         setItem(new MenuItem(new ItemBuilder("EMERALD_BLOCK").setDisplayName("&a&lCreate Arena")
-                .setLore("&7Click to create the arena!", "", session.isValid() ? "&aClick to create! ✔" : "&cComplete the setup first! ✘").build()).addAction(e -> {
-            if (session.isValid()) {
+                .setLore("&7Click to create the arena!", "", session.isComplete() ? "&aClick to create! ✔" : "&cComplete the setup first! ✘").build()).addAction(e -> {
+            if (session.isComplete()) {
                 close();
                 session.save();
             }

@@ -22,7 +22,6 @@ import me.cubecrafter.woolwars.storage.Database;
 import me.cubecrafter.woolwars.storage.player.PlayerData;
 import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import org.bukkit.Bukkit;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

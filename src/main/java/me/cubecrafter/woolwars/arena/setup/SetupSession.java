@@ -18,23 +18,16 @@
 
 package me.cubecrafter.woolwars.arena.setup;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.menu.setup.SetupMenu;
-import me.cubecrafter.woolwars.menu.setup.TeamSetupMenu;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.xutils.FileUtil;
 import me.cubecrafter.xutils.TextUtil;
 import me.cubecrafter.xutils.menu.Menu;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,12 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Getter
-public class SetupSession implements Listener {
+@Data
+public class SetupSession {
 
     private static final Map<UUID, SetupSession> sessions = new HashMap<>();
+    private static final File arenaFolder = WoolWars.get().getConfigManager().getArenaFolder();
 
-    public static boolean check(WoolPlayer player) {
+    public static boolean hasSession(WoolPlayer player) {
         return sessions.containsKey(player.getPlayer().getUniqueId());
     }
 
@@ -61,31 +55,94 @@ public class SetupSession implements Listener {
         return sessions.get(player.getPlayer().getUniqueId());
     }
 
+    private final String arenaId;
     private final WoolPlayer player;
     private final Menu menu;
-    @Setter private boolean centerSetupMode = false;
-    private final String id;
-    @Setter private String displayName;
-    @Setter private String group;
-    @Setter private Location lobby;
-    @Setter private int maxPlayersPerTeam = 4;
-    @Setter private int minPlayers = 8;
-    @Setter private int winPoints = 3;
-    @Setter private Location arenaPos1;
-    @Setter private Location arenaPos2;
-    @Setter private Location centerPos1;
-    @Setter private Location centerPos2;
-    @Setter private TeamData currentEditingTeam;
+
     private final List<TeamData> teams = new ArrayList<>();
     private final List<Location> powerUps = new ArrayList<>();
 
-    public SetupSession(WoolPlayer player, String id) {
+    private String displayName;
+    private String group;
+    private Location lobby;
+
+    private int maxPlayersPerTeam = 4;
+    private int minPlayers = 8;
+    private int winPoints = 3;
+
+    private Location arenaPos1;
+    private Location arenaPos2;
+    private Location centerPos1;
+    private Location centerPos2;
+
+    private TeamData currentTeam;
+    private boolean settingCenter;
+
+    public SetupSession(WoolPlayer player, String arenaId) {
         this.player = player;
-        this.id = id;
-        WoolWars.get().getServer().getPluginManager().registerEvents(this, WoolWars.get());
-        sessions.put(player.getPlayer().getUniqueId(), this);
-        menu = new SetupMenu(player, this);
+        this.arenaId = arenaId;
+        this.menu = new SetupMenu(player, this);
+
+        sessions.put(player.getUniqueId(), this);
         menu.open();
+    }
+
+    public boolean isComplete() {
+        return isDisplayNameSet() &&
+                isGroupSet() &&
+                isLobbySet() &&
+                isArenaPos1Set() &&
+                isArenaPos2Set() &&
+                isCenterPos1Set() &&
+                isCenterPos2Set() &&
+                teams.size() > 1 &&
+                teams.stream().allMatch(TeamData::isComplete);
+    }
+
+    public void save() {
+        // Create the arena file
+        File file = new File(arenaFolder, arenaId + ".yml");
+        FileUtil.create(file);
+
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        config.set("displayname", displayName);
+        config.set("group", group);
+        config.set("lobby-location", TextUtil.fromLocation(lobby));
+        config.set("max-players-per-team", maxPlayersPerTeam);
+        config.set("min-players", minPlayers);
+        config.set("win-points", winPoints);
+        config.set("arena.pos1", TextUtil.fromLocation(arenaPos1));
+        config.set("arena.pos2", TextUtil.fromLocation(arenaPos2));
+        config.set("center.pos1", TextUtil.fromLocation(centerPos1));
+        config.set("center.pos2", TextUtil.fromLocation(centerPos2));
+
+        for (TeamData data : teams) {
+            config.set("teams." + data.getColor().toString() + ".name", data.getName());
+            config.set("teams." + data.getColor().toString() + ".spawn-location", TextUtil.fromLocation(data.getSpawn()));
+            config.set("teams." + data.getColor().toString() + ".barrier.pos1", TextUtil.fromLocation(data.getBarrierPos1()));
+            config.set("teams." + data.getColor().toString() + ".barrier.pos2", TextUtil.fromLocation(data.getBarrierPos2()));
+            config.set("teams." + data.getColor().toString() + ".base.pos1", TextUtil.fromLocation(data.getBasePos1()));
+            config.set("teams." + data.getColor().toString() + ".base.pos2", TextUtil.fromLocation(data.getBasePos2()));
+        }
+
+        List<String> locations = new ArrayList<>();
+        for (Location location : powerUps) {
+            locations.add(TextUtil.fromLocation(location));
+        }
+        config.set("powerups", locations);
+
+        try {
+            config.save(file);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        // Register the arena
+        WoolWars.get().getArenaManager().register(new Arena(arenaId, config));
+
+        player.send("&7Arena &e" + arenaId + " &7successfully created and loaded!");
+        player.teleportToLobby();
+        remove(player);
     }
 
     public boolean isDisplayNameSet() {
@@ -114,104 +171,6 @@ public class SetupSession implements Listener {
 
     public boolean isCenterPos2Set() {
         return centerPos2 != null;
-    }
-
-    public boolean isValid() {
-        return isDisplayNameSet() &&
-                isGroupSet() &&
-                isLobbySet() &&
-                isArenaPos1Set() &&
-                isArenaPos2Set() &&
-                isCenterPos1Set() &&
-                isCenterPos2Set() &&
-                teams.size() > 1 &&
-                teams.stream().allMatch(TeamData::isValid);
-    }
-
-    public void cancel() {
-        HandlerList.unregisterAll(this);
-        remove(player);
-        player.teleportToLobby();
-    }
-
-    public void save() {
-        player.teleportToLobby();
-        HandlerList.unregisterAll(this);
-        File file = new File(WoolWars.get().getConfigManager().getArenasFolder(), id + ".yml");
-        if (!file.exists()) {
-            FileUtil.create(file);
-        }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        config.set("displayname", displayName);
-        config.set("group", group);
-        config.set("lobby-location", TextUtil.fromLocation(lobby));
-        config.set("max-players-per-team", maxPlayersPerTeam);
-        config.set("min-players", minPlayers);
-        config.set("win-points", winPoints);
-        config.set("arena.pos1", TextUtil.fromLocation(arenaPos1));
-        config.set("arena.pos2", TextUtil.fromLocation(arenaPos2));
-        config.set("center.pos1", TextUtil.fromLocation(centerPos1));
-        config.set("center.pos2", TextUtil.fromLocation(centerPos2));
-        for (TeamData data : teams) {
-            config.set("teams." + data.getColor().toString() + ".name", data.getName());
-            config.set("teams." + data.getColor().toString() + ".spawn-location", TextUtil.fromLocation(data.getSpawn()));
-            config.set("teams." + data.getColor().toString() + ".barrier.pos1", TextUtil.fromLocation(data.getBarrierPos1()));
-            config.set("teams." + data.getColor().toString() + ".barrier.pos2", TextUtil.fromLocation(data.getBarrierPos2()));
-            config.set("teams." + data.getColor().toString() + ".base.pos1", TextUtil.fromLocation(data.getBasePos1()));
-            config.set("teams." + data.getColor().toString() + ".base.pos2", TextUtil.fromLocation(data.getBasePos2()));
-        }
-        List<String> locations = new ArrayList<>();
-        for (Location location : powerUps) {
-            locations.add(TextUtil.fromLocation(location));
-        }
-        config.set("powerups", locations);
-        try {
-            config.save(file);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        Arena arena = new Arena(id, config);
-        WoolWars.get().getArenaManager().register(arena);
-        player.send("&7Arena &e" + id + " &7successfully created and loaded!");
-        remove(player);
-    }
-
-    @EventHandler
-    public void onInteract(PlayerInteractEvent e) {
-        if (!e.getPlayer().equals(player.getPlayer())) return;
-        if (centerSetupMode) {
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                e.setCancelled(true);
-                centerPos1 = e.getClickedBlock().getLocation();
-                player.send("&aCenter position 1 set!");
-                player.playSound("ORB_PICKUP");
-            } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                e.setCancelled(true);
-                centerPos2 = e.getClickedBlock().getLocation();
-                player.send("&aCenter position 2 set!");
-                player.playSound("ORB_PICKUP");
-            }
-            if (isCenterPos1Set() && isCenterPos2Set()) {
-                centerSetupMode = false;
-                menu.open();
-            }
-        } else if (currentEditingTeam != null) {
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                e.setCancelled(true);
-                currentEditingTeam.setBarrierPos1(e.getClickedBlock().getLocation());
-                player.send("&aBarrier position 1 set!");
-                player.playSound("ORB_PICKUP");
-            } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                e.setCancelled(true);
-                currentEditingTeam.setBarrierPos2(e.getClickedBlock().getLocation());
-                player.send("&aBarrier position 2 set!");
-                player.playSound("ORB_PICKUP");
-            }
-            if (currentEditingTeam.isBarrierPos1Set() && currentEditingTeam.isBarrierPos2Set()) {
-                new TeamSetupMenu(player, this, currentEditingTeam).open();
-                currentEditingTeam = null;
-            }
-        }
     }
 
 }

@@ -50,7 +50,8 @@ public class ArenaManager {
                 new DamageListener(),
                 new MoveListener(),
                 new InventoryListener(),
-                new ChatListener()
+                new ChatListener(),
+                new SetupListener()
         ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, plugin));
 
         if (Config.REWARD_COMMANDS_ENABLED.asBoolean()) {

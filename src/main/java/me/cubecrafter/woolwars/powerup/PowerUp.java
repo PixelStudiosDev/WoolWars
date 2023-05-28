@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Config;
+import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Location;
@@ -61,6 +62,7 @@ public class PowerUp {
 
     public void use(WoolPlayer player) {
         remove();
+        player.getData().addRoundStatistic(StatisticType.POWERUPS_COLLECTED, 1);
         player.playSound(Config.SOUNDS_POWERUP_COLLECTED.asString());
         // Add potion effects
         for (PotionEffect effect : data.getEffects()) {

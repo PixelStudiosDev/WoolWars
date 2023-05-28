@@ -45,7 +45,6 @@ public class StartingTask extends ArenaTask {
         Events.call(new GameStartEvent(arena));
         arena.assignTeams();
         arena.getTeams().forEach(Team::updateNameTags);
-        arena.broadcast(Messages.GAME_START_MESSAGE.asStringList());
         // Start the game
         return GameState.PRE_ROUND;
     }

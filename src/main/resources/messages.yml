@@ -20,8 +20,8 @@ general:
   unknown-command: "&cUnknown command!"
   only-player-command: "&cThis command can be executed only by a player!"
   no-permission: "&cYou don't have the permission to do this!"
-  command-blocked: "You can't use this command while you are in game!"
-  config-reloaded: "&7Config files reloaded!"
+  command-blocked: "&cYou can't use this command while you are in game!"
+  config-reloaded: "&aConfig files reloaded!"
 party:
   not-leader: "&cYou must be the party leader to join an arena!"
   too-big: "&cYour party is too big to join this arena!"
@@ -33,16 +33,20 @@ game:
   start-cancelled: "&cWe don't have enough players! Start cancelled!"
   cant-break-block: "&cYou can't break this block!"
   cant-place-block: "&cYou can't place blocks here!"
+  cant-collect-powerup: "&cThis will be available {seconds} seconds after the round starts!"
   center-locked: "&cCenter is locked!"
+  center-already-locked: "&cCenter is already locked!"
+  center-unlocked: "&a&lCENTER UNLOCKED!"
+  center-unlock-countdown: "&e&lCENTER UNLOCKS IN {seconds} SECONDS!"
   round-time-left-countdown: "&c{seconds} &7seconds left in the round!"
   all-players-dead: "&cAll players died! Starting a new round!"
   start-countdown: "&7The game starts in &a{seconds} &7seconds!"
   start-message:
-    - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
-    - "<center>&c&lWOOL WARS</center>"
+    - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+    - "<center>&c&lWelcome to WOOL WARS</center>"
     - "<center>&7Matches are best of &e3</center>"
-    - "<center>&7Place your team's color wool in the &acenter &7to win the round!</center>"
-    - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+    - "<center>&7Place your team's color wool in the &ecenter &7to win the round!</center>"
+    - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
   player-death:
     title: "&c&lYOU DIED"
     subtitle: "&7You will respawn at the start of the next round!"
@@ -71,7 +75,7 @@ game:
       one: "&c❶"
   pre-round:
     title: "&e&lPRE ROUND"
-    subtitle: "&7Select your kit!"
+    subtitle: "&bSelect your kit!"
   round-end:
     points-title-separator: " &f- "
     winner-team:
@@ -85,15 +89,14 @@ game:
       subtitle: "&e&lDRAW"
     stats-message:
       no-stats-achieved: "<center>&cNo stats achieved for this round!</center>"
-      kills-format: "<center>&7Kills: {kills}</center>"
-      wool-placed-format: "<center>&7Wool placed: {wool_placed}</center>"
-      blocks-broken-format: "<center>&7Blocks broken: {blocks_broken}</center>"
+      kills-format: "<center>&6Kills &7- &f{kills}</center>"
+      wool-placed-format: "<center>&6Wool placed &7- &f{wool_placed}</center>"
+      blocks-broken-format: "<center>&6Blocks broken &7- &f{blocks_broken}</center>"
       message:
-        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
         - "<center>&eRound #{round} stats</center>"
-        - ""
         - "{stats}"
-        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
   game-end:
     winner-team:
       title: "&a&lVICTORY"
@@ -107,7 +110,7 @@ game:
       statistic-format: "&7{player} &7- &e{value}"
       none-format: "&cNone"
       message:
-        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
         - ""
         - "<center>{team_status}</center>"
         - ""
@@ -115,7 +118,7 @@ game:
         - "<center>&6&lMost Wool Placed &7- {top_wool_placed}</center>"
         - "<center>&c&lMost Blocks Broken &7- {top_blocks_broken}</center>"
         - ""
-        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+        - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
   game-states:
     waiting: "Waiting"
     starting: "Starting"
@@ -158,7 +161,7 @@ scoreboard:
     - ''
     - '&ewww.myserver.net'
   playing:
-    - '&7{date}'
+    - '&7{date} &8{displayname}'
     - ''
     - '&fRound: &b{round}'
     - '&fState: &e{state}'

@@ -45,7 +45,7 @@ public class LeaveCommand extends Command implements SubCommand, PluginIdentifia
         WoolPlayer player = PlayerManager.get((Player) sender);
         Arena arena = ArenaUtil.getArenaByPlayer(player);
         if (arena == null) return;
-        arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.DISCONNECT);
+        arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.QUIT);
     }
 
     @Override

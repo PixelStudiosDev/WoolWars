@@ -46,7 +46,7 @@ public class PlayerLeaveArenaEvent extends Event {
     }
 
     public enum Reason {
-        DISCONNECT, GAME_END, PLAY_AGAIN;
+        DISCONNECT, GAME_END, PLAY_AGAIN, QUIT
     }
 
 }

@@ -18,19 +18,16 @@
 
 package me.cubecrafter.woolwars.arena.setup;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import me.cubecrafter.woolwars.arena.team.TeamColor;
 import org.bukkit.Location;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
+@Data
 public class TeamData {
 
     private final TeamColor color;
     private String name;
+
     private Location spawn;
     private Location basePos1;
     private Location basePos2;
@@ -61,7 +58,7 @@ public class TeamData {
         return barrierPos2 != null;
     }
 
-    public boolean isValid() {
+    public boolean isComplete() {
         return isNameSet() && isSpawnSet() && isBasePos1Set() && isBasePos2Set() && isBarrierPos1Set() && isBarrierPos2Set();
     }
 
