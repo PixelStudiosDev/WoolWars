@@ -35,6 +35,8 @@ public enum Config {
     ACTIVE_ROUND_DURATION("active-round-duration"),
     ROUND_OVER_DURATION("round-over-duration"),
     GAME_END_DURATION("game-end-duration"),
+    POWERUP_ACTIVATION_DELAY("powerup-activation-delay"),
+    CENTER_UNLOCK_DELAY("center-unlock-delay"),
     DISABLED_INTERACTION_BLOCKS("disabled-interaction-blocks"),
     PLACEABLE_BLOCKS("placeable-blocks"),
     CENTER_BLOCKS("center-blocks"),

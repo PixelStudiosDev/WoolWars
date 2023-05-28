@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.arena.tasks;
 
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.events.arena.GameEndEvent;
 import me.cubecrafter.woolwars.api.events.arena.RoundEndEvent;
 import me.cubecrafter.woolwars.arena.Arena;
@@ -31,6 +32,7 @@ import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.Tasks;
 import org.bukkit.block.Block;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BlockVector;
 
@@ -54,6 +56,28 @@ public class RoundTask extends ArenaTask {
     @Override
     public void start() {
         rotationTask = Tasks.repeat(() -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
+
+        arena.setCenterLocked(true);
+        new BukkitRunnable() {
+            double timer = Config.CENTER_UNLOCK_DELAY.asDouble();
+
+            @Override
+            public void run() {
+                if (arena.getState() != GameState.ACTIVE_ROUND) {
+                    arena.setCenterLocked(false);
+                    cancel();
+                    return;
+                }
+                if (timer <= 0) {
+                    arena.setCenterLocked(false);
+                    arena.broadcastActionBar(Messages.CENTER_UNLOCKED.asString());
+                    cancel();
+                } else {
+                    arena.broadcastActionBar(Messages.CENTER_UNLOCK_COUNTDOWN.asString().replace("{seconds}", String.format("%.1f", timer)));
+                    timer -= 0.1;
+                }
+            }
+        }.runTaskTimer(WoolWars.get(), 2L, 2L);
     }
 
     @Override

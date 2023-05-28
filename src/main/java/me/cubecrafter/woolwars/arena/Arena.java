@@ -133,7 +133,7 @@ public class Arena {
 
     public void addPlayer(WoolPlayer player, boolean partyCheck) {
         // Check if the player can join
-        if (SetupSession.check(player)) {
+        if (SetupSession.hasSession(player)) {
             player.send(Messages.ALREADY_IN_SETUP_MODE.asString());
             return;
         }
@@ -182,7 +182,7 @@ public class Arena {
         // Give leave item
         ItemStack item = ItemBuilder.fromConfig(Config.LEAVE_ITEM.asSection()).setTag("leave").build();
         player.getPlayer().getInventory().setItem(Config.LEAVE_ITEM.asSection().getInt("slot"), item);
-        // Hide the player from players in other arenas
+        player.send(Messages.GAME_START_MESSAGE.asStringList());
         playSound(Config.SOUNDS_PLAYER_JOINED.asString());
         broadcast(Messages.PLAYER_JOIN_ARENA.asString()
                 .replace("{player}", player.getPlayer().getName())

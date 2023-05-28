@@ -18,18 +18,23 @@
 
 package me.cubecrafter.woolwars.arena.tasks;
 
+import lombok.Getter;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.xutils.Tasks;
 import org.bukkit.scheduler.BukkitTask;
 
+@Getter
 public abstract class ArenaTask {
 
-    private final BukkitTask task;
     protected final Arena arena;
+
+    private final BukkitTask task;
+    private final int duration;
 
     public ArenaTask(Arena arena, int duration) {
         this.arena = arena;
+        this.duration = duration;
 
         arena.setTimer(duration);
         task = Tasks.repeat(() -> {
@@ -53,6 +58,10 @@ public abstract class ArenaTask {
 
     public GameState end() {
         return GameState.WAITING;
+    }
+
+    public int getSecondsElapsed() {
+        return duration - arena.getTimer();
     }
 
     public void cancel() {

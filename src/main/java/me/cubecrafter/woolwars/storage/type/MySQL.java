@@ -22,7 +22,6 @@ import me.cubecrafter.woolwars.storage.Database;
 import me.cubecrafter.woolwars.storage.player.PlayerData;
 import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import org.bukkit.Bukkit;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -30,8 +29,8 @@ import java.util.Collection;
 
 public class MySQL extends Database {
 
-    private final String INSERT_OR_UPDATE = "INSERT INTO player_data (uuid, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, win_streak, selected_kit) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) " +
-            "ON DUPLICATE KEY UPDATE wins=?, losses=?, games_played=?, kills=?, deaths=?, wool_placed=?, blocks_broken=?, powerups_collected=?, win_streak=?, selected_kit=?";
+    private final String INSERT_OR_UPDATE = "INSERT INTO player_data (uuid, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit, win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
+            "ON DUPLICATE KEY UPDATE wins=?, losses=?, games_played=?, kills=?, deaths=?, wool_placed=?, blocks_broken=?, powerups_collected=?, selected_kit=?, win_streak=?";
 
     @Override
     public void saveData(WoolPlayer player) {

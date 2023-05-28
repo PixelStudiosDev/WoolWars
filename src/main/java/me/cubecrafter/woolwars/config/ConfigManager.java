@@ -46,8 +46,8 @@ public class ConfigManager {
     private final File powerUpsFile;
     private final File menusFile;
 
-    private final File arenasFolder = new File(WoolWars.get().getDataFolder(), "arenas");
-    private final File kitsFolder = new File(WoolWars.get().getDataFolder(), "kits");
+    private final File arenaFolder = new File(WoolWars.get().getDataFolder(), "arenas");
+    private final File kitFolder = new File(WoolWars.get().getDataFolder(), "kits");
 
     public ConfigManager(WoolWars plugin) {
         this.plugin = plugin;
@@ -62,16 +62,16 @@ public class ConfigManager {
     }
 
     public void load(boolean updateFiles) {
-        arenasFolder.mkdirs();
+        arenaFolder.mkdirs();
         // Create config files
         if (!configFile.exists()) saveResource("config.yml", configFile);
         if (!messagesFile.exists()) saveResource("messages.yml", messagesFile);
         if (!powerUpsFile.exists()) saveResource("powerups.yml", powerUpsFile);
         if (!menusFile.exists()) saveResource("menus.yml", menusFile);
         // Create kits
-        if (kitsFolder.mkdirs()) {
+        if (kitFolder.mkdirs()) {
             for (String kit : new String[]{"archer", "assault", "engineer", "golem", "swordsman", "tank"}) {
-                saveResource("kits/" + kit + ".yml", new File(kitsFolder, kit + ".yml"));
+                saveResource("kits/" + kit + ".yml", new File(kitFolder, kit + ".yml"));
             }
         }
         config = YamlConfiguration.loadConfiguration(configFile);
@@ -117,11 +117,11 @@ public class ConfigManager {
     }
 
     public File[] getArenaFiles() {
-        return arenasFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+        return arenaFolder.listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
     public File[] getKitFiles() {
-        return kitsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+        return kitFolder.listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
     private void saveResource(String path, File destination) {

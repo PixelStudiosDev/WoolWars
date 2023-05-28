@@ -68,10 +68,6 @@ public class WoolPlayer {
         }
     }
 
-    public void setCollidable(boolean collidable) {
-        VersionUtil.setCollidable(player, collidable);
-    }
-
     public void teleport(Location location) {
         player.teleport(location);
     }

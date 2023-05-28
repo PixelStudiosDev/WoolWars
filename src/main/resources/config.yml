@@ -17,13 +17,17 @@ pre-round-duration: 15
 active-round-duration: 60
 round-over-duration: 5
 game-end-duration: 10
+powerup-activation-delay: 5
+center-unlock-delay: 8
 disabled-interaction-blocks:
   - CRAFTING_TABLE
   - WORKBENCH
   - FURNACE
 placeable-blocks: []
 center-blocks:
-  - RED_WOOL
+  - QUARTZ_BLOCK
+  - WHITE_WOOL
+  - SNOW_BLOCK
 disable-fall-damage: true
 items:
   play-again-item:
@@ -35,7 +39,7 @@ items:
   leave-item:
     material: RED_BED
     displayname: "&cReturn to Lobby &7(Right-Click)"
-    lose:
+    lore:
       - "&7Right-Click to return to the lobby!"
     slot: 8
   teleporter-item:

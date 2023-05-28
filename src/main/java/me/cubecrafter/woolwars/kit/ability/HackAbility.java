@@ -21,6 +21,7 @@ package me.cubecrafter.woolwars.kit.ability;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -34,7 +35,7 @@ public class HackAbility extends Ability {
     @Override
     public boolean handle(WoolPlayer player, Arena arena) {
         if (arena.isCenterLocked()) {
-            player.send(section.getString("messages.center-already-locked"));
+            player.send(Messages.CENTER_ALREADY_LOCKED.asString());
             return false;
         }
         arena.setCenterLocked(true);
@@ -51,10 +52,10 @@ public class HackAbility extends Ability {
                 }
                 if (timer <= 0) {
                     arena.setCenterLocked(false);
-                    arena.broadcastActionBar(section.getString("messages.center-unlocked"));
+                    arena.broadcastActionBar(Messages.CENTER_UNLOCKED.asString());
                     cancel();
                 } else {
-                    arena.broadcastActionBar(section.getString("messages.center-locked").replace("{seconds}", String.format("%.1f", timer)));
+                    arena.broadcastActionBar(Messages.CENTER_UNLOCK_COUNTDOWN.asString().replace("{seconds}", String.format("%.1f", timer)));
                     timer -= 0.1;
                 }
             }

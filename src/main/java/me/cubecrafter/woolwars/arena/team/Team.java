@@ -23,7 +23,7 @@ import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.woolwars.utils.Cuboid;
-import me.cubecrafter.woolwars.utils.GameScoreboard;
+import me.cubecrafter.woolwars.arena.TabHandler;
 import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -67,7 +67,7 @@ public class Team {
 
     public void removeMember(WoolPlayer player) {
         members.remove(player);
-        GameScoreboard.getOrCreate(player.getPlayer()).removeNameTags(this);
+        TabHandler.removeTags(player.getPlayer(), this);
     }
 
     public boolean isMember(WoolPlayer player) {
@@ -84,7 +84,7 @@ public class Team {
 
     public void updateNameTags() {
         if (Config.NAME_TAGS_ENABLED.asBoolean()) {
-            members.forEach(player -> GameScoreboard.getOrCreate(player.getPlayer()).setNameTags(this));
+            members.forEach(member -> TabHandler.applyTags(member.getPlayer(), this));
         }
     }
 
@@ -92,7 +92,6 @@ public class Team {
         // Respawn players
         for (WoolPlayer member : members) {
             member.teleport(spawn);
-            member.setCollidable(false);
             member.playSound(Config.SOUNDS_TELEPORT_TO_BASE.asString());
         }
         // Reset barrier
@@ -131,7 +130,7 @@ public class Team {
         members.clear();
         points = 0;
         if (Config.NAME_TAGS_ENABLED.asBoolean()) {
-            members.forEach(player -> GameScoreboard.getOrCreate(player.getPlayer()).removeNameTags(this));
+            members.forEach(member -> TabHandler.removeTags(member.getPlayer(), this));
         }
     }
 

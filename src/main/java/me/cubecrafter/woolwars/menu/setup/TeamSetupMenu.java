@@ -85,7 +85,7 @@ public class TeamSetupMenu extends Menu {
 
         setItem(new MenuItem(new ItemBuilder("WHITE_WOOL").setDisplayName("&e&lSet Barrier")
                 .setLore("&7Click to set the barrier region.", "", "&8Point 1: &7" + (data.isBarrierPos1Set() ? formatLocation(data.getBarrierPos1()) + " &a✔" : "&cNot Set ✘"), "&8Point 2: &7" + (data.isBarrierPos2Set() ? formatLocation(data.getBarrierPos2()) + " &a✔" : "&cNot Set ✘")).build()).addAction(event -> {
-            session.setCurrentEditingTeam(data);
+            session.setCurrentTeam(data);
             player.send("&7Left-Click on a block to set the first point, Right-Click on a block to set the second point.");
             close();
         }), 13);

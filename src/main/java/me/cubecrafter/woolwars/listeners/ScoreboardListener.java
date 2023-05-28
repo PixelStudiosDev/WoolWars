@@ -18,92 +18,100 @@
 
 package me.cubecrafter.woolwars.listeners;
 
-import me.cubecrafter.woolwars.api.events.arena.GameStateChangeEvent;
+import fr.mrmicky.fastboard.FastBoard;
 import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import me.cubecrafter.woolwars.arena.team.Team;
-import me.cubecrafter.woolwars.utils.GameScoreboard;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.Tasks;
-import org.bukkit.Bukkit;
+import me.cubecrafter.xutils.TextUtil;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ScoreboardListener {
 
+    private final Map<UUID, FastBoard> boards = new HashMap<>();
     private final BukkitTask task;
 
     public ScoreboardListener() {
         this.task = Tasks.repeat(() -> {
-            Bukkit.getOnlinePlayers().forEach(player -> updateScoreboard(PlayerManager.get(player)));
+            boards.values().forEach(this::updateBoard);
         }, 0L, Config.SCOREBOARD_REFRESH_INTERVAL.asInt());
 
         // Register events
         Events.subscribe(PlayerJoinEvent.class, event -> {
-            if (Config.SCOREBOARD_LOBBY_ENABLED.asBoolean()) {
-                WoolPlayer player = PlayerManager.get(event.getPlayer());
-                updateScoreboard(player).show();
-            }
+            if (!Config.SCOREBOARD_LOBBY_ENABLED.asBoolean()) return;
+
+            createBoard(event.getPlayer());
         });
 
         Events.subscribe(PlayerQuitEvent.class, event -> {
-            GameScoreboard.remove(event.getPlayer());
+            deleteBoard(event.getPlayer());
         });
 
         Events.subscribe(PlayerJoinArenaEvent.class, event -> {
-            updateScoreboard(event.getPlayer()).show();
-        });
-
-        Events.subscribe(PlayerLeaveArenaEvent.class, event -> {
-            if (!Config.SCOREBOARD_LOBBY_ENABLED.asBoolean()) {
-                GameScoreboard.getOrCreate(event.getPlayer().getPlayer()).hide();
+            Player player = event.getPlayer().getPlayer();
+            if (!boards.containsKey(player.getUniqueId())) {
+                createBoard(player);
             }
         });
 
-        Events.subscribe(GameStateChangeEvent.class, event -> {
-            for (WoolPlayer player : event.getArena().getPlayers()) {
-                updateScoreboard(player);
+        Events.subscribe(PlayerLeaveArenaEvent.class, event -> {
+            if (event.getReason() == PlayerLeaveArenaEvent.Reason.DISCONNECT) {
+                return;
+            }
+            if (!Config.SCOREBOARD_LOBBY_ENABLED.asBoolean()) {
+                deleteBoard(event.getPlayer().getPlayer());
             }
         });
     }
 
-    public GameScoreboard updateScoreboard(WoolPlayer player) {
-        GameScoreboard scoreboard = GameScoreboard.getOrCreate(player.getPlayer());
-        scoreboard.setTitle(Messages.SCOREBOARD_TITLE.asString());
+    public void createBoard(Player player) {
+        FastBoard board = new FastBoard(player);
+        board.updateTitle(TextUtil.color(Messages.SCOREBOARD_TITLE.asString()));
+        boards.put(player.getUniqueId(), board);
+    }
 
+    public void deleteBoard(Player player) {
+        FastBoard board = boards.remove(player.getUniqueId());
+        if (board != null) {
+            board.delete();
+        }
+    }
+
+    public void updateBoard(FastBoard board) {
+        WoolPlayer player = PlayerManager.get(board.getPlayer());
         Arena arena = ArenaUtil.getArenaByPlayer(player);
 
         if (arena != null) {
             switch (arena.getState()) {
                 case WAITING:
-                    scoreboard.setLines(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_WAITING.asStringList(), arena));
+                    board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_WAITING.asStringList(), arena)));
                     break;
                 case STARTING:
-                    scoreboard.setLines(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_STARTING.asStringList(), arena));
+                    board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_STARTING.asStringList(), arena)));
                     break;
                 default:
-                    scoreboard.setLines(ArenaUtil.parsePlaceholders(player, formatLines(Messages.SCOREBOARD_PLAYING.asStringList(), arena), arena));
+                    board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, formatLines(Messages.SCOREBOARD_PLAYING.asStringList(), arena), arena)));
                     break;
             }
         } else {
-            scoreboard.setLines(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_LOBBY.asStringList()));
+            board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_LOBBY.asStringList())));
         }
-        return scoreboard;
-    }
-
-    public void disable() {
-        task.cancel();
-        Bukkit.getOnlinePlayers().forEach(GameScoreboard::remove);
     }
 
     private List<String> formatLines(List<String> lines, Arena arena) {
@@ -133,6 +141,11 @@ public class ScoreboardListener {
             }
         }
         return formatted;
+    }
+
+    public void disable() {
+        task.cancel();
+        boards.values().forEach(FastBoard::delete);
     }
 
 }

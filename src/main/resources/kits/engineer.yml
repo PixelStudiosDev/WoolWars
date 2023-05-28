@@ -55,7 +55,3 @@ ability:
       - "&7You can only use your keystone"
       - "&7ability &c&lONCE &7per round."
   duration: 5 # seconds
-  messages:
-    center-already-locked: "&cCenter is already locked!"
-    center-unlocked: "&e&lCENTER UNLOCKED!"
-    center-locked: "&e&lCENTER UNLOCKS IN {seconds} SECONDS!"

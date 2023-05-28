@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.1.10'
+version = '1.1.11'
 
 repositories {
     mavenCentral()
@@ -24,7 +24,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.36'
     implementation 'org.bstats:bstats-bukkit:3.0.0'
     implementation 'de.tr7zw:item-nbt-api:2.11.1'
-    implementation 'com.github.cubecrafter:XUtils:master-SNAPSHOT'
+    implementation 'fr.mrmicky:fastboard:1.2.1'
+    implementation 'com.github.cubecrafter:XUtils:1.0.8'
 
     compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.3'
@@ -44,6 +45,7 @@ shadowJar {
     relocate 'org.bstats', 'me.cubecrafter.woolwars.libs.bstats'
     relocate 'de.tr7zw.changeme.nbtapi', 'me.cubecrafter.woolwars.libs.nbtapi'
     relocate 'de.tr7zw.annotations', 'me.cubecrafter.woolwars.libs.nbtapi.annotations'
+    relocate 'fr.mrmicky.fastboard', 'me.cubecrafter.woolwars.libs.fastboard'
     exclude 'META-INF/**'
     exclude 'LICENSE'
     minimize()

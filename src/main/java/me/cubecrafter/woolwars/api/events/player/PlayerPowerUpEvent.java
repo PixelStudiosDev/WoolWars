@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.powerup.PowerUp;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -37,7 +38,7 @@ public class PlayerPowerUpEvent extends Event implements Cancellable {
     @Setter
     private boolean cancelled;
 
-    private final Player player;
+    private final WoolPlayer player;
     private final PowerUp powerUp;
     private final Arena arena;
 

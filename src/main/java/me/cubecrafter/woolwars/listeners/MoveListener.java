@@ -19,14 +19,16 @@
 package me.cubecrafter.woolwars.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
+import me.cubecrafter.woolwars.api.events.player.PlayerPowerUpEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Config;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
-import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.Events;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -82,14 +84,25 @@ public class MoveListener implements Listener {
                     && bottom.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_BOTTOM_BLOCK.asString()).get().parseMaterial())) {
                 player.getPlayer().setVelocity(player.getLocation().getDirection().normalize().multiply(Config.JUMP_PADS_HORIZONTAL_POWER.asDouble()).setY(Config.JUMP_PADS_VERTICAL_POWER.asDouble()));
                 player.playSound(Config.SOUNDS_JUMP_PAD.asString());
+
             }
+
             if (arena.getState() != GameState.ACTIVE_ROUND) return;
+
             for (PowerUp powerUp : arena.getPowerUps()) {
                 if (!powerUp.isActive()) continue;
+
                 double distance = player.getLocation().distance(powerUp.getLocation());
-                if (distance <= 1) {
-                    powerUp.use(player);
-                    player.getData().addRoundStatistic(StatisticType.POWERUPS_COLLECTED, 1);
+
+                if (distance <= 1.25) {
+                    int delay = Config.POWERUP_ACTIVATION_DELAY.asInt();
+                    if (arena.getCurrentTask().getSecondsElapsed() < delay) {
+                        player.send(Messages.CANT_COLLECT_POWERUP.asString().replace("{seconds}", String.valueOf(delay)));
+                        return;
+                    }
+                    if (!Events.call(new PlayerPowerUpEvent(player, powerUp, arena))) {
+                        powerUp.use(player);
+                    }
                 }
             }
         }

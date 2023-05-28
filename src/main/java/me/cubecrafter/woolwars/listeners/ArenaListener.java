@@ -247,7 +247,7 @@ public class ArenaListener implements Listener {
                 new TeleporterMenu(player, arena).open();
                 break;
             case "leave":
-                arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.DISCONNECT);
+                arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.QUIT);
                 break;
             case "ability":
                 player.getSelectedKit().getAbility().use(player, arena);

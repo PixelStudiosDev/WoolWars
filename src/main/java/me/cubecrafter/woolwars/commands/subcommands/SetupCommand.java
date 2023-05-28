@@ -38,14 +38,14 @@ public class SetupCommand implements SubCommand {
             return;
         }
         if (args.length < 1) {
-            if (SetupSession.check(player)) {
+            if (SetupSession.hasSession(player)) {
                 SetupSession.get(player).getMenu().open();
             } else {
                 player.send("&cUsage: /woolwars setup <arena-id>");
             }
             return;
         }
-        if (SetupSession.check(player)) {
+        if (SetupSession.hasSession(player)) {
             player.send("&cYou are already in setup mode!");
             return;
         }
