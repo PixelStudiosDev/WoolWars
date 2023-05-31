@@ -88,18 +88,6 @@ public class Utils {
         }, 0L, 20 * 60 * 60);
     }
 
-    public static boolean matchMaterial(String material, String other) {
-        if (material.startsWith("*") && material.endsWith("*")) {
-            return other.contains(material.substring(1, material.length() - 1));
-        } else if (material.startsWith("*")) {
-            return other.endsWith(material.substring(1));
-        } else if (material.endsWith("*")) {
-            return other.startsWith(material.substring(0, material.length() - 1));
-        } else {
-            return other.equals(material);
-        }
-    }
-
     public static String getCenteredMessage(String message) {
         if (message == null || message.equals("")) return "";
         message = TextUtil.color(message.replace("<center>", "").replace("</center>", ""));

@@ -44,12 +44,13 @@ game:
   start-message:
     - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
     - "<center>&c&lWelcome to WOOL WARS</center>"
-    - "<center>&7Matches are best of &e3</center>"
+    - "<center>&7Matches are best of &e3&7.</center>"
     - "<center>&7Place your team's color wool in the &ecenter &7to win the round!</center>"
     - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
   player-death:
     title: "&c&lYOU DIED"
     subtitle: "&7You will respawn at the start of the next round!"
+    respawn-next-round: "&eYou will respawn next round!"
     fall: "{player_team_color}{player} &7fell from a high place"
     lava: "{player_team_color}{player} &7burned to death"
     void: "{player_team_color}{player} &7fell out of the world"
@@ -111,6 +112,7 @@ game:
       none-format: "&cNone"
       message:
         - "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+        - "<center>&c&lWOOL WARS</center>"
         - ""
         - "<center>{team_status}</center>"
         - ""
@@ -161,7 +163,7 @@ scoreboard:
     - ''
     - '&ewww.myserver.net'
   playing:
-    - '&7{date} &8{displayname}'
+    - '&7{date}'
     - ''
     - '&fRound: &b{round}'
     - '&fState: &e{state}'

@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.listeners;
 
+import com.cryptomorin.xseries.XBlock;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.arena.GameState;
@@ -28,7 +29,6 @@ import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import me.cubecrafter.woolwars.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -94,11 +94,9 @@ public class BlockListener implements Listener {
                 }
             }
 
-            for (String material : Config.PLACEABLE_BLOCKS.asStringList()) {
-                if (Utils.matchMaterial(material, block.getType().toString())) {
-                    arena.getPlacedBlocks().add(block);
-                    return;
-                }
+            if (XBlock.isOneOf(block, Config.PLACEABLE_BLOCKS.asStringList())) {
+                arena.getPlacedBlocks().add(block);
+                return;
             }
         }
 

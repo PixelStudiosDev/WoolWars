@@ -18,7 +18,7 @@
 
 package me.cubecrafter.woolwars.listeners;
 
-import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XBlock;
 import me.cubecrafter.woolwars.api.events.player.PlayerPowerUpEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
@@ -44,8 +44,8 @@ public class MoveListener implements Listener {
                 event.getFrom().getBlockY() == event.getTo().getBlockY()) return;
 
         WoolPlayer player = PlayerManager.get(event.getPlayer());
-        if (!ArenaUtil.isPlaying(player)) return;
         Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
 
         if (!arena.getArenaRegion().isInside(event.getTo())) {
             if (!player.isAlive()) {
@@ -69,8 +69,10 @@ public class MoveListener implements Listener {
             return;
         }
 
+        Block block = event.getTo().getBlock();
+
         if (arena.getState() == GameState.WAITING || arena.getState() == GameState.STARTING) {
-            if (player.getLocation().getBlock().getType().toString().contains("LAVA")) {
+            if (XBlock.isLava(block.getType())) {
                 player.teleport(arena.getLobby());
                 player.playSound(Config.SOUNDS_TELEPORT_TO_BASE.asString());
                 return;
@@ -78,13 +80,10 @@ public class MoveListener implements Listener {
         }
 
         if (player.isAlive()) {
-            Block top = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
-            Block bottom = top.getRelative(BlockFace.DOWN);
-            if (top.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_TOP_BLOCK.asString()).get().parseMaterial())
-                    && bottom.getType().equals(XMaterial.matchXMaterial(Config.JUMP_PADS_BOTTOM_BLOCK.asString()).get().parseMaterial())) {
+
+            if (arena.getJumpPads().contains(block.getRelative(BlockFace.DOWN).getLocation())) {
                 player.getPlayer().setVelocity(player.getLocation().getDirection().normalize().multiply(Config.JUMP_PADS_HORIZONTAL_POWER.asDouble()).setY(Config.JUMP_PADS_VERTICAL_POWER.asDouble()));
                 player.playSound(Config.SOUNDS_JUMP_PAD.asString());
-
             }
 
             if (arena.getState() != GameState.ACTIVE_ROUND) return;

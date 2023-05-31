@@ -54,6 +54,7 @@ public enum Messages {
     PARTY_MEMBERS_IN_ARENA("party.members-in-arena"),
     DEATH_TITLE("game.player-death.title"),
     DEATH_SUBTITLE("game.player-death.subtitle"),
+    DEATH_RESPAWN_NEXT_ROUND("game.player-death.respawn-next-round"),
     ALL_PLAYERS_DEAD("game.all-players-dead"),
     DEATH_BY_FALL("game.player-death.fall"),
     DEATH_BY_LAVA("game.player-death.lava"),

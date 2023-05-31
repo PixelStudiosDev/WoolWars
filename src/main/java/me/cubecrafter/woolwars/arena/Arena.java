@@ -18,6 +18,8 @@
 
 package me.cubecrafter.woolwars.arena;
 
+import com.cryptomorin.xseries.XBlock;
+import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
@@ -27,17 +29,18 @@ import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.setup.SetupSession;
 import me.cubecrafter.woolwars.arena.tasks.ArenaTask;
 import me.cubecrafter.woolwars.arena.tasks.GameEndTask;
+import me.cubecrafter.woolwars.arena.tasks.ParticleTask;
 import me.cubecrafter.woolwars.arena.tasks.PreRoundTask;
 import me.cubecrafter.woolwars.arena.tasks.RoundOverTask;
 import me.cubecrafter.woolwars.arena.tasks.RoundTask;
 import me.cubecrafter.woolwars.arena.tasks.StartingTask;
+import me.cubecrafter.woolwars.arena.team.Team;
+import me.cubecrafter.woolwars.arena.team.TeamAssigner;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.party.PartyProvider;
 import me.cubecrafter.woolwars.powerup.PowerUp;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import me.cubecrafter.woolwars.arena.team.Team;
-import me.cubecrafter.woolwars.arena.team.TeamAssigner;
 import me.cubecrafter.woolwars.utils.Cuboid;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.xutils.Events;
@@ -47,6 +50,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -82,7 +86,9 @@ public class Arena {
     private final List<Team> teams = new ArrayList<>();
     private final List<PowerUp> powerUps = new ArrayList<>();
     private final Set<Block> placedBlocks = new HashSet<>();
+    private final List<Location> jumpPads;
 
+    private final ParticleTask particleTask;
     private ArenaTask currentTask;
     private GameState state = GameState.WAITING;
 
@@ -120,6 +126,12 @@ public class Arena {
             Location location = TextUtil.parseLocation(line);
             powerUps.add(new PowerUp(this, location));
         }
+        // Load jump pads
+        this.jumpPads = arenaRegion.getBlocks().stream().filter(block -> {
+            return XBlock.isSimilar(block, XMaterial.matchXMaterial(Config.JUMP_PADS_TOP_BLOCK.asString()).get()) &&
+                    XBlock.isSimilar(block.getRelative(BlockFace.DOWN), XMaterial.matchXMaterial(Config.JUMP_PADS_BOTTOM_BLOCK.asString()).get());
+        }).map(Block::getLocation).collect(Collectors.toList());
+        this.particleTask = new ParticleTask(this);
         // Adjust some game rules
         world.setGameRuleValue("doDaylightCycle", "false");
         world.setGameRuleValue("doFireTick", "false");
@@ -244,6 +256,7 @@ public class Arena {
     public void assignTeams() {
         if (state == GameState.STARTING) {
             assigner.assign(this);
+            teams.forEach(Team::applyTags);
         }
     }
 

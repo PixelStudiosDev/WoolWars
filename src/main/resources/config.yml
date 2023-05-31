@@ -21,8 +21,8 @@ powerup-activation-delay: 5
 center-unlock-delay: 8
 disabled-interaction-blocks:
   - CRAFTING_TABLE
-  - WORKBENCH
   - FURNACE
+  - CHEST
 placeable-blocks: []
 center-blocks:
   - QUARTZ_BLOCK
@@ -67,10 +67,10 @@ blocked-commands:
     - fly
 chat-format:
   enabled: true
-  lobby-format: "{player}: &7{message}"
-  waiting-lobby-format: "{player}: &7{message}"
-  game-format: "{team_color}&l{team_letter} {team_color}{player}: &7{message}"
-  spectator-format: "&7[SPECTATOR] {team_color}&l{team_letter} {team_color}{player}: &7{message}"
+  lobby-format: "{player}&7: {message}"
+  waiting-lobby-format: "{player}&7: {message}"
+  game-format: "{team_color}&l{team_letter} {team_color}{player}&7: {message}"
+  spectator-format: "&7[SPECTATOR] {team_color}&l{team_letter} {team_color}{player}&7: {message}"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | REWARDS                                  |
@@ -93,7 +93,7 @@ reward-commands:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 sounds:
-  jump-pad: ENTITY_BAT_TAKEOFF
+  jump-pad: ENTITY_SLIME_JUMP
   round-start: BLOCK_NOTE_PLING
   round-won: FIREWORK_LAUNCH
   round-lost: GHAST_MOAN

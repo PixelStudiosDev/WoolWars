@@ -18,6 +18,8 @@
 
 package me.cubecrafter.woolwars.listeners;
 
+import com.cryptomorin.xseries.messages.ActionBar;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
@@ -30,7 +32,9 @@ import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.VersionUtil;
 import me.cubecrafter.xutils.Events;
+import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -95,7 +99,6 @@ public class DamageListener implements Listener {
         }
     }
 
-    @EventHandler
     public void onDamageByEntity(EntityDamageByEntityEvent event, WoolPlayer player, Arena arena) {
         Entity damager = event.getDamager();
 
@@ -160,6 +163,7 @@ public class DamageListener implements Listener {
         player.getPlayer().getInventory().setArmorContents(null);
         player.getPlayer().getInventory().clear();
         player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false));
         player.getPlayer().setFireTicks(0);
         player.getPlayer().setHealth(20);
         player.sendTitle(Messages.DEATH_TITLE.asString(), Messages.DEATH_SUBTITLE.asString(), 2);
@@ -175,9 +179,12 @@ public class DamageListener implements Listener {
         player.getPlayer().getInventory().setItem(Config.TELEPORTER_ITEM.asSection().getInt("slot"), teleporter);
         player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 0, false, false));
 
+        player.send(Messages.DEATH_RESPAWN_NEXT_ROUND.asString());
+        ActionBar.sendActionBarWhile(WoolWars.get(), player.getPlayer(), TextUtil.color(Messages.DEATH_RESPAWN_NEXT_ROUND.asString()), () -> !player.isAlive());
+
         if (arena.getAlivePlayers().isEmpty()) {
             arena.broadcast(Messages.ALL_PLAYERS_DEAD.asString());
-            arena.setState(GameState.ROUND_OVER);
+            arena.setState(arena.getCurrentTask().end());
         }
     }
 
