@@ -72,6 +72,11 @@ public class JoinCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Join an arena/group";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return true;
     }

@@ -121,6 +121,7 @@ public abstract class Database {
             data.setSelectedKit(resultSet.getString("selected_kit"));
             // Loop through all columns and find valid statistic types
             for (StatisticType type : StatisticType.values()) {
+                if (type == StatisticType.DAMAGE) continue;
                 data.addStatistic(type, resultSet.getInt(type.getId()));
             }
             future.complete(data);

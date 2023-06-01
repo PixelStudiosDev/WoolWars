@@ -28,6 +28,7 @@ public interface SubCommand {
     List<String> tabComplete(CommandSender sender, String[] args);
     String getLabel();
     String getPermission();
+    String getDescription();
     boolean isPlayerOnly();
 
 }

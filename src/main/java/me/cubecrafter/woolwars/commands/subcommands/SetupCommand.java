@@ -73,6 +73,11 @@ public class SetupCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Setup an arena";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return true;
     }

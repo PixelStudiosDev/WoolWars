@@ -117,6 +117,8 @@ public class DamageListener implements Listener {
                     WoolPlayer shooter = PlayerManager.get((Player) projectile.getShooter());
                     if (arena.isTeammate(player, shooter)) {
                         event.setCancelled(true);
+                    } else {
+                        shooter.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());
                     }
                 }
                 break;
@@ -125,6 +127,8 @@ public class DamageListener implements Listener {
                     WoolPlayer attacker = PlayerManager.get((Player) damager);
                     if (arena.isTeammate(player, attacker)) {
                         event.setCancelled(true);
+                    } else {
+                        attacker.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());
                     }
                 }
                 break;

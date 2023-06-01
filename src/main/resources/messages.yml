@@ -17,7 +17,7 @@ general:
   already-in-setup-mode: "&cYou can't join an arena while you are in setup mode!"
   game-already-started: "&cThe game is already started!"
   arena-full: "&cThis game is full!"
-  unknown-command: "&cUnknown command!"
+  unknown-command: "&cUnknown command! Type /woolwars help to view all the available commands!"
   only-player-command: "&cThis command can be executed only by a player!"
   no-permission: "&cYou don't have the permission to do this!"
   command-blocked: "&cYou can't use this command while you are in game!"
@@ -90,6 +90,7 @@ game:
       subtitle: "&e&lDRAW"
     stats-message:
       no-stats-achieved: "<center>&cNo stats achieved for this round!</center>"
+      damage-format: "<center>&6Damage &7- &f{damage}</center>"
       kills-format: "<center>&6Kills &7- &f{kills}</center>"
       wool-placed-format: "<center>&6Wool placed &7- &f{wool_placed}</center>"
       blocks-broken-format: "<center>&6Blocks broken &7- &f{blocks_broken}</center>"

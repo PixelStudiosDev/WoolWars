@@ -54,6 +54,11 @@ public class SetLobbyCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Sets the lobby location";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return true;
     }

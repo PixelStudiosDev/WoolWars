@@ -91,6 +91,7 @@ public enum Messages {
     GAME_START_MESSAGE("game.start-message"),
     NO_STATS_ACHIEVED("game.round-end.stats-message.no-stats-achieved"),
     STATS_MESSAGE("game.round-end.stats-message.message"),
+    STATS_DAMAGE("game.round-end.stats-message.damage-format"),
     STATS_KILLS("game.round-end.stats-message.kills-format"),
     STATS_PLACED_WOOL("game.round-end.stats-message.wool-placed-format"),
     STATS_BROKEN_BLOCKS("game.round-end.stats-message.blocks-broken-format"),
@@ -115,18 +116,20 @@ public enum Messages {
     SCOREBOARD_STARTING("scoreboard.starting"),
     SCOREBOARD_PLAYING("scoreboard.playing");
 
+    private static final ConfigManager CONFIG_MANAGER = WoolWars.get().getConfigManager();
+
     private final String path;
 
     public String asString() {
-        return WoolWars.get().getConfigManager().getMessages().getString(path);
+        return CONFIG_MANAGER.getMessages().getString(path);
     }
 
     public List<String> asStringList() {
-        return WoolWars.get().getConfigManager().getMessages().getStringList(path);
+        return CONFIG_MANAGER.getMessages().getStringList(path);
     }
 
     public ConfigurationSection asSection() {
-        return WoolWars.get().getConfigManager().getMessages().getConfigurationSection(path);
+        return CONFIG_MANAGER.getMessages().getConfigurationSection(path);
     }
 
 }

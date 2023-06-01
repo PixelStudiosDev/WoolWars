@@ -50,6 +50,11 @@ public class ReloadCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Reloads the configuration";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return false;
     }

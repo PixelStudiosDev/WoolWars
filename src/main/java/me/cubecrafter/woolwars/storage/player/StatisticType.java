@@ -35,7 +35,8 @@ public enum StatisticType {
     WIN_STREAK("win_streak"),
     WOOL_PLACED("wool_placed"),
     BLOCKS_BROKEN("blocks_broken"),
-    POWERUPS_COLLECTED("powerups_collected");
+    POWERUPS_COLLECTED("powerups_collected"),
+    DAMAGE("damage");
 
     private final String id;
 

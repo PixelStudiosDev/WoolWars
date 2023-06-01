@@ -94,30 +94,32 @@ public enum Config {
     MYSQL_SSL_ENABLED("mysql.use-ssl"),
     LOBBY_LOCATION("lobby-location");
 
+    private static final ConfigManager CONFIG_MANAGER = WoolWars.get().getConfigManager();
+
     private final String path;
 
     public String asString() {
-        return WoolWars.get().getConfigManager().getConfig().getString(path);
+        return CONFIG_MANAGER.getConfig().getString(path);
     }
 
     public int asInt() {
-        return WoolWars.get().getConfigManager().getConfig().getInt(path);
+        return CONFIG_MANAGER.getConfig().getInt(path);
     }
 
     public double asDouble() {
-        return WoolWars.get().getConfigManager().getConfig().getDouble(path);
+        return CONFIG_MANAGER.getConfig().getDouble(path);
     }
 
     public List<String> asStringList() {
-        return WoolWars.get().getConfigManager().getConfig().getStringList(path);
+        return CONFIG_MANAGER.getConfig().getStringList(path);
     }
 
     public boolean asBoolean() {
-        return WoolWars.get().getConfigManager().getConfig().getBoolean(path);
+        return CONFIG_MANAGER.getConfig().getBoolean(path);
     }
 
     public ConfigurationSection asSection() {
-        return WoolWars.get().getConfigManager().getConfig().getConfigurationSection(path);
+        return CONFIG_MANAGER.getConfig().getConfigurationSection(path);
     }
 
     public Location asLocation() {

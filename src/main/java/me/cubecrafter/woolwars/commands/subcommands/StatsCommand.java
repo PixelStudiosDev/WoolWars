@@ -51,6 +51,11 @@ public class StatsCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Opens the stats menu";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return true;
     }

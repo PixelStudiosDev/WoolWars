@@ -142,13 +142,17 @@ public class RoundTask extends ArenaTask {
                     formatted.add(line.replace("{round}", String.valueOf(arena.getRound())));
                     continue;
                 }
+                int damage = player.getData().getRoundStatistic(StatisticType.DAMAGE);
                 int kills = player.getData().getRoundStatistic(StatisticType.KILLS);
                 int woolPlaced = player.getData().getRoundStatistic(StatisticType.WOOL_PLACED);
                 int blocksBroken = player.getData().getRoundStatistic(StatisticType.BLOCKS_BROKEN);
                 // Check if the player has any stats
-                if (blocksBroken == 0 && woolPlaced == 0 && kills == 0) {
+                if (blocksBroken == 0 && woolPlaced == 0 && kills == 0 && damage == 0) {
                     formatted.add(Messages.NO_STATS_ACHIEVED.asString());
                     continue;
+                }
+                if (damage != 0) {
+                    formatted.add(Messages.STATS_DAMAGE.asString().replace("{damage}", String.valueOf(damage)));
                 }
                 if (kills != 0) {
                     formatted.add(Messages.STATS_KILLS.asString().replace("{kills}", String.valueOf(kills)));

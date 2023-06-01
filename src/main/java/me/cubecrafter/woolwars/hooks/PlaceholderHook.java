@@ -131,6 +131,8 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return String.valueOf(data.getRoundStatistic(StatisticType.WOOL_PLACED));
             case "round_blocks_broken":
                 return String.valueOf(data.getRoundStatistic(StatisticType.BLOCKS_BROKEN));
+            case "round_damage":
+                return String.valueOf(data.getRoundStatistic(StatisticType.DAMAGE));
         }
         return null;
     }

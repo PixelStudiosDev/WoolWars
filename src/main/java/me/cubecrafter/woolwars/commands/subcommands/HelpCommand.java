@@ -19,33 +19,17 @@
 package me.cubecrafter.woolwars.commands.subcommands;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
-import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.arena.ArenaUtil;
-import me.cubecrafter.woolwars.storage.player.PlayerManager;
-import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-public class LeaveCommand extends Command implements SubCommand, PluginIdentifiableCommand {
-
-    public LeaveCommand() {
-        super("leave");
-        setDescription("Leave the current arena");
-    }
+public class HelpCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        WoolPlayer player = PlayerManager.get((Player) sender);
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (arena == null) return;
-        arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.QUIT);
+        WoolWars.get().getCommandManager().sendHelpMessage((Player) sender);
     }
 
     @Override
@@ -55,35 +39,22 @@ public class LeaveCommand extends Command implements SubCommand, PluginIdentifia
 
     @Override
     public String getLabel() {
-        return "leave";
+        return "help";
     }
 
     @Override
     public String getPermission() {
-        return "woolwars.leave";
+        return "";
     }
 
     @Override
     public String getDescription() {
-        return "Leave the current arena";
+        return "Show the help menu";
     }
 
     @Override
     public boolean isPlayerOnly() {
         return true;
-    }
-
-    @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (sender instanceof Player) {
-            execute(sender, args);
-        }
-        return true;
-    }
-
-    @Override
-    public Plugin getPlugin() {
-        return WoolWars.get();
     }
 
 }

@@ -54,6 +54,11 @@ public class ForceStartCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Force start the game";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return true;
     }

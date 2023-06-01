@@ -21,6 +21,7 @@ package me.cubecrafter.woolwars.commands;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.commands.subcommands.ArenasCommand;
 import me.cubecrafter.woolwars.commands.subcommands.ForceStartCommand;
+import me.cubecrafter.woolwars.commands.subcommands.HelpCommand;
 import me.cubecrafter.woolwars.commands.subcommands.JoinCommand;
 import me.cubecrafter.woolwars.commands.subcommands.LeaveCommand;
 import me.cubecrafter.woolwars.commands.subcommands.ReloadCommand;
@@ -30,6 +31,9 @@ import me.cubecrafter.woolwars.commands.subcommands.StatsCommand;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.xutils.TextUtil;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -56,7 +60,8 @@ public class CommandManager extends Command implements PluginIdentifiableCommand
             new ReloadCommand(),
             new SetLobbyCommand(),
             new SetupCommand(),
-            new StatsCommand()
+            new StatsCommand(),
+            new HelpCommand()
     };
 
     public CommandManager(WoolWars plugin) {
@@ -85,6 +90,21 @@ public class CommandManager extends Command implements PluginIdentifiableCommand
         }
     }
 
+    public void sendHelpMessage(Player player) {
+        HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§8Click to suggest this command!").create());
+
+        ComponentBuilder builder = new ComponentBuilder("§8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n");
+        for (SubCommand command : commands) {
+            if (player.hasPermission(command.getPermission())) {
+                ClickEvent click = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/woolwars " + command.getLabel());
+                builder.append("§c/woolwars " + command.getLabel() + " §8- §7" + command.getDescription() + "\n").event(hover).event(click);
+            }
+        }
+        builder.append("§8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬").event((HoverEvent) null).event((ClickEvent) null);
+
+        player.spigot().sendMessage(builder.create());
+    }
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (args.length > 0) {
@@ -102,6 +122,8 @@ public class CommandManager extends Command implements PluginIdentifiableCommand
                 return true;
             }
             cmd.execute(sender, Arrays.copyOfRange(args, 1, args.length));
+        } else if (sender instanceof Player) {
+            sendHelpMessage((Player) sender);
         } else {
             TextUtil.sendMessage(sender, Messages.UNKNOWN_COMMAND.asString());
         }
