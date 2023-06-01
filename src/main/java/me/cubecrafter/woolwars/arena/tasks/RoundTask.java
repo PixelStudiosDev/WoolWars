@@ -57,27 +57,29 @@ public class RoundTask extends ArenaTask {
     public void start() {
         rotationTask = Tasks.repeat(() -> arena.getPowerUps().forEach(PowerUp::rotate), 0L, 1L);
 
-        arena.setCenterLocked(true);
-        new BukkitRunnable() {
-            double timer = Config.CENTER_UNLOCK_DELAY.asDouble();
+        if (Config.CENTER_UNLOCK_DELAY.asDouble() > 0) {
+            arena.setCenterLocked(true);
+            new BukkitRunnable() {
+                double delay = Config.CENTER_UNLOCK_DELAY.asDouble();
 
-            @Override
-            public void run() {
-                if (arena.getState() != GameState.ACTIVE_ROUND) {
-                    arena.setCenterLocked(false);
-                    cancel();
-                    return;
+                @Override
+                public void run() {
+                    if (arena.getState() != GameState.ACTIVE_ROUND) {
+                        arena.setCenterLocked(false);
+                        cancel();
+                        return;
+                    }
+                    if (delay <= 0) {
+                        arena.setCenterLocked(false);
+                        arena.broadcastActionBar(Messages.CENTER_UNLOCKED.asString());
+                        cancel();
+                    } else {
+                        arena.broadcastActionBar(Messages.CENTER_UNLOCK_COUNTDOWN.asString().replace("{seconds}", String.format("%.1f", delay)));
+                        delay -= 0.1;
+                    }
                 }
-                if (timer <= 0) {
-                    arena.setCenterLocked(false);
-                    arena.broadcastActionBar(Messages.CENTER_UNLOCKED.asString());
-                    cancel();
-                } else {
-                    arena.broadcastActionBar(Messages.CENTER_UNLOCK_COUNTDOWN.asString().replace("{seconds}", String.format("%.1f", timer)));
-                    timer -= 0.1;
-                }
-            }
-        }.runTaskTimer(WoolWars.get(), 2L, 2L);
+            }.runTaskTimer(WoolWars.get(), 2L, 2L);
+        }
     }
 
     @Override
@@ -105,6 +107,7 @@ public class RoundTask extends ArenaTask {
         for (Map.Entry<Team, List<BlockVector>> entry : wool.entrySet()) {
             if (entry.getValue().size() < arena.getCenterRegion().getBlockCount()) continue;
             arena.setState(stopRound(entry.getKey()));
+            break;
         }
     }
 
@@ -113,21 +116,21 @@ public class RoundTask extends ArenaTask {
         if (winner != null && winner.addPoint() == arena.getWinPoints()) {
             Events.call(new GameEndEvent(arena, winner, arena.getTeams().stream().filter(team -> !team.equals(winner)).collect(Collectors.toList())));
 
+            winner.sendTitle(Messages.WINNER_TITLE.asString(), Messages.WINNER_SUBTITLE.asString(), 3);
+            winner.playSound(Config.SOUNDS_GAME_WON.asString());
+
             for (Team team : arena.getTeams()) {
                 List<String> messages = Messages.END_GAME_MESSAGE.asStringList();
                 messages.replaceAll(message -> message.replace("{team_status}", team.equals(winner) ? Messages.TEAM_WON_FORMAT.asString() : Messages.TEAM_LOST_FORMAT.asString())
-                        .replace("{top_kills}", formatStatistics(StatisticType.KILLS))
-                        .replace("{top_blocks_broken}", formatStatistics(StatisticType.BLOCKS_BROKEN))
-                        .replace("{top_wool_placed}", formatStatistics(StatisticType.WOOL_PLACED)));
+                        .replace("{top_kills}", formatStatistic(StatisticType.KILLS))
+                        .replace("{top_blocks_broken}", formatStatistic(StatisticType.BLOCKS_BROKEN))
+                        .replace("{top_wool_placed}", formatStatistic(StatisticType.WOOL_PLACED)));
                 team.broadcast(messages);
 
-                if (team.equals(winner)) {
-                    team.sendTitle(Messages.WINNER_TITLE.asString(), Messages.WINNER_SUBTITLE.asString(), 3);
-                    team.playSound(Config.SOUNDS_GAME_WON.asString());
-                } else {
-                    team.sendTitle(Messages.LOSER_TITLE.asString(), Messages.LOSER_SUBTITLE.asString(), 3);
-                    team.playSound(Config.SOUNDS_GAME_LOST.asString());
-                }
+                if (team.equals(winner)) continue;
+
+                team.sendTitle(Messages.LOSER_TITLE.asString(), Messages.LOSER_SUBTITLE.asString(), 3);
+                team.playSound(Config.SOUNDS_GAME_LOST.asString());
             }
             return GameState.GAME_ENDED;
         }
@@ -139,13 +142,17 @@ public class RoundTask extends ArenaTask {
                     formatted.add(line.replace("{round}", String.valueOf(arena.getRound())));
                     continue;
                 }
+                int damage = player.getData().getRoundStatistic(StatisticType.DAMAGE);
                 int kills = player.getData().getRoundStatistic(StatisticType.KILLS);
                 int woolPlaced = player.getData().getRoundStatistic(StatisticType.WOOL_PLACED);
                 int blocksBroken = player.getData().getRoundStatistic(StatisticType.BLOCKS_BROKEN);
                 // Check if the player has any stats
-                if (blocksBroken == 0 && woolPlaced == 0 && kills == 0) {
+                if (blocksBroken == 0 && woolPlaced == 0 && kills == 0 && damage == 0) {
                     formatted.add(Messages.NO_STATS_ACHIEVED.asString());
                     continue;
+                }
+                if (damage != 0) {
+                    formatted.add(Messages.STATS_DAMAGE.asString().replace("{damage}", String.valueOf(damage)));
                 }
                 if (kills != 0) {
                     formatted.add(Messages.STATS_KILLS.asString().replace("{kills}", String.valueOf(kills)));
@@ -168,14 +175,13 @@ public class RoundTask extends ArenaTask {
         } else {
             Events.call(new RoundEndEvent(arena, false, winner, arena.getTeams().stream().filter(team -> !team.equals(winner)).collect(Collectors.toList())));
 
+            winner.sendTitle(Messages.ROUND_WIN_TITLE.asString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_WIN_SUBTITLE.asString(), 3);
+            winner.playSound(Config.SOUNDS_ROUND_WON.asString());
+
             for (Team team : arena.getTeams()) {
-                if (team.equals(winner)) {
-                    team.sendTitle(Messages.ROUND_WIN_TITLE.asString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_WIN_SUBTITLE.asString(), 3);
-                    team.playSound(Config.SOUNDS_ROUND_WON.asString());
-                } else {
-                    team.sendTitle(Messages.ROUND_LOSE_TITLE.asString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_LOSE_SUBTITLE.asString(), 3);
-                    team.playSound(Config.SOUNDS_ROUND_LOST.asString());
-                }
+                if (team.equals(winner)) continue;
+                team.sendTitle(Messages.ROUND_LOSE_TITLE.asString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_LOSE_SUBTITLE.asString(), 3);
+                team.playSound(Config.SOUNDS_ROUND_LOST.asString());
             }
         }
         return GameState.ROUND_OVER;
@@ -190,13 +196,13 @@ public class RoundTask extends ArenaTask {
         wool.values().forEach(blocks -> blocks.remove(block.getLocation().toVector().toBlockVector()));
     }
 
-    public String formatStatistics(StatisticType type) {
-        WoolPlayer highest = arena.getPlayers().stream().max(Comparator.comparingInt(player -> player.getData().getRoundStatistic(type))).orElse(null);
+    public String formatStatistic(StatisticType type) {
+        WoolPlayer highest = arena.getPlayers().stream().max(Comparator.comparingInt(player -> player.getData().getArenaStatistic(type))).orElse(null);
         if (highest == null) {
             return Messages.NONE_FORMAT.asString();
         } else {
-            return Messages.END_GAME_STATS_FORMAT.asString().replace("{player}", highest.getPlayer().getName())
-                    .replace("{value}", String.valueOf(highest.getData().getRoundStatistic(type)));
+            return Messages.END_GAME_STATS_FORMAT.asString().replace("{player}", highest.getName())
+                    .replace("{value}", String.valueOf(highest.getData().getArenaStatistic(type)));
         }
     }
 

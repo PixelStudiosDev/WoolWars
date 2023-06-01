@@ -21,6 +21,7 @@ package me.cubecrafter.woolwars;
 import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.arena.ArenaManager;
+import me.cubecrafter.woolwars.arena.TabHandler;
 import me.cubecrafter.woolwars.commands.CommandManager;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.ConfigManager;
@@ -52,6 +53,7 @@ public final class WoolWars extends JavaPlugin {
     private KitManager kitManager;
     private PlayerManager playerManager;
     private PowerUpManager powerupManager;
+    private TabHandler tabHandler;
 
     @Setter
     private PartyProvider partyProvider;
@@ -74,9 +76,10 @@ public final class WoolWars extends JavaPlugin {
         storage = Config.MYSQL_ENABLED.asBoolean() ? new MySQL() : new SQLite();
         arenaManager = new ArenaManager(this);
         commandManager = new CommandManager(this);
-        powerupManager = new PowerUpManager();
         kitManager = new KitManager(this);
         playerManager = new PlayerManager(this);
+        powerupManager = new PowerUpManager();
+        tabHandler = new TabHandler();
 
         arenaManager.load();
         kitManager.load();

@@ -23,7 +23,6 @@ import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.xutils.Events;
 
 public class StartingTask extends ArenaTask {
@@ -44,7 +43,6 @@ public class StartingTask extends ArenaTask {
     public GameState end() {
         Events.call(new GameStartEvent(arena));
         arena.assignTeams();
-        arena.getTeams().forEach(Team::updateNameTags);
         // Start the game
         return GameState.PRE_ROUND;
     }

@@ -51,6 +51,11 @@ public class ArenasCommand implements SubCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Open the arenas menu";
+    }
+
+    @Override
     public boolean isPlayerOnly() {
         return true;
     }

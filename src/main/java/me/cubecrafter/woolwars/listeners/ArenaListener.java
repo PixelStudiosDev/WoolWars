@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.listeners;
 
+import com.cryptomorin.xseries.XBlock;
 import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
@@ -218,11 +219,9 @@ public class ArenaListener implements Listener {
         if (arena == null) return;
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            for (String material : Config.DISABLED_INTERACTION_BLOCKS.asStringList()) {
-                if (Utils.matchMaterial(material, event.getClickedBlock().getType().toString())) {
-                    event.setCancelled(true);
-                    return;
-                }
+            if (XBlock.isOneOf(event.getClickedBlock(), Config.DISABLED_INTERACTION_BLOCKS.asStringList())) {
+                event.setCancelled(true);
+                return;
             }
         }
 

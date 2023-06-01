@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.listeners;
 
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
@@ -71,6 +72,7 @@ public class JoinQuitListener implements Listener {
         if (arena != null) {
             arena.removePlayer(woolPlayer, PlayerLeaveArenaEvent.Reason.DISCONNECT);
         }
+        WoolWars.get().getTabHandler().onQuit(player);
     }
 
     public void sendUpdateMessage(Player player) {

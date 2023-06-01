@@ -19,11 +19,11 @@
 package me.cubecrafter.woolwars.arena.team;
 
 import lombok.Getter;
+import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.woolwars.utils.Cuboid;
-import me.cubecrafter.woolwars.arena.TabHandler;
 import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -67,7 +67,7 @@ public class Team {
 
     public void removeMember(WoolPlayer player) {
         members.remove(player);
-        TabHandler.removeTags(player.getPlayer(), this);
+        WoolWars.get().getTabHandler().removeTags(player.getPlayer(), this);
     }
 
     public boolean isMember(WoolPlayer player) {
@@ -82,9 +82,9 @@ public class Team {
         return members.size();
     }
 
-    public void updateNameTags() {
+    public void applyTags() {
         if (Config.NAME_TAGS_ENABLED.asBoolean()) {
-            members.forEach(member -> TabHandler.applyTags(member.getPlayer(), this));
+            WoolWars.get().getTabHandler().applyTags(this);
         }
     }
 
@@ -127,11 +127,11 @@ public class Team {
     }
 
     public void reset() {
+        if (Config.NAME_TAGS_ENABLED.asBoolean()) {
+            WoolWars.get().getTabHandler().removeTags(this);
+        }
         members.clear();
         points = 0;
-        if (Config.NAME_TAGS_ENABLED.asBoolean()) {
-            members.forEach(member -> TabHandler.removeTags(member.getPlayer(), this));
-        }
     }
 
 }

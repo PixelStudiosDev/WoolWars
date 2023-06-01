@@ -75,30 +75,32 @@ public enum Menus {
     TELEPORTER_MENU_TITLE("teleporter-menu.title"),
     TELEPORTER_MENU_PLAYER_ITEM("teleporter-menu.items.player-item");
 
+    private static final ConfigManager CONFIG_MANAGER = WoolWars.get().getConfigManager();
+
     private final String path;
 
     public String asString() {
-        return WoolWars.get().getConfigManager().getMenus().getString(path);
+        return CONFIG_MANAGER.getMenus().getString(path);
     }
 
     public int asInt() {
-        return WoolWars.get().getConfigManager().getMenus().getInt(path);
+        return CONFIG_MANAGER.getMenus().getInt(path);
     }
 
     public List<Integer> asIntegerList() {
-        return WoolWars.get().getConfigManager().getMenus().getIntegerList(path);
+        return CONFIG_MANAGER.getMenus().getIntegerList(path);
     }
 
     public boolean asBoolean() {
-        return WoolWars.get().getConfigManager().getMenus().getBoolean(path);
+        return CONFIG_MANAGER.getMenus().getBoolean(path);
     }
 
     public ConfigurationSection asSection() {
-        return WoolWars.get().getConfigManager().getMenus().getConfigurationSection(path);
+        return CONFIG_MANAGER.getMenus().getConfigurationSection(path);
     }
 
     public List<String> asStringList() {
-        return WoolWars.get().getConfigManager().getMenus().getStringList(path);
+        return CONFIG_MANAGER.getMenus().getStringList(path);
     }
 
 }
