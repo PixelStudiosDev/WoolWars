@@ -58,6 +58,7 @@ game:
     kill-message: "{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
   kits:
     shift-to-select-kit: "&eShift to select a kit!"
+    no-permission: "&cYou don't have the permission to use this kit!"
     kit-already-selected: "&cYou already have this kit selected!"
     kit-selected: "&7You have selected the &b{name} &7kit!"
     kit-status-selected: "&cAlready Selected!"

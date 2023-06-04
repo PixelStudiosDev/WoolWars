@@ -16,65 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.commands.subcommands;
+package me.cubecrafter.woolwars.commands;
 
-import me.cubecrafter.woolwars.arena.setup.SetupSession;
-import me.cubecrafter.woolwars.commands.SubCommand;
+import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class SetupCommand implements SubCommand {
+public class ForceStartCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         WoolPlayer player = PlayerManager.get((Player) sender);
-        if (ArenaUtil.getArenaByPlayer(player) != null) {
-            player.send("&cYou can't setup an arena while you're in game!");
-            return;
-        }
-        if (args.length < 1) {
-            if (SetupSession.hasSession(player)) {
-                SetupSession.get(player).getMenu().open();
-            } else {
-                player.send("&cUsage: /woolwars setup <arena-id>");
-            }
-            return;
-        }
-        if (SetupSession.hasSession(player)) {
-            player.send("&cYou are already in setup mode!");
-            return;
-        }
-        String id = args[0];
-        if (ArenaUtil.getArenaById(id) != null) {
-            player.send("&cAn arena called &e" + id + "&c already exists!");
-            return;
-        }
-        new SetupSession(player, id);
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String[] args) {
-        return null;
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        arena.forceStart();
     }
 
     @Override
     public String getLabel() {
-        return "setup";
+        return "forcestart";
     }
 
     @Override
     public String getPermission() {
-        return "woolwars.admin";
+        return "woolwars.forcestart";
     }
 
     @Override
     public String getDescription() {
-        return "Setup an arena";
+        return "Force start the game";
     }
 
     @Override

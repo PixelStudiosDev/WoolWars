@@ -16,40 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.commands.subcommands;
+package me.cubecrafter.woolwars.commands;
 
-import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.commands.SubCommand;
+import me.cubecrafter.woolwars.menu.game.ArenasMenu;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class HelpCommand implements SubCommand {
+public class ArenasCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        WoolWars.get().getCommandManager().sendHelpMessage((Player) sender);
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String[] args) {
-        return null;
+        WoolPlayer player = PlayerManager.get((Player) sender);
+        new ArenasMenu(player).open();
     }
 
     @Override
     public String getLabel() {
-        return "help";
+        return "arenas";
     }
 
     @Override
     public String getPermission() {
-        return "";
+        return "woolwars.arenas";
     }
 
     @Override
     public String getDescription() {
-        return "Show the help menu";
+        return "Open the arenas menu";
     }
 
     @Override

@@ -41,6 +41,7 @@ public class Kit {
     private final YamlConfiguration config;
     private final String id;
     private final String name;
+    private final boolean permissionRequired;
 
     private final Map<Integer, ItemStack> contents = new HashMap<>();
     private final ItemStack[] armor = new ItemStack[4];
@@ -51,6 +52,7 @@ public class Kit {
         this.id = id;
         this.config = config;
         this.name = config.getString("name");
+        this.permissionRequired = config.getBoolean("permission-required");
         this.ability = Ability.fromConfig(config.getConfigurationSection("ability"));
 
         for (String section : config.getConfigurationSection("items").getKeys(false)) {
@@ -67,6 +69,12 @@ public class Kit {
     }
 
     public void addToPlayer(WoolPlayer player, Team team) {
+        if (!canUse(player)) {
+            player.send(Messages.KIT_NO_PERMISSION.asString());
+            return;
+        }
+        player.getData().setSelectedKit(id);
+
         PlayerInventory inventory = player.getPlayer().getInventory();
         inventory.clear();
         inventory.setArmorContents(null);
@@ -96,6 +104,10 @@ public class Kit {
         inventory.setItem(ability.getSlot(), ability.getItem());
 
         player.send(Messages.KIT_SELECTED.asString().replace("{name}", name));
+    }
+
+    public boolean canUse(WoolPlayer player) {
+        return !permissionRequired || player.hasPermission("woolwars.kit." + id);
     }
 
 }

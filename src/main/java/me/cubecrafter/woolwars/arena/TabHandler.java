@@ -31,35 +31,17 @@ import java.util.function.BiFunction;
 
 public class TabHandler {
 
+    private final Scoreboard scoreboard;
     private final BiFunction<String, Team, String> formatter = (tag, team) -> TextUtil.color(tag)
             .replace("{team}", team.getName())
             .replace("{team_color}", team.getTeamColor().getChatColor().toString())
             .replace("{team_letter}", team.getLetter());
 
+    public TabHandler() {
+        this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    }
+
     public void applyTags(Team team) {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            setNameTags(online, team);
-        }
-    }
-
-    public void removeTags(Team team) {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            team.getMembers().forEach(member -> removeTags(online, member.getPlayer(), team));
-        }
-    }
-
-    public void removeTags(Player player, Team team) {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            removeTags(online, player, team);
-        }
-    }
-
-    public void onQuit(Player player) {
-        player.getScoreboard().getTeams().forEach(org.bukkit.scoreboard.Team::unregister);
-    }
-
-    private void setNameTags(Player viewer, Team team) {
-        Scoreboard scoreboard = viewer.getScoreboard();
         org.bukkit.scoreboard.Team scoreboardTeam = scoreboard.getTeam(getTeamName(team));
         // Team doesn't exist, create it
         if (scoreboardTeam == null) {
@@ -79,14 +61,22 @@ public class TabHandler {
         }
     }
 
-    private void removeTags(Player viewer, Player player, Team team) {
-        org.bukkit.scoreboard.Team scoreboardTeam = viewer.getScoreboard().getTeam(getTeamName(team));
+    public void removeTags(Team team) {
+        team.getMembers().forEach(member -> removeTags(member.getPlayer(), team));
+    }
+
+    public void removeTags(Player player, Team team) {
+        org.bukkit.scoreboard.Team scoreboardTeam = scoreboard.getTeam(getTeamName(team));
         if (scoreboardTeam == null) return;
         scoreboardTeam.removeEntry(player.getName());
         // Remove team if empty
         if (scoreboardTeam.getSize() == 0) {
             scoreboardTeam.unregister();
         }
+    }
+
+    public void onJoin(Player player) {
+        player.setScoreboard(scoreboard);
     }
 
     private String getTeamName(Team team) {

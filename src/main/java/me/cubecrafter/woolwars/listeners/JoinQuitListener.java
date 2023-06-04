@@ -45,6 +45,7 @@ public class JoinQuitListener implements Listener {
         // Disable join message
         event.setJoinMessage("");
         ArenaUtil.teleportToLobby(player);
+        WoolWars.get().getTabHandler().onJoin(player);
         // Hide players in game
         Tasks.later(() -> {
             for (Player online : Bukkit.getOnlinePlayers()) {
@@ -72,7 +73,6 @@ public class JoinQuitListener implements Listener {
         if (arena != null) {
             arena.removePlayer(woolPlayer, PlayerLeaveArenaEvent.Reason.DISCONNECT);
         }
-        WoolWars.get().getTabHandler().onQuit(player);
     }
 
     public void sendUpdateMessage(Player player) {

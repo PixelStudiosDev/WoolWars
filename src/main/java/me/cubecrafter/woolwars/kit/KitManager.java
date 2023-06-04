@@ -27,7 +27,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 public class KitManager {
@@ -51,10 +50,6 @@ public class KitManager {
 
     public Kit getKit(String id) {
         return kits.get(id);
-    }
-
-    public Kit getRandomKit() {
-        return getKits().toArray(new Kit[0])[ThreadLocalRandom.current().nextInt(getKits().size())];
     }
 
 }

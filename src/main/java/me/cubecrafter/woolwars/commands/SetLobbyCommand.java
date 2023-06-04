@@ -16,16 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.commands.subcommands;
+package me.cubecrafter.woolwars.commands;
 
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.commands.SubCommand;
 import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public class SetLobbyCommand implements SubCommand {
 
@@ -33,14 +31,11 @@ public class SetLobbyCommand implements SubCommand {
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Location location = player.getLocation();
+
         WoolWars.get().getConfigManager().getConfig().set("lobby-location", TextUtil.fromLocation(location));
         WoolWars.get().getConfigManager().save();
-        TextUtil.sendMessage(player, "&7Lobby location set! &8(" + location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")");
-    }
 
-    @Override
-    public List<String> tabComplete(CommandSender sender, String[] args) {
-        return null;
+        TextUtil.sendMessage(player, "&7Lobby location set! &8(" + location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")");
     }
 
     @Override
