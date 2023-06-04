@@ -37,7 +37,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class PreRoundTask extends ArenaTask {
 
-    private static final KitManager kitManager = WoolWars.get().getKitManager();
+    private static final KitManager KIT_MANAGER = WoolWars.get().getKitManager();
 
     public PreRoundTask(Arena arena) {
         super(arena, Config.PRE_ROUND_DURATION.asInt());
@@ -57,11 +57,12 @@ public class PreRoundTask extends ArenaTask {
             player.reset(GameMode.SURVIVAL);
             player.setAbilityUsed(false);
             arena.getPlayers().forEach(other -> player.setVisibility(other, true));
-            // Give previous kit if available, otherwise give random kit
-            Kit kit = player.getSelectedKit() == null ? kitManager.getRandomKit() : player.getSelectedKit();
+            // Give previous kit if available, otherwise give random kit (and also check if the kit can be used)
+            Kit kit = player.getSelectedKit();
+            if (kit == null || !kit.canUse(player)) {
+                kit = KIT_MANAGER.getKits().stream().filter(available -> available.canUse(player)).findAny().orElse(null);
+            }
             kit.addToPlayer(player, arena.getTeam(player));
-            // Update selected kit
-            player.getData().setSelectedKit(kit.getId());
 
             TextUtil.sendActionBarWhile(player.getPlayer(), Messages.SHIFT_TO_SELECT_KIT.asString(), () -> arena.getState() == GameState.PRE_ROUND);
         }

@@ -1,5 +1,7 @@
 # The displayed name of the kit
 name: "Swordsman"
+# If set to true, players will require the permission "woolwars.kit.<id>" to use this kit
+permission-required: false
 # Armor pieces
 armor:
   helmet:

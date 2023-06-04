@@ -61,6 +61,7 @@ public enum Messages {
     DEATH_BY_VOID("game.player-death.void"),
     DEATH_GENERIC("game.player-death.generic"),
     KILL_MESSAGE("game.player-death.kill-message"),
+    KIT_NO_PERMISSION("game.kits.no-permission"),
     KIT_ALREADY_SELECTED("game.kits.kit-already-selected"),
     KIT_SELECTED("game.kits.kit-selected"),
     KIT_STATUS_SELECTED("game.kits.kit-status-selected"),

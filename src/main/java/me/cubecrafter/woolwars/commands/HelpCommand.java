@@ -18,17 +18,32 @@
 
 package me.cubecrafter.woolwars.commands;
 
+import me.cubecrafter.xutils.commands.CommandManager;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.List;
+public class HelpCommand implements SubCommand {
 
-public interface SubCommand {
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        WoolCommand command = (WoolCommand) CommandManager.get().getCommand("woolwars");
+        command.sendHelpMenu((Player) sender);
+    }
 
-    void execute(CommandSender sender, String[] args);
-    List<String> tabComplete(CommandSender sender, String[] args);
-    String getLabel();
-    String getPermission();
-    String getDescription();
-    boolean isPlayerOnly();
+    @Override
+    public String getLabel() {
+        return "help";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Show the help menu";
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return true;
+    }
 
 }

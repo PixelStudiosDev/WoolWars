@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.commands.subcommands;
+package me.cubecrafter.woolwars.commands;
 
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.GameState;
-import me.cubecrafter.woolwars.commands.SubCommand;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -38,8 +38,10 @@ public class JoinCommand implements SubCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) return;
+
         Arena arena = ArenaUtil.getArenaById(args[0]);
         WoolPlayer player = PlayerManager.get((Player) sender);
+
         if (arena != null) {
             arena.addPlayer(player, true);
         } else if (ArenaUtil.getGroups().contains(args[0])) {
@@ -54,10 +56,12 @@ public class JoinCommand implements SubCommand {
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
         if (args.length != 1) return null;
+
         List<String> completions = new ArrayList<>();
         completions.addAll(ArenaUtil.getArenas().stream().filter(arena -> arena.getState().equals(GameState.WAITING) || arena.getState().equals(GameState.STARTING)).map(Arena::getId).collect(Collectors.toList()));
         completions.addAll(ArenaUtil.getGroups());
         completions.add("random");
+
         return completions;
     }
 

@@ -181,7 +181,7 @@ public class DamageListener implements Listener {
 
         ItemStack teleporter = ItemBuilder.fromConfig(Config.TELEPORTER_ITEM.asSection()).setTag("teleporter").build();
         player.getPlayer().getInventory().setItem(Config.TELEPORTER_ITEM.asSection().getInt("slot"), teleporter);
-        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 0, false, false));
+        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false));
 
         player.send(Messages.DEATH_RESPAWN_NEXT_ROUND.asString());
         ActionBar.sendActionBarWhile(WoolWars.get(), player.getPlayer(), TextUtil.color(Messages.DEATH_RESPAWN_NEXT_ROUND.asString()), () -> !player.isAlive());

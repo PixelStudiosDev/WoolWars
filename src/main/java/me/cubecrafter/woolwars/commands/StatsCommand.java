@@ -16,47 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.commands.subcommands;
+package me.cubecrafter.woolwars.commands;
 
-import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.commands.SubCommand;
-import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.woolwars.menu.game.StatsMenu;
+import me.cubecrafter.woolwars.storage.player.PlayerManager;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class ReloadCommand implements SubCommand {
+public class StatsCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        WoolWars.get().reload();
-        TextUtil.sendMessage(sender, Messages.CONFIG_RELOADED.asString());
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String[] args) {
-        return null;
+        WoolPlayer player = PlayerManager.get((Player) sender);
+        new StatsMenu(player).open();
     }
 
     @Override
     public String getLabel() {
-        return "reload";
+        return "stats";
     }
 
     @Override
     public String getPermission() {
-        return "woolwars.admin";
+        return "woolwars.stats";
     }
 
     @Override
     public String getDescription() {
-        return "Reloads the configuration";
+        return "Opens the stats menu";
     }
 
     @Override
     public boolean isPlayerOnly() {
-        return false;
+        return true;
     }
 
 }

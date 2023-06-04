@@ -89,7 +89,6 @@ public class KitsMenu extends Menu {
                 player.send(Messages.KIT_ALREADY_SELECTED.asString());
             } else {
                 kit.addToPlayer(player, arena.getTeam(player));
-                player.getData().setSelectedKit(kit.getId());
             }
         });
 

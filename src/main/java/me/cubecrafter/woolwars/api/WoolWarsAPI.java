@@ -35,51 +35,51 @@ import java.util.List;
 @UtilityClass
 public class WoolWarsAPI {
 
-    public Location getLobbyLocation() {
+    public static Location getLobbyLocation() {
         return Config.LOBBY_LOCATION.asLocation();
     }
 
-    public List<Arena> getArenas() {
+    public static List<Arena> getArenas() {
         return ArenaUtil.getArenas();
     }
 
-    public Arena getArenaByPlayer(WoolPlayer player) {
+    public static Arena getArenaByPlayer(WoolPlayer player) {
         return ArenaUtil.getArenaByPlayer(player);
     }
 
-    public Arena getArenaById(String id) {
+    public static Arena getArenaById(String id) {
         return ArenaUtil.getArenaById(id);
     }
 
-    public List<Arena> getArenasByGroup(String group) {
+    public static List<Arena> getArenasByGroup(String group) {
         return ArenaUtil.getArenasByGroup(group);
     }
 
-    public List<String> getGroups() {
+    public static List<String> getGroups() {
         return ArenaUtil.getGroups();
     }
 
-    public Kit getKitById(String id) {
+    public static Kit getKitById(String id) {
         return WoolWars.get().getKitManager().getKit(id);
     }
 
-    public List<Kit> getKits() {
+    public static List<Kit> getKits() {
         return new ArrayList<>(WoolWars.get().getKitManager().getKits());
     }
 
-    public WoolPlayer getPlayer(Player player) {
+    public static WoolPlayer getPlayer(Player player) {
         return PlayerManager.get(player);
     }
 
-    public boolean isPlaying(WoolPlayer player) {
+    public static boolean isPlaying(WoolPlayer player) {
         return ArenaUtil.isPlaying(player);
     }
 
-    public void joinRandomArena(WoolPlayer player) {
+    public static void joinRandomArena(WoolPlayer player) {
         ArenaUtil.joinRandomArena(player);
     }
 
-    public void joinRandomArena(WoolPlayer player, String group) {
+    public static void joinRandomArena(WoolPlayer player, String group) {
         ArenaUtil.joinRandomArena(player, group);
     }
 

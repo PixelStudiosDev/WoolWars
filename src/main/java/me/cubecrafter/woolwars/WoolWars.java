@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.cubecrafter.woolwars.arena.ArenaManager;
 import me.cubecrafter.woolwars.arena.TabHandler;
-import me.cubecrafter.woolwars.commands.CommandManager;
+import me.cubecrafter.woolwars.commands.WoolCommand;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.ConfigManager;
 import me.cubecrafter.woolwars.hooks.PlaceholderHook;
@@ -48,7 +48,6 @@ public final class WoolWars extends JavaPlugin {
 
     private ArenaManager arenaManager;
     private ConfigManager configManager;
-    private CommandManager commandManager;
     private Database storage;
     private KitManager kitManager;
     private PlayerManager playerManager;
@@ -75,11 +74,12 @@ public final class WoolWars extends JavaPlugin {
         configManager = new ConfigManager(this);
         storage = Config.MYSQL_ENABLED.asBoolean() ? new MySQL() : new SQLite();
         arenaManager = new ArenaManager(this);
-        commandManager = new CommandManager(this);
         kitManager = new KitManager(this);
         playerManager = new PlayerManager(this);
         powerupManager = new PowerUpManager();
         tabHandler = new TabHandler();
+
+        WoolCommand.register();
 
         arenaManager.load();
         kitManager.load();

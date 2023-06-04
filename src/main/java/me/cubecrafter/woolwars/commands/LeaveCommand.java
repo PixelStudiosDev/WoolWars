@@ -16,51 +16,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.cubecrafter.woolwars.commands.subcommands;
+package me.cubecrafter.woolwars.commands;
 
+import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.Arena;
-import me.cubecrafter.woolwars.commands.SubCommand;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.xutils.commands.BaseCommand;
+import me.cubecrafter.xutils.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import java.util.List;
+public class LeaveCommand extends BaseCommand implements SubCommand {
 
-public class ForceStartCommand implements SubCommand {
+    public LeaveCommand() {
+        super("leave");
 
-    @Override
-    public void execute(CommandSender sender, String[] args) {
-        WoolPlayer player = PlayerManager.get((Player) sender);
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
-        if (arena == null) return;
-        arena.forceStart();
+        setDescription("Leave the current arena");
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String[] args) {
-        return null;
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) return;
+
+        WoolPlayer player = PlayerManager.get((Player) sender);
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+        arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.QUIT);
     }
 
     @Override
     public String getLabel() {
-        return "forcestart";
+        return "leave";
     }
 
     @Override
     public String getPermission() {
-        return "woolwars.forcestart";
+        return "woolwars.leave";
     }
 
     @Override
     public String getDescription() {
-        return "Force start the game";
+        return "Leave the current arena";
     }
 
     @Override
     public boolean isPlayerOnly() {
         return true;
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return WoolWars.get();
     }
 
 }
