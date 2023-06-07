@@ -48,7 +48,9 @@ public class GoldenShellAbility extends Ability {
         inventory.setArmorContents(armor);
         // Restore previous armor
         Tasks.later(() -> {
-            if (arena.getState() != GameState.ACTIVE_ROUND) return;
+            if (arena.getState() != GameState.ACTIVE_ROUND || !player.isAlive()) {
+                return;
+            }
             inventory.setArmorContents(previous);
         }, section.getInt("duration") * 20L);
         return true;

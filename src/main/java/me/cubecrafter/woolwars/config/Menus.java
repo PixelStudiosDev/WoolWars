@@ -19,7 +19,8 @@
 package me.cubecrafter.woolwars.config;
 
 import lombok.RequiredArgsConstructor;
-import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.xutils.config.ConfigManager;
+import me.cubecrafter.xutils.config.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
@@ -75,32 +76,32 @@ public enum Menus {
     TELEPORTER_MENU_TITLE("teleporter-menu.title"),
     TELEPORTER_MENU_PLAYER_ITEM("teleporter-menu.items.player-item");
 
-    private static final ConfigManager CONFIG_MANAGER = WoolWars.get().getConfigManager();
+    private static final Configuration CONFIG = ConfigManager.get().load("menus.yml", true);
 
     private final String path;
 
     public String asString() {
-        return CONFIG_MANAGER.getMenus().getString(path);
+        return CONFIG.getString(path);
     }
 
     public int asInt() {
-        return CONFIG_MANAGER.getMenus().getInt(path);
+        return CONFIG.getInt(path);
     }
 
     public List<Integer> asIntegerList() {
-        return CONFIG_MANAGER.getMenus().getIntegerList(path);
+        return CONFIG.getIntegerList(path);
     }
 
     public boolean asBoolean() {
-        return CONFIG_MANAGER.getMenus().getBoolean(path);
+        return CONFIG.getBoolean(path);
     }
 
     public ConfigurationSection asSection() {
-        return CONFIG_MANAGER.getMenus().getConfigurationSection(path);
+        return CONFIG.getConfigurationSection(path);
     }
 
     public List<String> asStringList() {
-        return CONFIG_MANAGER.getMenus().getStringList(path);
+        return CONFIG.getStringList(path);
     }
 
 }

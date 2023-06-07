@@ -19,8 +19,9 @@
 package me.cubecrafter.woolwars.config;
 
 import lombok.RequiredArgsConstructor;
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.config.ConfigManager;
+import me.cubecrafter.xutils.config.Configuration;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -94,32 +95,32 @@ public enum Config {
     MYSQL_SSL_ENABLED("mysql.use-ssl"),
     LOBBY_LOCATION("lobby-location");
 
-    private static final ConfigManager CONFIG_MANAGER = WoolWars.get().getConfigManager();
+    private static final Configuration CONFIG = ConfigManager.get().load("config.yml", true);
 
     private final String path;
 
     public String asString() {
-        return CONFIG_MANAGER.getConfig().getString(path);
+        return CONFIG.getString(path);
     }
 
     public int asInt() {
-        return CONFIG_MANAGER.getConfig().getInt(path);
+        return CONFIG.getInt(path);
     }
 
     public double asDouble() {
-        return CONFIG_MANAGER.getConfig().getDouble(path);
+        return CONFIG.getDouble(path);
     }
 
     public List<String> asStringList() {
-        return CONFIG_MANAGER.getConfig().getStringList(path);
+        return CONFIG.getStringList(path);
     }
 
     public boolean asBoolean() {
-        return CONFIG_MANAGER.getConfig().getBoolean(path);
+        return CONFIG.getBoolean(path);
     }
 
     public ConfigurationSection asSection() {
-        return CONFIG_MANAGER.getConfig().getConfigurationSection(path);
+        return CONFIG.getConfigurationSection(path);
     }
 
     public Location asLocation() {

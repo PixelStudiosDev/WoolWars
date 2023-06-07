@@ -85,7 +85,7 @@ game:
       subtitle: "&e&lROUND WON"
     loser-team:
       title: "{points}"
-      subtitle: "&e&lROUND WON"
+      subtitle: "&e&lROUND LOST"
     draw:
       title: "{points}"
       subtitle: "&e&lDRAW"

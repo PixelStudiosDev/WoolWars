@@ -18,7 +18,6 @@
 
 package me.cubecrafter.woolwars.listeners;
 
-import com.cryptomorin.xseries.XBlock;
 import me.cubecrafter.woolwars.api.events.player.PlayerJoinArenaEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
@@ -26,32 +25,21 @@ import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.arena.team.Team;
-import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
-import me.cubecrafter.woolwars.menu.game.KitsMenu;
-import me.cubecrafter.woolwars.menu.game.TeleporterMenu;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
-import me.cubecrafter.woolwars.utils.Utils;
-import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class ArenaListener implements Listener {
 
@@ -72,26 +60,27 @@ public class ArenaListener implements Listener {
     }
 
     @EventHandler
+    public void onPotionSplash(PotionSplashEvent event) {
+        Player player = (Player) event.getPotion().getShooter();
+        if (!ArenaUtil.isPlaying(PlayerManager.get(player))) return;
+
+        for (Entity entity : event.getAffectedEntities()) {
+            if (!(entity instanceof Player)) continue;
+
+            Player affected = (Player) entity;
+            if (!PlayerManager.get(affected).isAlive()) {
+                event.setIntensity(affected, 0);
+            }
+        }
+    }
+
+    @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
         if (projectile.getShooter() instanceof Player) {
             Player player = (Player) projectile.getShooter();
             if (!ArenaUtil.isPlaying(PlayerManager.get(player))) return;
             projectile.remove();
-        }
-    }
-
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event) {
-        if (ArenaUtil.isPlaying(PlayerManager.get(event.getPlayer()))) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (ArenaUtil.isPlaying(PlayerManager.get((Player) event.getEntity()))) {
-            event.setCancelled(true);
         }
     }
 
@@ -109,49 +98,6 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onWeatherChange(WeatherChangeEvent event) {
         event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if (!(event.getRightClicked() instanceof Player)) return;
-        Player player = event.getPlayer();
-        WoolPlayer woolPlayer = PlayerManager.get(player);
-        Arena arena = ArenaUtil.getArenaByPlayer(woolPlayer);
-        if (arena == null) return;
-        if (woolPlayer.isAlive()) return;
-        Player clicked = (Player) event.getRightClicked();
-        Arena other = ArenaUtil.getArenaByPlayer(PlayerManager.get(clicked));
-        if (!arena.equals(other)) return;
-        player.setGameMode(GameMode.SPECTATOR);
-        player.setSpectatorTarget(clicked);
-    }
-
-    @EventHandler
-    public void onSneak(PlayerToggleSneakEvent event) {
-        Player player = event.getPlayer();
-        WoolPlayer woolPlayer = PlayerManager.get(player);
-        Arena arena = ArenaUtil.getArenaByPlayer(woolPlayer);
-        if (arena == null) return;
-        if (arena.getState() == GameState.PRE_ROUND) {
-            new KitsMenu(woolPlayer, arena).open();
-        }
-        if (!woolPlayer.isAlive()) return;
-        if (player.getSpectatorTarget() == null) {
-            // The player is not spectating anyone
-            return;
-        }
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setAllowFlight(true);
-        player.setFlying(true);
-    }
-
-    @EventHandler
-    public void onItemConsume(PlayerItemConsumeEvent event) {
-        Arena arena = ArenaUtil.getArenaByPlayer(PlayerManager.get(event.getPlayer()));
-        if (arena == null) return;
-        if (arena.getState() != GameState.ACTIVE_ROUND) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler
@@ -209,59 +155,6 @@ public class ArenaListener implements Listener {
                 .replace("{player_team_color}", team.getTeamColor().getChatColor().toString());
 
         arena.broadcast(message);
-    }
-
-    @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
-        WoolPlayer player = PlayerManager.get(event.getPlayer());
-        Arena arena = ArenaUtil.getArenaByPlayer(player);
-
-        if (arena == null) return;
-
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (XBlock.isOneOf(event.getClickedBlock(), Config.DISABLED_INTERACTION_BLOCKS.asStringList())) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        ItemStack item = event.getItem();
-        if (item == null) return;
-
-        // Disable potions if the game is not active
-        if (item.getType().toString().contains("POTION") && arena.getState() != GameState.ACTIVE_ROUND) {
-            event.setCancelled(true);
-            event.getPlayer().updateInventory();
-            return;
-        }
-
-        String tag = Utils.getTag(item);
-        if (tag.isEmpty()) return;
-
-        event.setCancelled(true);
-        switch (tag) {
-            case "teleporter":
-                new TeleporterMenu(player, arena).open();
-                break;
-            case "leave":
-                arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.QUIT);
-                break;
-            case "ability":
-                player.getSelectedKit().getAbility().use(player, arena);
-                break;
-            case "playagain":
-                if (!player.hasPermission("woolwars.playagain")) {
-                    player.send(Messages.NO_PERMISSION.asString());
-                    break;
-                }
-                arena.removePlayer(player, PlayerLeaveArenaEvent.Reason.PLAY_AGAIN);
-                if (!ArenaUtil.joinRandomArena(player, arena.getGroup())) {
-                    player.teleportToLobby();
-                }
-                break;
-        }
     }
 
 }

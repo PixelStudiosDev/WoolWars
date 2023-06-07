@@ -41,7 +41,6 @@ import java.util.UUID;
 public class SetupSession {
 
     private static final Map<UUID, SetupSession> sessions = new HashMap<>();
-    private static final File arenaFolder = WoolWars.get().getConfigManager().getArenaFolder();
 
     public static boolean hasSession(WoolPlayer player) {
         return sessions.containsKey(player.getPlayer().getUniqueId());
@@ -101,7 +100,7 @@ public class SetupSession {
 
     public void save() {
         // Create the arena file
-        File file = new File(arenaFolder, arenaId + ".yml");
+        File file = new File(WoolWars.get().getArenaManager().getArenaFolder(), arenaId + ".yml");
         FileUtil.create(file);
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
