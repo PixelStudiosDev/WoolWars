@@ -34,7 +34,6 @@ import me.cubecrafter.woolwars.utils.VersionUtil;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.GameMode;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -125,7 +124,7 @@ public class DamageListener implements Listener {
             case ENTITY_ATTACK:
                 if (damager instanceof Player) {
                     WoolPlayer attacker = PlayerManager.get((Player) damager);
-                    if (arena.isTeammate(player, attacker)) {
+                    if (!attacker.isAlive() || arena.isTeammate(player, attacker)) {
                         event.setCancelled(true);
                     } else {
                         attacker.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());

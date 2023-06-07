@@ -19,11 +19,11 @@
 package me.cubecrafter.woolwars.powerup;
 
 import lombok.Getter;
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.woolwars.utils.Utils;
 import me.cubecrafter.xutils.TextUtil;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.cubecrafter.xutils.config.ConfigManager;
+import me.cubecrafter.xutils.config.Configuration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -34,12 +34,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 public class PowerUpManager {
 
+    private final Configuration config = ConfigManager.get().load("powerups.yml");
     private final List<PowerUpData> powerUps = new ArrayList<>();
 
     public void load() {
         powerUps.clear();
 
-        YamlConfiguration config = WoolWars.get().getConfigManager().getPowerUps();
         for (String id : config.getKeys(false)) {
             ItemStack displayedItem = ItemBuilder.fromConfig(config.getConfigurationSection(id + ".displayed-item")).build();
             List<String> holoLines = config.getStringList(id + ".hologram-lines");

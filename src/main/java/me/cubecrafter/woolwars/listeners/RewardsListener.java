@@ -23,8 +23,8 @@ import me.cubecrafter.woolwars.api.events.arena.RoundEndEvent;
 import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.woolwars.config.Config;
+import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -34,29 +34,35 @@ public class RewardsListener implements Listener {
 
     @EventHandler
     public void onRoundEnd(RoundEndEvent event) {
+        if (!Config.REWARD_COMMANDS_ENABLED.asBoolean()) return;
+
         for (Team team : event.getLoserTeams()) {
-            team.getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_ROUND_LOSE.asStringList()));
+            team.getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_ROUND_LOSE.asStringList()));
         }
         if (event.getWinnerTeam() == null) return;
-        event.getWinnerTeam().getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_ROUND_WIN.asStringList()));
+        event.getWinnerTeam().getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_ROUND_WIN.asStringList()));
     }
 
     @EventHandler
     public void onPlayerKill(PlayerKillEvent event) {
-        executeCommands(event.getVictim().getPlayer(), Config.REWARD_COMMANDS_DEATH.asStringList());
+        if (!Config.REWARD_COMMANDS_ENABLED.asBoolean()) return;
+
+        executeCommands(event.getVictim(), Config.REWARD_COMMANDS_DEATH.asStringList());
         if (event.getAttacker() == null) return;
-        executeCommands(event.getAttacker().getPlayer(), Config.REWARD_COMMANDS_KILL.asStringList());
+        executeCommands(event.getAttacker(), Config.REWARD_COMMANDS_KILL.asStringList());
     }
 
     @EventHandler
     public void onGameEnd(GameEndEvent event) {
+        if (!Config.REWARD_COMMANDS_ENABLED.asBoolean()) return;
+
         for (Team team : event.getLoserTeams()) {
-            team.getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_MATCH_LOSE.asStringList()));
+            team.getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_MATCH_LOSE.asStringList()));
         }
-        event.getWinnerTeam().getMembers().forEach(player -> executeCommands(player.getPlayer(), Config.REWARD_COMMANDS_MATCH_WIN.asStringList()));
+        event.getWinnerTeam().getMembers().forEach(player -> executeCommands(player, Config.REWARD_COMMANDS_MATCH_WIN.asStringList()));
     }
 
-    public void executeCommands(Player player, List<String> commands) {
+    public void executeCommands(WoolPlayer player, List<String> commands) {
         for (String command : commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
         }

@@ -18,9 +18,10 @@
 
 package me.cubecrafter.woolwars.kit;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.config.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -28,15 +29,30 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class KitManager {
 
-    private final WoolWars plugin;
+    private final String[] DEFAULT_KITS = new String[] {
+            "archer", "assault", "engineer", "golem", "swordsman", "tank"
+    };
+
+    @Getter
+    private final File folder;
     private final Map<String, Kit> kits = new HashMap<>();
+
+    public KitManager(WoolWars plugin) {
+        this.folder = new File(plugin.getDataFolder(), "kits");
+    }
 
     public void load() {
         kits.clear();
-        for (File file : plugin.getConfigManager().getKitFiles()) {
+        // If the folder doesn't exist, load the default kits
+        if (folder.mkdirs()) {
+            for (String kit : DEFAULT_KITS) {
+                new Configuration("kits/" + kit + ".yml").load();
+            }
+        }
+        // Load all kits
+        for (File file : getKitFiles()) {
             String id = file.getName().replace(".yml", "");
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
             kits.put(id, new Kit(id, config));
@@ -50,6 +66,10 @@ public class KitManager {
 
     public Kit getKit(String id) {
         return kits.get(id);
+    }
+
+    public File[] getKitFiles() {
+        return folder.listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.1.14'
+version = '1.1.15'
 
 repositories {
     mavenCentral()
@@ -25,7 +25,8 @@ dependencies {
     implementation 'org.bstats:bstats-bukkit:3.0.0'
     implementation 'de.tr7zw:item-nbt-api:2.11.1'
     implementation 'fr.mrmicky:fastboard:1.2.1'
-    implementation 'com.github.cubecrafter:XUtils:1.0.9'
+    //implementation 'com.github.cubecrafter:XUtils:1.0.12'
+    implementation 'me.cubecrafter:XUtils:1.0.13'
 
     compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.3'

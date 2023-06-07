@@ -18,9 +18,10 @@
 
 package me.cubecrafter.woolwars.commands;
 
-import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.xutils.TextUtil;
 import me.cubecrafter.xutils.commands.SubCommand;
+import me.cubecrafter.xutils.config.ConfigManager;
+import me.cubecrafter.xutils.config.Configuration;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,8 +33,9 @@ public class SetLobbyCommand implements SubCommand {
         Player player = (Player) sender;
         Location location = player.getLocation();
 
-        WoolWars.get().getConfigManager().getConfig().set("lobby-location", TextUtil.fromLocation(location));
-        WoolWars.get().getConfigManager().save();
+        Configuration config = ConfigManager.get().load("config.yml");
+        config.set("lobby-location", TextUtil.fromLocation(location));
+        config.save();
 
         TextUtil.sendMessage(player, "&7Lobby location set! &8(" + location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")");
     }

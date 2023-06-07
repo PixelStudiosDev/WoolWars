@@ -18,49 +18,29 @@
 
 package me.cubecrafter.woolwars.arena;
 
+import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
-import me.cubecrafter.woolwars.config.Config;
-import me.cubecrafter.woolwars.listeners.*;
 import me.cubecrafter.xutils.TextUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ArenaManager {
 
-    private final WoolWars plugin;
+    @Getter
+    private final File arenaFolder;
+
     private final Map<String, Arena> arenas = new HashMap<>();
 
-    private final ScoreboardListener scoreboard;
-
     public ArenaManager(WoolWars plugin) {
-        this.plugin = plugin;
-        this.scoreboard = new ScoreboardListener();
-        // Register listeners
-        Arrays.asList(
-                new ArenaListener(),
-                new BlockListener(),
-                new StatisticsListener(),
-                new JoinQuitListener(),
-                new DamageListener(),
-                new MoveListener(),
-                new InventoryListener(),
-                new ChatListener(),
-                new SetupListener()
-        ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, plugin));
-
-        if (Config.REWARD_COMMANDS_ENABLED.asBoolean()) {
-            Bukkit.getPluginManager().registerEvents(new RewardsListener(), plugin);
-        }
+        this.arenaFolder = new File(plugin.getDataFolder(), "arenas");
     }
 
     public void load() {
-        for (File file : plugin.getConfigManager().getArenaFiles()) {
+        for (File file : getArenaFiles()) {
             String id = file.getName().replace(".yml", "");
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
             register(new Arena(id, config));
@@ -83,7 +63,10 @@ public class ArenaManager {
 
     public void disable() {
         getArenas().forEach(Arena::restart);
-        scoreboard.disable();
+    }
+
+    public File[] getArenaFiles() {
+        return arenaFolder.listFiles((dir, name) -> name.endsWith(".yml"));
     }
 
 }

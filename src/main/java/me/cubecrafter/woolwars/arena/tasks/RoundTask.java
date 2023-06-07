@@ -180,6 +180,7 @@ public class RoundTask extends ArenaTask {
 
             for (Team team : arena.getTeams()) {
                 if (team.equals(winner)) continue;
+
                 team.sendTitle(Messages.ROUND_LOSE_TITLE.asString().replace("{points}", arena.getPointsFormatted()), Messages.ROUND_LOSE_SUBTITLE.asString(), 3);
                 team.playSound(Config.SOUNDS_ROUND_LOST.asString());
             }

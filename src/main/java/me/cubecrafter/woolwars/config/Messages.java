@@ -19,7 +19,8 @@
 package me.cubecrafter.woolwars.config;
 
 import lombok.RequiredArgsConstructor;
-import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.xutils.config.ConfigManager;
+import me.cubecrafter.xutils.config.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
@@ -117,20 +118,20 @@ public enum Messages {
     SCOREBOARD_STARTING("scoreboard.starting"),
     SCOREBOARD_PLAYING("scoreboard.playing");
 
-    private static final ConfigManager CONFIG_MANAGER = WoolWars.get().getConfigManager();
+    private static final Configuration CONFIG = ConfigManager.get().load("messages.yml", true);
 
     private final String path;
 
     public String asString() {
-        return CONFIG_MANAGER.getMessages().getString(path);
+        return CONFIG.getString(path);
     }
 
     public List<String> asStringList() {
-        return CONFIG_MANAGER.getMessages().getStringList(path);
+        return CONFIG.getStringList(path);
     }
 
     public ConfigurationSection asSection() {
-        return CONFIG_MANAGER.getMessages().getConfigurationSection(path);
+        return CONFIG.getConfigurationSection(path);
     }
 
 }
