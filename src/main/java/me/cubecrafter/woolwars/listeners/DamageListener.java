@@ -165,10 +165,13 @@ public class DamageListener implements Listener {
         player.getPlayer().setFlying(true);
         player.getPlayer().getInventory().setArmorContents(null);
         player.getPlayer().getInventory().clear();
-        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
-        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false));
         player.getPlayer().setFireTicks(0);
         player.getPlayer().setHealth(20);
+        player.getPlayer().getActivePotionEffects().forEach(potionEffect -> player.getPlayer().removePotionEffect(potionEffect.getType()));
+
+        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+        player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false));
+
         player.sendTitle(Messages.DEATH_TITLE.asString(), Messages.DEATH_SUBTITLE.asString(), 2);
 
         for (WoolPlayer alive : arena.getAlivePlayers()) {
