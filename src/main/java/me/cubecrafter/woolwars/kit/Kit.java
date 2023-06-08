@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.kit;
 
+import com.cryptomorin.xseries.XPotion;
 import lombok.Getter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.team.Team;
@@ -29,8 +30,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -45,6 +49,7 @@ public class Kit {
 
     private final Map<Integer, ItemStack> contents = new HashMap<>();
     private final ItemStack[] armor = new ItemStack[4];
+    private final List<PotionEffect> effects = new ArrayList<>();
 
     private final Ability ability;
 
@@ -66,6 +71,11 @@ public class Kit {
             if (section == null) continue;
             armor[i] = ItemBuilder.fromConfig(section).setUnbreakable(true).build();
         }
+
+        for (String effect : config.getStringList("effects")) {
+            String[] split = effect.split(":");
+            effects.add(XPotion.matchXPotion(split[0]).orElse(XPotion.SPEED).buildPotionEffect(Integer.MAX_VALUE, Integer.parseInt(split[1]) - 1));
+        }
     }
 
     public void addToPlayer(WoolPlayer player, Team team) {
@@ -74,6 +84,8 @@ public class Kit {
             return;
         }
         player.getData().setSelectedKit(id);
+
+        player.getPlayer().getActivePotionEffects().forEach(effect -> player.getPlayer().removePotionEffect(effect.getType()));
 
         PlayerInventory inventory = player.getPlayer().getInventory();
         inventory.clear();
@@ -102,6 +114,8 @@ public class Kit {
             }
         }
         inventory.setItem(ability.getSlot(), ability.getItem());
+
+        effects.forEach(effect -> player.getPlayer().addPotionEffect(effect));
 
         player.send(Messages.KIT_SELECTED.asString().replace("{name}", name));
     }

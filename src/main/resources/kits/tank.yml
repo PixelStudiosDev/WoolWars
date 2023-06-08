@@ -2,6 +2,9 @@
 name: "Tank"
 # If set to true, players will require the permission "woolwars.kit.<id>" to use this kit
 permission-required: false
+# A list of effects that will be applied to the player. Format: <effect-name>:<level> (e.g. SPEED:1)
+effects:
+  - "ABSORPTION:1"
 # Armor pieces
 armor:
   helmet:
