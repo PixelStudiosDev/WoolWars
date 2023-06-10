@@ -164,6 +164,18 @@ scoreboard:
     - '&fStarting in:&a {time}s'
     - ''
     - '&ewww.myserver.net'
+  pre-round:
+    - '&7{date}'
+    - ''
+    - '&fMap: &a{displayname}'
+    - '&fRound: &b{round}'
+    - '&fState: &e{state}'
+    - ''
+    - '{teams}'
+    - ''
+    - '&fTime Left: &a{time_formatted}'
+    - ''
+    - '&ewww.myserver.net'
   playing:
     - '&7{date}'
     - ''

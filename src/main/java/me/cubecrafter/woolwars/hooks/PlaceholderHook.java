@@ -22,6 +22,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
+import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.woolwars.storage.player.PlayerData;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.StatisticType;
@@ -32,7 +33,7 @@ import java.text.DecimalFormat;
 
 public class PlaceholderHook extends PlaceholderExpansion {
 
-    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     @Override
     public String getIdentifier() {
@@ -87,9 +88,9 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 int deaths = data.getStatistic(StatisticType.DEATHS);
                 int kills = data.getStatistic(StatisticType.KILLS);
                 if (deaths == 0) {
-                    return decimalFormat.format(kills);
+                    return DECIMAL_FORMAT.format(kills);
                 }
-                return decimalFormat.format(kills / deaths);
+                return DECIMAL_FORMAT.format(kills / deaths);
         }
 
         if (!params.startsWith("arena_")) return null;
@@ -134,6 +135,24 @@ public class PlaceholderHook extends PlaceholderExpansion {
             case "round_damage":
                 return String.valueOf(data.getRoundStatistic(StatisticType.DAMAGE));
         }
+
+        if (!params.substring(6).startsWith("team_")) return null;
+        Team team = arena.getTeam(woolPlayer);
+        if (team == null) return null;
+
+        switch (params.substring(11)) {
+            case "name":
+                return team.getName();
+            case "color":
+                return team.getTeamColor().getChatColor().toString();
+            case "letter":
+                return team.getLetter();
+            case "points":
+                return String.valueOf(team.getPoints());
+            case "alive":
+                return String.valueOf(team.getAliveCount());
+        }
+
         return null;
     }
 

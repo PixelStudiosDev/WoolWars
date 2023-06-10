@@ -98,17 +98,22 @@ public class ScoreboardListener {
         Arena arena = ArenaUtil.getArenaByPlayer(player);
 
         if (arena != null) {
+            List<String> lines;
             switch (arena.getState()) {
                 case WAITING:
-                    board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_WAITING.asStringList(), arena)));
+                    lines = Messages.SCOREBOARD_WAITING.asStringList();
                     break;
                 case STARTING:
-                    board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_STARTING.asStringList(), arena)));
+                    lines = Messages.SCOREBOARD_STARTING.asStringList();
+                    break;
+                case PRE_ROUND:
+                    lines = Messages.SCOREBOARD_PRE_ROUND.asStringList();
                     break;
                 default:
-                    board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, formatLines(Messages.SCOREBOARD_PLAYING.asStringList(), arena), arena)));
+                    lines = Messages.SCOREBOARD_PLAYING.asStringList();
                     break;
             }
+            board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, formatLines(lines, arena), arena)));
         } else {
             board.updateLines(TextUtil.color(ArenaUtil.parsePlaceholders(player, Messages.SCOREBOARD_LOBBY.asStringList())));
         }
