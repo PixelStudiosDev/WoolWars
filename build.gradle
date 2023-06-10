@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.1.16'
+version = '1.1.17'
 
 repositories {
     mavenCentral()
@@ -23,8 +23,8 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
     implementation 'org.bstats:bstats-bukkit:3.0.0'
-    implementation 'de.tr7zw:item-nbt-api:2.11.2'
-    implementation 'fr.mrmicky:fastboard:1.2.1'
+    implementation 'de.tr7zw:item-nbt-api:2.11.3'
+    implementation 'fr.mrmicky:fastboard:2.0.0'
     implementation 'com.github.cubecrafter:XUtils:1.0.13'
     //implementation 'me.cubecrafter:XUtils:1.0.13'
 

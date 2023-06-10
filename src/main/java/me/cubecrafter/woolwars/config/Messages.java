@@ -116,6 +116,7 @@ public enum Messages {
     SCOREBOARD_LOBBY("scoreboard.lobby"),
     SCOREBOARD_WAITING("scoreboard.waiting"),
     SCOREBOARD_STARTING("scoreboard.starting"),
+    SCOREBOARD_PRE_ROUND("scoreboard.pre-round"),
     SCOREBOARD_PLAYING("scoreboard.playing");
 
     private static final Configuration CONFIG = ConfigManager.get().load("messages.yml", true);
