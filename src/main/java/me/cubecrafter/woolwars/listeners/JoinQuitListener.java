@@ -18,6 +18,7 @@
 
 package me.cubecrafter.woolwars.listeners;
 
+import lombok.RequiredArgsConstructor;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.api.events.player.PlayerLeaveArenaEvent;
 import me.cubecrafter.woolwars.arena.Arena;
@@ -35,9 +36,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+@RequiredArgsConstructor
 public class JoinQuitListener implements Listener {
+
+    private final WoolWars plugin;
+
+    @EventHandler
+    public void onLogin(PlayerLoginEvent event) {
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
+        plugin.getPlayerManager().loadPlayer(event.getPlayer());
+    }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
@@ -45,7 +56,7 @@ public class JoinQuitListener implements Listener {
         // Disable join message
         event.setJoinMessage("");
         ArenaUtil.teleportToLobby(player);
-        WoolWars.get().getTabHandler().onJoin(player);
+        plugin.getTabHandler().onJoin(player);
         // Hide players in game
         Tasks.later(() -> {
             for (Player online : Bukkit.getOnlinePlayers()) {
@@ -73,6 +84,8 @@ public class JoinQuitListener implements Listener {
         if (arena != null) {
             arena.removePlayer(woolPlayer, PlayerLeaveArenaEvent.Reason.DISCONNECT);
         }
+        // Unload player
+        plugin.getPlayerManager().unloadPlayer(player);
     }
 
     public void sendUpdateMessage(Player player) {

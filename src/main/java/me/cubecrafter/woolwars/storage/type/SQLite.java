@@ -29,7 +29,7 @@ import java.util.Collection;
 
 public class SQLite extends Database {
 
-    private final String INSERT_OR_REPLACE = "INSERT OR REPLACE INTO player_data (uuid, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, selected_kit, win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    private final String INSERT_OR_REPLACE = "INSERT OR REPLACE INTO player_data (uuid, selected_kit, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, win_streak, highest_win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
     @Override
     public void saveData(WoolPlayer player) {
@@ -53,18 +53,19 @@ public class SQLite extends Database {
 
     private void setPlaceholders(PreparedStatement statement, WoolPlayer player) throws SQLException {
         PlayerData data = player.getData();
-        statement.setString(1, player.getPlayer().getUniqueId().toString());
+        statement.setString(1, player.getUniqueId().toString());
 
-        statement.setInt(2, data.getStatistic(StatisticType.WINS));
-        statement.setInt(3, data.getStatistic(StatisticType.LOSSES));
-        statement.setInt(4, data.getStatistic(StatisticType.GAMES_PLAYED));
-        statement.setInt(5, data.getStatistic(StatisticType.KILLS));
-        statement.setInt(6, data.getStatistic(StatisticType.DEATHS));
-        statement.setInt(7, data.getStatistic(StatisticType.WOOL_PLACED));
-        statement.setInt(8, data.getStatistic(StatisticType.BLOCKS_BROKEN));
-        statement.setInt(9, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
-        statement.setString(10, data.getSelectedKit());
+        statement.setString(2, data.getSelectedKit());
+        statement.setInt(3, data.getStatistic(StatisticType.WINS));
+        statement.setInt(4, data.getStatistic(StatisticType.LOSSES));
+        statement.setInt(5, data.getStatistic(StatisticType.GAMES_PLAYED));
+        statement.setInt(6, data.getStatistic(StatisticType.KILLS));
+        statement.setInt(7, data.getStatistic(StatisticType.DEATHS));
+        statement.setInt(8, data.getStatistic(StatisticType.WOOL_PLACED));
+        statement.setInt(9, data.getStatistic(StatisticType.BLOCKS_BROKEN));
+        statement.setInt(10, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
         statement.setInt(11, data.getStatistic(StatisticType.WIN_STREAK));
+        statement.setInt(12, data.getStatistic(StatisticType.HIGHEST_WIN_STREAK));
     }
 
 }

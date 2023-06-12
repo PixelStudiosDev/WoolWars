@@ -20,6 +20,7 @@ package me.cubecrafter.woolwars.listeners;
 
 import me.cubecrafter.woolwars.api.events.arena.GameEndEvent;
 import me.cubecrafter.woolwars.arena.team.Team;
+import me.cubecrafter.woolwars.storage.player.PlayerData;
 import me.cubecrafter.woolwars.storage.player.StatisticType;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import org.bukkit.event.EventHandler;
@@ -30,9 +31,16 @@ public class StatisticsListener implements Listener {
     @EventHandler
     public void onGameEnd(GameEndEvent event) {
         for (WoolPlayer player : event.getWinnerTeam().getMembers()) {
-            player.getData().addStatistic(StatisticType.WINS, 1);
-            player.getData().addStatistic(StatisticType.WIN_STREAK, 1);
-            player.getData().addStatistic(StatisticType.GAMES_PLAYED, 1);
+            PlayerData data = player.getData();
+
+            data.addStatistic(StatisticType.WINS, 1);
+            data.addStatistic(StatisticType.WIN_STREAK, 1);
+            data.addStatistic(StatisticType.GAMES_PLAYED, 1);
+
+            int streak = data.getStatistic(StatisticType.WIN_STREAK);
+            if (streak > data.getStatistic(StatisticType.HIGHEST_WIN_STREAK)) {
+                data.setStatistic(StatisticType.HIGHEST_WIN_STREAK, streak);
+            }
         }
         for (Team team : event.getLoserTeams()) {
             for (WoolPlayer player : team.getMembers()) {
