@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://imgur.com/yuiFoKv.png">
+  <img src="https://imgur.com/vv385q3.png">
 </p>
 <p align="center">
   <a href="https://www.spigotmc.org/resources/105548/"><img src="https://img.shields.io/badge/BUY-SPIGOTMC-orange?style=for-the-badge"></a>
