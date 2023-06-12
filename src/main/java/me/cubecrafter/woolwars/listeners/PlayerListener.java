@@ -28,6 +28,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -67,6 +68,13 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
         if (ArenaUtil.isPlaying(PlayerManager.get(event.getPlayer()))) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHunger(FoodLevelChangeEvent event) {
+        if (ArenaUtil.isPlaying(PlayerManager.get((Player) event.getEntity()))) {
             event.setCancelled(true);
         }
     }

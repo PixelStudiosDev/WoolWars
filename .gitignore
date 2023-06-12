@@ -112,3 +112,6 @@ buildNumber.properties
 
 # Common working directory
 run/
+
+# Exclude default kits
+/src/main/resources/kits/
