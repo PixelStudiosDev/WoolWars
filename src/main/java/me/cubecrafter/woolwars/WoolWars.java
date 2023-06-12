@@ -122,7 +122,7 @@ public final class WoolWars extends JavaPlugin {
                 new ArenaListener(),
                 new BlockListener(),
                 new StatisticsListener(),
-                new JoinQuitListener(),
+                new JoinQuitListener(this),
                 new DamageListener(),
                 new MoveListener(),
                 new InventoryListener(),

@@ -30,11 +30,11 @@ import me.cubecrafter.xutils.Tasks;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class Database {
@@ -74,8 +74,10 @@ public abstract class Database {
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", 250);
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
 
-        dataSource = new HikariDataSource(hikariConfig);
+        this.dataSource = new HikariDataSource(hikariConfig);
+
         createTable();
+        updateTable();
     }
 
     protected void execute(String sql, ThrowingConsumer<PreparedStatement> consumer) {
@@ -93,6 +95,7 @@ public abstract class Database {
     private void createTable() {
         execute("CREATE TABLE IF NOT EXISTS player_data (" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
+                "selected_kit VARCHAR(255)," +
                 "wins INT," +
                 "losses INT," +
                 "games_played INT," +
@@ -102,8 +105,29 @@ public abstract class Database {
                 "blocks_broken INT," +
                 "powerups_collected INT," +
                 "win_streak INT," +
-                "selected_kit VARCHAR(255))",
+                "highest_win_streak INT)",
                 PreparedStatement::executeUpdate);
+    }
+
+    private void updateTable() {
+        List<String> columns = new ArrayList<>();
+        columns.add("highest_win_streak");
+        // Check already existing columns
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = metaData.getColumns(null, null, "player_data", null);
+            while (resultSet.next()) {
+                String column = resultSet.getString("COLUMN_NAME");
+                columns.removeIf(string -> string.equals(column));
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        // Add missing columns
+        for (String column : columns) {
+            execute("ALTER TABLE player_data ADD COLUMN " + column + " INT", PreparedStatement::executeUpdate);
+        }
     }
 
     public CompletableFuture<PlayerData> fetchData(UUID uuid) {

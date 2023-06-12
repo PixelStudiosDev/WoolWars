@@ -23,6 +23,7 @@ import me.cubecrafter.woolwars.storage.Database;
 import me.cubecrafter.xutils.Events;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -39,27 +40,21 @@ public class PlayerManager {
 
     public PlayerManager(WoolWars plugin) {
         this.database = plugin.getStorage();
-
-        Events.subscribe(PlayerLoginEvent.class, event -> {
-            if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
-            loadPlayer(event.getPlayer());
-        });
-
-        Events.subscribe(PlayerQuitEvent.class, event -> {
-            Player player = event.getPlayer();
-            database.saveData(players.remove(player.getUniqueId()));
-        });
     }
 
     public WoolPlayer getPlayer(Player player) {
         return players.get(player.getUniqueId());
     }
 
+    public void unloadPlayer(Player player) {
+        database.saveData(players.remove(player.getUniqueId()));
+    }
+
     public Collection<WoolPlayer> getPlayers() {
         return players.values();
     }
 
-    private void loadPlayer(Player player) {
+    public void loadPlayer(Player player) {
         UUID uuid = player.getUniqueId();
         WoolPlayer woolPlayer = new WoolPlayer(player);
         players.put(uuid, woolPlayer);

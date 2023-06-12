@@ -33,6 +33,7 @@ public enum StatisticType {
     KILLS("kills"),
     DEATHS("deaths"),
     WIN_STREAK("win_streak"),
+    HIGHEST_WIN_STREAK("highest_win_streak"),
     WOOL_PLACED("wool_placed"),
     BLOCKS_BROKEN("blocks_broken"),
     POWERUPS_COLLECTED("powerups_collected"),
