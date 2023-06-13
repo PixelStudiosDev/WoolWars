@@ -24,6 +24,7 @@ import me.cubecrafter.woolwars.api.events.player.PlayerKillEvent;
 import me.cubecrafter.woolwars.arena.Arena;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
 import me.cubecrafter.woolwars.arena.GameState;
+import me.cubecrafter.woolwars.arena.team.Team;
 import me.cubecrafter.woolwars.config.Config;
 import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
@@ -34,6 +35,7 @@ import me.cubecrafter.woolwars.utils.VersionUtil;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.TextUtil;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -118,6 +120,7 @@ public class DamageListener implements Listener {
                         event.setCancelled(true);
                     } else {
                         shooter.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());
+                        sendDamageIndicator(arena, player, shooter, (int) event.getFinalDamage());
                     }
                 }
                 break;
@@ -128,6 +131,7 @@ public class DamageListener implements Listener {
                         event.setCancelled(true);
                     } else {
                         attacker.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());
+                        sendDamageIndicator(arena, player, attacker, (int) event.getFinalDamage());
                     }
                 }
                 break;
@@ -152,6 +156,31 @@ public class DamageListener implements Listener {
             // Handle fake death
             handleDeath(player, arena);
         }
+    }
+
+    public void sendDamageIndicator(Arena arena, WoolPlayer player, WoolPlayer attacker, int damage) {
+        ConfigurationSection section = Messages.DAMAGE_INDICATOR.asSection();
+        Team team = arena.getTeam(player);
+        int health = (int) player.getPlayer().getHealth();
+
+        StringBuilder builder = new StringBuilder();
+        // build 10 hearts string, every heart can have 3 states: full, damaged, empty
+        for (int i = 1; i <= 10; i++) {
+            if (health < i * 2) {
+                builder.append(section.getString("heart-empty"));
+            } else if (health - damage < i * 2) {
+                builder.append(section.getString("heart-damaged"));
+            } else {
+                builder.append(section.getString("heart-full"));
+            }
+        }
+        String message = section.getString("format")
+                .replace("{team_color}", team.getTeamColor().getChatColor().toString())
+                .replace("{team_letter}", team.getLetter())
+                .replace("{player}", player.getName())
+                .replace("{health}", builder.toString());
+
+        attacker.sendActionBar(message);
     }
 
     public static void handleDeath(WoolPlayer player, Arena arena) {
