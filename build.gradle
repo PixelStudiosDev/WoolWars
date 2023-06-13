@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.1.19'
+version = '1.1.20'
 
 repositories {
     mavenCentral()
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.cryptomorin:XSeries:9.3.1'
+    implementation 'com.github.cryptomorin:XSeries:9.4.0'
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
     implementation 'org.bstats:bstats-bukkit:3.0.0'

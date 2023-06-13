@@ -130,6 +130,11 @@ game:
     active-round: "Active Round"
     round-over: "Round Over"
     game-ended: "Game Ended"
+  damage-indicator:
+    format: "{team_color}&l{team_letter} {team_color}{player} {health}"
+    heart-full: "&4❤"
+    heart-damaged: "&c❤"
+    heart-empty: "&0❤"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # | SCOREBOARD                               |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

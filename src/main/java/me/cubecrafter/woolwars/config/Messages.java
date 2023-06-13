@@ -109,6 +109,7 @@ public enum Messages {
     GAME_STATE_ACTIVE_ROUND("game.game-states.active-round"),
     GAME_STATE_ROUND_OVER("game.game-states.round-over"),
     GAME_STATE_GAME_ENDED("game.game-states.game-ended"),
+    DAMAGE_INDICATOR("game.damage-indicator"),
     SCOREBOARD_TEAM_FORMAT("scoreboard.team-format"),
     SCOREBOARD_PROGRESS_EMPTY("scoreboard.progress-format.empty"),
     SCOREBOARD_PROGRESS_FULL("scoreboard.progress-format.full"),
