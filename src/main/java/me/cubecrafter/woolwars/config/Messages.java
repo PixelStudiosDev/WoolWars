@@ -49,6 +49,7 @@ public enum Messages {
     CENTER_UNLOCK_COUNTDOWN("game.center-unlock-countdown"),
     COMMAND_BLOCKED("general.command-blocked"),
     CONFIG_RELOADED("general.config-reloaded"),
+    PLAYER_NOT_FOUND("general.player-not-found"),
     PARTY_NOT_LEADER("party.not-leader"),
     PARTY_TOO_BIG("party.too-big"),
     PARTY_OFFLINE_MEMBERS("party.offline-members"),

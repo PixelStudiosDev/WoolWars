@@ -41,9 +41,14 @@ public class WoolPlayer {
 
     private final Player player;
 
-    private PlayerData data = new PlayerData();
+    private PlayerData data;
     private boolean alive;
     private boolean abilityUsed;
+
+    public WoolPlayer(Player player) {
+        this.player = player;
+        this.data = new PlayerData(player.getUniqueId());
+    }
 
     public void send(String message) {
         if (message.startsWith("<center>") && message.endsWith("</center>")) {

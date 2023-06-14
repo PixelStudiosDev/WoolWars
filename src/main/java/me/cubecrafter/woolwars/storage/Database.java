@@ -136,7 +136,7 @@ public abstract class Database {
         executeAsync("SELECT * FROM player_data WHERE uuid=?", statement -> {
             statement.setString(1, uuid.toString());
             ResultSet resultSet = statement.executeQuery();
-            PlayerData data = new PlayerData();
+            PlayerData data = new PlayerData(uuid);
             if (!resultSet.next()) {
                 // Return empty data
                 future.complete(data);

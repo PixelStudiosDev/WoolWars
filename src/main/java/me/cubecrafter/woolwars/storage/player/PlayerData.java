@@ -19,13 +19,18 @@
 package me.cubecrafter.woolwars.storage.player;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
+@RequiredArgsConstructor
 public class PlayerData {
+
+    private final UUID uuid;
 
     private final Map<StatisticType, Integer> overallStatistics = new EnumMap<>(StatisticType.class);
     private final Map<StatisticType, Integer> arenaStatistics = new EnumMap<>(StatisticType.class);
