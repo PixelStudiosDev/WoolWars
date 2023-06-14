@@ -22,6 +22,7 @@ general:
   no-permission: "&cYou don't have the permission to do this!"
   command-blocked: "&cYou can't use this command while you are in game!"
   config-reloaded: "&aConfig files reloaded!"
+  player-not-found: "&cPlayer not found!"
 party:
   not-leader: "&cYou must be the party leader to join an arena!"
   too-big: "&cYour party is too big to join this arena!"

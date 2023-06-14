@@ -18,19 +18,56 @@
 
 package me.cubecrafter.woolwars.commands;
 
+import me.cubecrafter.woolwars.WoolWars;
+import me.cubecrafter.woolwars.config.Messages;
 import me.cubecrafter.woolwars.menu.game.StatsMenu;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.xutils.commands.SubCommand;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StatsCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         WoolPlayer player = PlayerManager.get((Player) sender);
-        new StatsMenu(player).open();
+        // Load stats of specified player
+        if (args.length > 0) {
+            OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+            if (!target.hasPlayedBefore()) {
+                player.send(Messages.PLAYER_NOT_FOUND.asString());
+                return;
+            }
+            if (target.isOnline()) {
+                WoolPlayer online = PlayerManager.get(target.getPlayer());
+                new StatsMenu(player, online.getData()).open();
+            } else {
+                WoolWars.get().getStorage().fetchData(target.getUniqueId()).thenAccept(data -> {
+                    new StatsMenu(player, data).open();
+                });
+            }
+        }
+        // Load own stats
+        new StatsMenu(player, player.getData()).open();
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            List<String> names = Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+            return StringUtil.copyPartialMatches(args[0], names, new ArrayList<>());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -45,7 +82,7 @@ public class StatsCommand implements SubCommand {
 
     @Override
     public String getDescription() {
-        return "Opens the stats menu";
+        return "View your own or another player's stats";
     }
 
     @Override

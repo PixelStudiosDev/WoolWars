@@ -40,7 +40,7 @@ arenas-menu:
 # | STATS MENU                               |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 stats-menu:
-  title: "● Your Wool Wars Stats"
+  title: "● {player}'s Stats"
   rows: 6
   filler:
     enabled: true

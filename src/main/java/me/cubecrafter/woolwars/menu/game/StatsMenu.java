@@ -25,21 +25,24 @@ import me.cubecrafter.woolwars.storage.player.WoolPlayer;
 import me.cubecrafter.woolwars.utils.ItemBuilder;
 import me.cubecrafter.xutils.menu.Menu;
 import me.cubecrafter.xutils.menu.MenuItem;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 public class StatsMenu extends Menu {
 
     private final PlayerData data;
 
-    public StatsMenu(WoolPlayer player) {
+    public StatsMenu(WoolPlayer player, PlayerData data) {
         super(player.getPlayer());
-        this.data = player.getData();
+        this.data = data;
 
         setAutoUpdate(false);
     }
 
     @Override
     public String getTitle() {
-        return Menus.STATS_MENU_TITLE.asString();
+        OfflinePlayer player = Bukkit.getOfflinePlayer(data.getUuid());
+        return Menus.STATS_MENU_TITLE.asString().replace("{player}", player.getName());
     }
 
     @Override

@@ -40,6 +40,8 @@ public class ArenaManager {
     }
 
     public void load() {
+        arenaFolder.mkdirs();
+
         for (File file : getArenaFiles()) {
             String id = file.getName().replace(".yml", "");
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
