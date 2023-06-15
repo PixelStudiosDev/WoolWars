@@ -57,6 +57,7 @@ game:
     void: "{player_team_color}{player} &7fell out of the world"
     generic: "{player_team_color}{player} &7died"
     kill-message: "{player_team_color}{player} &7was killed by {attacker_team_color}{attacker}"
+    assist-message: "&6+1 &7Kill Assist"
   kits:
     shift-to-select-kit: "&eShift to select a kit!"
     no-permission: "&cYou don't have the permission to use this kit!"

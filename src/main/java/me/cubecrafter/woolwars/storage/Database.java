@@ -105,13 +105,15 @@ public abstract class Database {
                 "blocks_broken INT," +
                 "powerups_collected INT," +
                 "win_streak INT," +
-                "highest_win_streak INT)",
+                "highest_win_streak INT," +
+                "assists INT)",
                 PreparedStatement::executeUpdate);
     }
 
     private void updateTable() {
         List<String> columns = new ArrayList<>();
         columns.add("highest_win_streak");
+        columns.add("assists");
         // Check already existing columns
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();

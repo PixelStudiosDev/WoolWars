@@ -41,6 +41,8 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
+import java.util.Map;
+
 public class ArenaListener implements Listener {
 
     @EventHandler
@@ -155,6 +157,19 @@ public class ArenaListener implements Listener {
                 .replace("{player_team_color}", team.getTeamColor().getChatColor().toString());
 
         arena.broadcast(message);
+
+        // Check for assists
+        for (Map.Entry<WoolPlayer, Long> entry : victim.getLastHit().entrySet()) {
+            WoolPlayer killer = entry.getKey();
+
+            if (killer.equals(attacker)) continue;
+
+            if (entry.getValue() + 5000 > System.currentTimeMillis()) {
+                killer.getData().addRoundStatistic(StatisticType.ASSISTS, 1);
+                killer.send(Messages.ASSIST_MESSAGE.asString());
+            }
+        }
+        victim.getLastHit().clear();
     }
 
 }

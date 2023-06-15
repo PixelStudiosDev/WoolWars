@@ -37,7 +37,8 @@ public enum StatisticType {
     WOOL_PLACED("wool_placed"),
     BLOCKS_BROKEN("blocks_broken"),
     POWERUPS_COLLECTED("powerups_collected"),
-    DAMAGE("damage");
+    DAMAGE("damage"),
+    ASSISTS("assists");
 
     private final String id;
 

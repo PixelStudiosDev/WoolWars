@@ -29,8 +29,8 @@ import java.util.Collection;
 
 public class MySQL extends Database {
 
-    private final String INSERT_OR_UPDATE = "INSERT INTO player_data (uuid, selected_kit, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, win_streak, highest_win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) " +
-            "ON DUPLICATE KEY UPDATE selected_kit=?, wins=?, losses=?, games_played=?, kills=?, deaths=?, wool_placed=?, blocks_broken=?, powerups_collected=?, win_streak=?, highest_win_streak=?";
+    private final String INSERT_OR_UPDATE = "INSERT INTO player_data (uuid, selected_kit, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, win_streak, highest_win_streak, assists) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) " +
+            "ON DUPLICATE KEY UPDATE selected_kit=?, wins=?, losses=?, games_played=?, kills=?, deaths=?, wool_placed=?, blocks_broken=?, powerups_collected=?, win_streak=?, highest_win_streak=?, assists=?";
 
     @Override
     public void saveData(WoolPlayer player) {
@@ -67,18 +67,20 @@ public class MySQL extends Database {
         statement.setInt(10, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
         statement.setInt(11, data.getStatistic(StatisticType.WIN_STREAK));
         statement.setInt(12, data.getStatistic(StatisticType.HIGHEST_WIN_STREAK));
+        statement.setInt(13, data.getStatistic(StatisticType.ASSISTS));
 
-        statement.setString(13, data.getSelectedKit());
-        statement.setInt(14, data.getStatistic(StatisticType.WINS));
-        statement.setInt(15, data.getStatistic(StatisticType.LOSSES));
-        statement.setInt(16, data.getStatistic(StatisticType.GAMES_PLAYED));
-        statement.setInt(17, data.getStatistic(StatisticType.KILLS));
-        statement.setInt(18, data.getStatistic(StatisticType.DEATHS));
-        statement.setInt(19, data.getStatistic(StatisticType.WOOL_PLACED));
-        statement.setInt(20, data.getStatistic(StatisticType.BLOCKS_BROKEN));
-        statement.setInt(21, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
-        statement.setInt(22, data.getStatistic(StatisticType.WIN_STREAK));
-        statement.setInt(23, data.getStatistic(StatisticType.HIGHEST_WIN_STREAK));
+        statement.setString(14, data.getSelectedKit());
+        statement.setInt(15, data.getStatistic(StatisticType.WINS));
+        statement.setInt(16, data.getStatistic(StatisticType.LOSSES));
+        statement.setInt(17, data.getStatistic(StatisticType.GAMES_PLAYED));
+        statement.setInt(18, data.getStatistic(StatisticType.KILLS));
+        statement.setInt(19, data.getStatistic(StatisticType.DEATHS));
+        statement.setInt(20, data.getStatistic(StatisticType.WOOL_PLACED));
+        statement.setInt(21, data.getStatistic(StatisticType.BLOCKS_BROKEN));
+        statement.setInt(22, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
+        statement.setInt(23, data.getStatistic(StatisticType.WIN_STREAK));
+        statement.setInt(24, data.getStatistic(StatisticType.HIGHEST_WIN_STREAK));
+        statement.setInt(25, data.getStatistic(StatisticType.ASSISTS));
     }
 
 }

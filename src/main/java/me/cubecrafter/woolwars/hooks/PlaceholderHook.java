@@ -134,6 +134,8 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return String.valueOf(data.getRoundStatistic(StatisticType.BLOCKS_BROKEN));
             case "round_damage":
                 return String.valueOf(data.getRoundStatistic(StatisticType.DAMAGE));
+            case "round_assists":
+                return String.valueOf(data.getRoundStatistic(StatisticType.ASSISTS));
         }
 
         if (!params.substring(6).startsWith("team_")) return null;

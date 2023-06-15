@@ -48,6 +48,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.Map;
+
 public class DamageListener implements Listener {
 
     @EventHandler
@@ -121,6 +123,7 @@ public class DamageListener implements Listener {
                     } else {
                         shooter.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());
                         sendDamageIndicator(arena, player, shooter, (int) event.getFinalDamage());
+                        player.getLastHit().put(shooter, System.currentTimeMillis());
                     }
                 }
                 break;
@@ -132,6 +135,7 @@ public class DamageListener implements Listener {
                     } else {
                         attacker.getData().addRoundStatistic(StatisticType.DAMAGE, (int) event.getFinalDamage());
                         sendDamageIndicator(arena, player, attacker, (int) event.getFinalDamage());
+                        player.getLastHit().put(attacker, System.currentTimeMillis());
                     }
                 }
                 break;

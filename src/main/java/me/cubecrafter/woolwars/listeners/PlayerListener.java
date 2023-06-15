@@ -24,6 +24,7 @@ import me.cubecrafter.woolwars.arena.GameState;
 import me.cubecrafter.woolwars.menu.game.KitsMenu;
 import me.cubecrafter.woolwars.storage.player.PlayerManager;
 import me.cubecrafter.woolwars.storage.player.WoolPlayer;
+import me.cubecrafter.woolwars.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +33,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class PlayerListener implements Listener {
 
@@ -67,8 +69,15 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (ArenaUtil.isPlaying(PlayerManager.get(event.getPlayer()))) {
-            event.setCancelled(true);
+        WoolPlayer player = PlayerManager.get(event.getPlayer());
+        Arena arena = ArenaUtil.getArenaByPlayer(player);
+        if (arena == null) return;
+
+        event.setCancelled(true);
+
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (Utils.getTag(item).equals("ability")) {
+            player.getSelectedKit().getAbility().use(player, arena);
         }
     }
 
