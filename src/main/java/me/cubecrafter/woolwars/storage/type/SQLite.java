@@ -29,7 +29,7 @@ import java.util.Collection;
 
 public class SQLite extends Database {
 
-    private final String INSERT_OR_REPLACE = "INSERT OR REPLACE INTO player_data (uuid, selected_kit, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, win_streak, highest_win_streak) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    private final String INSERT_OR_REPLACE = "INSERT OR REPLACE INTO player_data (uuid, selected_kit, wins, losses, games_played, kills, deaths, wool_placed, blocks_broken, powerups_collected, win_streak, highest_win_streak, assists) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     @Override
     public void saveData(WoolPlayer player) {
@@ -66,6 +66,7 @@ public class SQLite extends Database {
         statement.setInt(10, data.getStatistic(StatisticType.POWERUPS_COLLECTED));
         statement.setInt(11, data.getStatistic(StatisticType.WIN_STREAK));
         statement.setInt(12, data.getStatistic(StatisticType.HIGHEST_WIN_STREAK));
+        statement.setInt(13, data.getStatistic(StatisticType.ASSISTS));
     }
 
 }

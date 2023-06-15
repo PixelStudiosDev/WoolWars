@@ -87,6 +87,9 @@ public class StatsMenu extends Menu {
         setItem(new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_HIGHEST_WIN_STREAK_ITEM.asSection())
                 .addPlaceholder("{highest_win_streak}", String.valueOf(data.getStatistic(StatisticType.HIGHEST_WIN_STREAK))).build()), Menus.STATS_MENU_HIGHEST_WIN_STREAK_ITEM_SLOT.asInt());
 
+        setItem(new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_ASSISTS_ITEM.asSection())
+                .addPlaceholder("{assists}", String.valueOf(data.getStatistic(StatisticType.ASSISTS))).build()), Menus.STATS_MENU_ASSISTS_ITEM_SLOT.asInt());
+
         setItem(new MenuItem(ItemBuilder.fromConfig(Menus.STATS_MENU_CLOSE_ITEM.asSection()).build()).addAction(event -> close()), Menus.STATS_MENU_CLOSE_ITEM_SLOT.asInt());
     }
 

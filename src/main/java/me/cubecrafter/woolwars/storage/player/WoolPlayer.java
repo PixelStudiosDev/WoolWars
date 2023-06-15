@@ -19,6 +19,9 @@
 package me.cubecrafter.woolwars.storage.player;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import me.cubecrafter.woolwars.WoolWars;
 import me.cubecrafter.woolwars.kit.Kit;
 import me.cubecrafter.woolwars.arena.ArenaUtil;
@@ -31,10 +34,13 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 public class WoolPlayer {
 
     private final static KitManager kitManager = WoolWars.get().getKitManager();
@@ -44,6 +50,8 @@ public class WoolPlayer {
     private PlayerData data;
     private boolean alive;
     private boolean abilityUsed;
+
+    private final Map<WoolPlayer, Long> lastHit = new HashMap<>();
 
     public WoolPlayer(Player player) {
         this.player = player;

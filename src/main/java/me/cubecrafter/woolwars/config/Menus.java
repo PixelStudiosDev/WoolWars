@@ -65,6 +65,8 @@ public enum Menus {
     STATS_MENU_WIN_STREAK_ITEM_SLOT("stats-menu.items.win-streak-item.slot"),
     STATS_MENU_HIGHEST_WIN_STREAK_ITEM("stats-menu.items.highest-win-streak-item"),
     STATS_MENU_HIGHEST_WIN_STREAK_ITEM_SLOT("stats-menu.items.highest-win-streak-item.slot"),
+    STATS_MENU_ASSISTS_ITEM("stats-menu.items.assists-item"),
+    STATS_MENU_ASSISTS_ITEM_SLOT("stats-menu.items.assists-item.slot"),
     STATS_MENU_CLOSE_ITEM("stats-menu.items.close-item"),
     STATS_MENU_CLOSE_ITEM_SLOT("stats-menu.items.close-item.slot"),
     // Kits menu

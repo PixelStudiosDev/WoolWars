@@ -11,7 +11,7 @@
 # | ARENAS MENU                              |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 arenas-menu:
-  title: "● Wool Wars Arenas"
+  title: "Wool Wars Arenas"
   rows: 6
   filler:
     enabled: true
@@ -40,7 +40,7 @@ arenas-menu:
 # | STATS MENU                               |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 stats-menu:
-  title: "● {player}'s Stats"
+  title: "{player}'s Stats"
   rows: 6
   filler:
     enabled: true
@@ -54,69 +54,76 @@ stats-menu:
       displayname: "&aWins"
       lore:
         - "&7{wins}"
-      slot: 20
+      slot: 10
     losses-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VmMTE5ZjA4ODUxYTcyYTVmMTBmYmMzMjQ3ZDk1ZTFjMDA2MzYwZDJiNGY0MTJiMjNjZTA1NDA5Mjc1NmIwYyJ9fX0="
       displayname: "&aLosses"
       lore:
         - "&7{losses}"
-      slot: 21
+      slot: 11
     games-played-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc0MTcwYzY2YmYzMTQwZjIzNGIzMjJhZGQ3MjRjNWRmNjk0OWE5MjA5ZjgwN2ViZjg2ZDRmOWM4YzFlMTc4In19fQ=="
       displayname: "&aGames Played"
       lore:
         - "&7{games_played}"
-      slot: 22
+      slot: 12
     kills-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFmNTA1MmM3NGI3OTA1YmZmYmVmYjVjMTBiODU2NzViODk4M2VkYzllMWYyYjEwMWZmOTA2ZWI1YWMxNDQyYiJ9fX0="
       displayname: "&aKills"
       lore:
         - "&7{kills}"
-      slot: 23
+      slot: 14
     deaths-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFiOTZmODhiODJmMTIzNTRhMDkzZWU3N2FiMzdiOWQyNDVkYjNmY2EwZjYwMTJjZTE1NjViZTA2NjRjODA3MiJ9fX0="
       displayname: "&aDeaths"
       lore:
         - "&7{deaths}"
-      slot: 24
+      slot: 15
     wool-placed-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA4ZGY2MGM1MTA3NGVlZjI1NDRmZjM4Y2VhZDllMTY2NzVhZTQyNTE5MTYxMDUxODBlMWY4Y2UxOTdhYjNiYyJ9fX0="
       displayname: "&aWool Placed"
       lore:
         - "&7{wool_placed}"
-      slot: 29
+      slot: 16
     blocks-broken-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWU0MzUyNjgwZDBiYjI5YjkxMzhhZjc4MzMwMWEzOTFiMzQwOTBjYjQ5NDFkNTJjMDg3Y2E3M2M4MDM2Y2I1MSJ9fX0="
       displayname: "&aBlocks Broken"
       lore:
         - "&7{blocks_broken}"
-      slot: 30
+      slot: 29
     powerups-collected-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0="
       displayname: "&aPowerups Collected"
       lore:
         - "&7{powerups_collected}"
-      slot: 31
+      slot: 30
     win-streak-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDU1ODdkYTdmZTczMzZlOGFiOWY3OTFlYTVlMmNmYzhhODI3Y2E5NTk1NjdlYjlkNTNhNjQ3YmFiZjk0OGQ1In19fQ=="
       displayname: "&aWin Streak"
       lore:
         - "&7{win_streak}"
-      slot: 32
+      slot: 31
     highest-win-streak-item:
       material: PLAYER_HEAD
       texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmYzdmYTRlNzRiNmU0MDFhZTA2NDE0OGFlNWU3NjhiODkzZjFkOTI5N2Y4NzQ3NTEwMWY3MjI1YTJhNWE2YSJ9fX0="
       displayname: "&aHighest Win Streak"
       lore:
           - "&7{highest_win_streak}"
+      slot: 32
+    assists-item:
+      material: PLAYER_HEAD
+      texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE5NzcxMDliODJmZTE3NTI3YmQ3MTkxYjNiNWVhNTJmZWEzMGJmNTY3ZDEwOTdjYTQ3YTliNmIyY2FhMWRkYSJ9fX0="
+      displayname: "&aAssists"
+      lore:
+          - "&7{assists}"
       slot: 33
     close-item:
       material: BARRIER
@@ -129,7 +136,7 @@ stats-menu:
 # | KITS MENU                                |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 kits-menu:
-  title: "● Kit Selector"
+  title: "Kit Selector"
   rows: 5
   filler:
     enabled: false
@@ -211,7 +218,7 @@ kits-menu:
 # | TELEPORTER MENU                          |
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 teleporter-menu:
-  title: "● Teleporter"
+  title: "Teleporter"
   items:
     player-item:
       material: PLAYER_HEAD
