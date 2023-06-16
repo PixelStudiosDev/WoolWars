@@ -1,3 +1,6 @@
+> ### This repository will no longer be updated, new updates can be found on [Polymart](https://polymart.org/r/2551) / [SpigotMC](https://www.spigotmc.org/resources/105548/) / [BuiltByBit](https://builtbybit.com/resources/25971/)
+<br/>
+
 <p align="center">
   <img src="https://imgur.com/vv385q3.png">
 </p>
